@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Pegg Electrical Maintenance - Your Trusted Electricians</title>
+    <!-- Inter Font from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles and overrides for Tailwind */
+        body {
+            font-family: 'Inter', sans-serif;
+            @apply bg-gray-50 text-gray-800;
+        }
+
+        .section-padding {
+            @apply py-16 md:py-24;
+        }
+
+        /* Basic styling for sections for visual separation */
+        section:nth-child(even) {
+            @apply bg-white;
+        }
+        section:nth-child(odd):not(.hero) {
+            @apply bg-gray-50;
+        }
+
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6; /* Blue-500 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2563eb; /* Blue-600 */
+        }
+    </style>
+</head>
+<body class="scroll-smooth">
+    <!-- Header/Navigation Section -->
+    <header class="bg-gray-900 text-white shadow-lg sticky top-0 z-50">
+        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg class="h-8 w-8 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v2.059a2.99 2.99 0 01-.871 2.105 3.003 3.003 0 01-1.47 1.054 3.003 3.003 0 01-2.105.871A2.99 2.99 0 015 8v-.059l-.7.7a1 1 0 01-1.4-1.4l1.7-1.7V4a1 1 0 011-1h1a1 1 0 011 1v2h.059c.712-.008 1.402.164 2.047.487l.006-.003c.531.267 1.01.626 1.42.923a1 1 0 011.414 1.414l-1.42 1.42V18a1 1 0 01-1 1h-1a1 1 0 01-1-1v-2.059a2.99 2.99 0 01.871-2.105 3.003 3.003 0 011.47-1.054 3.003 3.003 0 012.105-.871A2.99 2.99 0 0115 12v.059l.7-.7a1 1 0 011.4 1.4l-1.7 1.7V16a1 1 0 01-1 1h-1a1 1 0 01-1-1v-2h-.059c-.712.008-1.402-.164-2.047-.487l-.006.003c-.531-.267-1.01-.626-1.42-.923a1 1 0 01-1.414-1.414l1.42-1.42V2a1 1 0 011-1h1z" clip-rule="evenodd"></path>
+                </svg>
+                <a href="#home" class="text-2xl font-extrabold tracking-tight rounded-md p-1 hover:text-yellow-400 transition-colors duration-300">Pegg Electrical Maintenance</a>
+            </div>
+            <ul class="hidden md:flex space-x-6">
+                <li><a href="#home" class="hover:text-yellow-400 transition-colors duration-300 p-2 rounded-md">Home</a></li>
+                <li><a href="#about" class="hover:text-yellow-400 transition-colors duration-300 p-2 rounded-md">About Us</a></li>
+                <li><a href="#services" class="hover:text-yellow-400 transition-colors duration-300 p-2 rounded-md">Services</a></li>
+                <li><a href="#testimonials" class="hover:text-yellow-400 transition-colors duration-300 p-2 rounded-md">Testimonials</a></li>
+                <li><a href="#contact" class="hover:text-yellow-400 transition-colors duration-300 p-2 rounded-md">Contact</a></li>
+            </ul>
+            <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
+                <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </nav>
+        <!-- Mobile Menu (hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-800 py-4">
+            <ul class="flex flex-col items-center space-y-4">
+                <li><a href="#home" class="block text-white hover:text-yellow-400 transition-colors duration-300 py-2">Home</a></li>
+                <li><a href="#about" class="block text-white hover:text-yellow-400 transition-colors duration-300 py-2">About Us</a></li>
+                <li><a href="#services" class="block text-white hover:text-yellow-400 transition-colors duration-300 py-2">Services</a></li>
+                <li><a href="#testimonials" class="block text-white hover:text-yellow-400 transition-colors duration-300 py-2">Testimonials</a></li>
+                <li><a href="#contact" class="block text-white hover:text-yellow-400 transition-colors duration-300 py-2">Contact</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="relative bg-gradient-to-r from-blue-700 to-blue-900 text-white flex items-center justify-center text-center section-padding min-h-[70vh] rounded-b-xl overflow-hidden">
+            <!-- Background overlay for visual effect -->
+            <div class="absolute inset-0 bg-black opacity-30 rounded-b-xl"></div>
+            <div class="absolute inset-0 z-0 overflow-hidden">
+                <!-- Example of a subtle background pattern or image -->
+                <img src="https://placehold.co/1920x1080/0A2342/C0C0C0?text=Electrical+Background" alt="Electrical background pattern" class="absolute w-full h-full object-cover opacity-20">
+            </div>
+
+            <div class="relative z-10 px-4 max-w-4xl">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 animate-fade-in-up">
+                    Expert Electrical Solutions You Can Trust
+                </h1>
+                <p class="text-lg sm:text-xl mb-8 opacity-90 animate-fade-in-up delay-100">
+                    Your reliable partner for all residential and commercial electrical needs. Safety, Quality, and Service Guaranteed.
+                </p>
+                <a href="#contact" class="inline-block bg-yellow-400 text-gray-900 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-yellow-300 transform hover:scale-105 transition duration-300 ease-in-out animate-fade-in-up delay-200">
+                    Get a Free Quote
+                </a>
+                <a href="tel:+1234567890" class="inline-block mt-4 md:ml-4 text-white border-2 border-yellow-400 font-bold py-3 px-8 rounded-full hover:bg-yellow-400 hover:text-gray-900 transition duration-300 ease-in-out animate-fade-in-up delay-300">
+                    Call Us Now: (123) 456-7890
+                </a>
+            </div>
+        </section>
+
+        <!-- About Us Section -->
+        <section id="about" class="section-padding">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center mb-12 text-gray-900 relative pb-4">
+                    About Pegg Electrical Maintenance
+                    <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-blue-500 rounded-full"></span>
+                </h2>
+                <div class="flex flex-col md:flex-row items-center gap-12">
+                    <div class="md:w-1/2">
+                        <img src="https://placehold.co/600x400/3b82f6/ffffff?text=Our+Team" alt="VoltLink Electric Team" class="rounded-lg shadow-xl w-full h-auto object-cover">
+                    </div>
+                    <div class="md:w-1/2 text-lg leading-relaxed">
+                        <p class="mb-4">
+                            At <strong>Pegg Electrical Maintenance</strong>, we are a team of highly experienced and licensed electricians dedicated to providing superior electrical services for both residential and commercial clients. With over 15 years in the industry, our commitment to safety, quality craftsmanship, and unparalleled customer service is at the core of everything we do.
+                        </p>
+                        <p class="mb-4">
+                            We understand the importance of reliable and safe electrical systems. That's why we use only the highest quality materials and adhere to the strictest industry standards. From minor repairs to major installations, you can trust Pegg Electrical Maintenance to power your world with confidence.
+                        </p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Fully Licensed & Insured Professionals</li>
+                            <li>Prompt & Reliable Service</li>
+                            <li>Transparent Pricing, No Hidden Fees</li>
+                            <li>24/7 Emergency Support</li>
+                            <li>100% Customer Satisfaction Guarantee</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="section-padding bg-blue-50">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center mb-12 text-gray-900 relative pb-4">
+                    Our Comprehensive Electrical Services
+                    <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-blue-500 rounded-full"></span>
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Service Item 1: Residential Wiring -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                        <div class="text-blue-600 mb-4 text-5xl flex justify-center">
+                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0 0l-7 7m7-7v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-gray-900 mb-4 text-center">Residential Wiring</h3>
+                        <p class="text-gray-700 text-center">
+                            New home wiring, rewiring existing homes, panel upgrades, circuit installations, and all residential electrical needs. We ensure your home's electrical system is safe and up to code.
+                        </p>
+                    </div>
+
+                    <!-- Service Item 2: Commercial Electrical -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                        <div class="text-blue-600 mb-4 text-5xl flex justify-center">
+                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m-1 4h1m8-10h1m-1 4h1m-1 4h1m0 0v1h1m-1-1h1v1h-1"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-gray-900 mb-4 text-center">Commercial Electrical</h3>
+                        <p class="text-gray-700 text-center">
+                            From office buildings to retail spaces, we provide comprehensive electrical services including lighting installation, power distribution, and maintenance for businesses.
+                        </p>
+                    </div>
+
+                    <!-- Service Item 3: Electrical Repairs & Troubleshooting -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                        <div class="text-blue-600 mb-4 text-5xl flex justify-center">
+                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-gray-900 mb-4 text-center">Repairs & Troubleshooting</h3>
+                        <p class="text-gray-700 text-center">
+                            Experiencing issues? Our experts quickly diagnose and repair faulty wiring, outlets, switches, and other electrical problems to restore safety and functionality.
+                        </p>
+                    </div>
+
+                    <!-- Service Item 4: Lighting Solutions -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                        <div class="text-blue-600 mb-4 text-5xl flex justify-center">
+                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 20v-3m-3 0V7a4 4 0 118 0v10m-8 0h8a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-gray-900 mb-4 text-center">Lighting Solutions</h3>
+                        <p class="text-gray-700 text-center">
+                            Indoor and outdoor lighting installation, LED conversions, smart lighting systems, and landscape lighting to enhance aesthetics and energy efficiency.
+                        </p>
+                    </div>
+
+                    <!-- Service Item 5: Electrical Panel Upgrades -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                        <div class="text-blue-600 mb-4 text-5xl flex justify-center">
+                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.001 12.001 0 002 12c0 2.757 1.5 5.242 4.721 7.424A12.003 12.003 0 0012 22c2.904 0 5.682-.703 8.019-1.936a11.955 11.955 0 01-8.618-4.016z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-gray-900 mb-4 text-center">Panel Upgrades</h3>
+                        <p class="text-gray-700 text-center">
+                            Ensure your electrical panel can handle modern demands. We upgrade outdated panels for increased capacity, safety, and reliability.
+                        </p>
+                    </div>
+
+                    <!-- Service Item 6: Safety Inspections & Code Compliance -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                        <div class="text-blue-600 mb-4 text-5xl flex justify-center">
+                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.001 12.001 0 002 12c0 2.757 1.5 5.242 4.721 7.424A12.003 12.003 0 0012 22c2.904 0 5.682-.703 8.019-1.936a11.955 11.955 0 01-8.618-4.016z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-gray-900 mb-4 text-center">Safety Inspections</h3>
+                        <p class="text-gray-700 text-center">
+                            Thorough electrical safety inspections for homes and businesses, ensuring compliance with local codes and identifying potential hazards.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section id="testimonials" class="section-padding bg-gray-50">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center mb-12 text-gray-900 relative pb-4">
+                    What Our Clients Say
+                    <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-blue-500 rounded-full"></span>
+                </h2>
+                <div class="relative max-w-3xl mx-auto">
+                    <div id="testimonial-carousel" class="overflow-hidden">
+                        <div class="flex transition-transform duration-500 ease-in-out" id="testimonial-track">
+                            <!-- Testimonial 1 -->
+                            <div class="w-full flex-shrink-0 p-6 bg-white rounded-xl shadow-lg text-center">
+                                <p class="text-xl italic text-gray-700 mb-6">
+                                    "Pegg Electrical Maintenance transformed our outdated electrical system into a modern, safe setup. Their team was professional, efficient, and incredibly knowledgeable. Highly recommend their services for any residential project!"
+                                </p>
+                                <p class="font-semibold text-blue-600 text-lg">- Sarah J., Homeowner</p>
+                                <p class="text-gray-500 text-sm">Residential Wiring Project</p>
+                            </div>
+                            <!-- Testimonial 2 -->
+                            <div class="w-full flex-shrink-0 p-6 bg-white rounded-xl shadow-lg text-center">
+                                <p class="text-xl italic text-gray-700 mb-6">
+                                    "We had a complex commercial lighting installation, and VoltLink Electric handled it flawlessly. They completed the project on time and within budget, with minimal disruption to our operations. Outstanding work!"
+                                </p>
+                                <p class="font-semibold text-blue-600 text-lg">- Michael T., Business Owner</p>
+                                <p class="text-gray-500 text-sm">Commercial Lighting Upgrade</p>
+                            </div>
+                            <!-- Testimonial 3 -->
+                            <div class="w-full flex-shrink-0 p-6 bg-white rounded-xl shadow-lg text-center">
+                                <p class="text-xl italic text-gray-700 mb-6">
+                                    "When our power went out unexpectedly, VoltLink Electric was there in minutes. Their emergency response was quick, and they fixed the issue expertly. Truly a lifesaver!"
+                                </p>
+                                <p class="font-semibold text-blue-600 text-lg">- Emily R., Emergency Service Client</p>
+                                <p class="text-gray-500 text-sm">Emergency Electrical Repair</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="prev-testimonial" class="absolute top-1/2 left-0 -translate-y-1/2 bg-blue-500 text-white p-2 rounded-full shadow-md hover:bg-blue-600 focus:outline-none transition-colors duration-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <button id="next-testimonial" class="absolute top-1/2 right-0 -translate-y-1/2 bg-blue-500 text-white p-2 rounded-full shadow-md hover:bg-blue-600 focus:outline-none transition-colors duration-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+                <div id="testimonial-dots" class="flex justify-center mt-8 space-x-2"></div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section-padding bg-blue-700 text-white rounded-t-xl">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center mb-12 relative pb-4">
+                    Contact Us
+                    <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-yellow-400 rounded-full"></span>
+                </h2>
+                <div class="flex flex-col md:flex-row gap-12 items-start">
+                    <div class="md:w-1/2 bg-white p-8 rounded-xl shadow-lg text-gray-900">
+                        <h3 class="text-2xl font-semibold mb-6">Get a Free Consultation Today!</h3>
+                        <form id="contact-form" class="space-y-6">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                                <input type="text" id="name" name="name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" placeholder="John Doe" required>
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Your Email</label>
+                                <input type="email" id="email" name="email" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" placeholder="you@example.com" required>
+                            </div>
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number (Optional)</label>
+                                <input type="tel" id="phone" name="phone" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" placeholder="(123) 456-7890">
+                            </div>
+                            <div>
+                                <label for="service" class="block text-sm font-medium text-gray-700 mb-1">Service Needed</label>
+                                <select id="service" name="service" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                                    <option value="">Select a service</option>
+                                    <option value="Residential Wiring">Residential Wiring</option>
+                                    <option value="Commercial Electrical">Commercial Electrical</option>
+                                    <option value="Repairs & Troubleshooting">Repairs & Troubleshooting</option>
+                                    <option value="Lighting Solutions">Lighting Solutions</option>
+                                    <option value="Panel Upgrades">Panel Upgrades</option>
+                                    <option value="Safety Inspections">Safety Inspections</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Your Message</label>
+                                <textarea id="message" name="message" rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" placeholder="Describe your electrical needs..." required></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-300 transform hover:scale-105 shadow-md">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="md:w-1/2 space-y-8 text-lg">
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-4 text-yellow-400">Our Contact Information</h3>
+                            <p class="flex items-center mb-2">
+                                <svg class="w-6 h-6 mr-2 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path></svg>
+                                <strong>Phone:</strong> <a href="tel:+1234567890" class="hover:underline ml-2">(123) 456-7890</a>
+                            </p>
+                            <p class="flex items-center mb-2">
+                                <svg class="w-6 h-6 mr-2 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
+                                <strong>Email:</strong> <a href="mailto:info@voltlinkelectric.com" class="hover:underline ml-2">info@joepegg.com</a>
+                            </p>
+                            <p class="flex items-center">
+                                <svg class="w-6 h-6 mr-2 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+                                <strong>Address:</strong> 123 Power Grid St, ElectriCity, EL 12345
+                            </p>
+                        </div>
+                        <!-- Google Maps Embed -->
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-4 text-yellow-400">Find Us on the Map</h3>
+                            <div class="relative w-full rounded-lg overflow-hidden shadow-lg" style="padding-bottom: 75%;">
+                                <iframe
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.213271783852!2d-122.41941578468165!3d37.77492947975878!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80858064a7c0065b%3A0xfcf010530d95955f!2sGolden%20Gate%20Bridge!5e0!3m2!1sen!2sus!4v1678912345678!5m2!1sen!2sus"
+                                    width="100%" height="100%" style="border:0; position:absolute; top:0; left:0;" allowfullscreen="" loading="lazy"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-900 text-white py-8">
+        <div class="container mx-auto px-4 text-center md:flex md:justify-between md:items-center">
+            <p>&copy; 2025 Pegg Electrical Maintenance. All rights reserved.</p>
+            <div class="flex justify-center md:justify-end space-x-6 mt-4 md:mt-0">
+                <a href="#" class="hover:text-yellow-400 transition-colors duration-300">Privacy Policy</a>
+                <a href="#" class="hover:text-yellow-400 transition-colors duration-300">Terms of Service</a>
+                <!-- Social Media Links (add actual links) -->
+                <a href="#" class="hover:text-yellow-400 transition-colors duration-300">Facebook</a>
+                <a href="#" class="hover:text-yellow-400 transition-colors duration-300">LinkedIn</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-6 right-6 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition-opacity duration-300 opacity-0 transform scale-0 origin-bottom-right">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+    </button>
+
+    <!-- Message Box Modal -->
+    <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[9999] hidden">
+        <div class="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full text-center">
+            <h3 id="modal-title" class="text-2xl font-bold mb-4 text-gray-900"></h3>
+            <p id="modal-message" class="text-gray-700 mb-6"></p>
+            <button id="modal-close-button" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-300">
+                Close
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+
+                // Check if the target element exists
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+
+                    // Close mobile menu if open
+                    const mobileMenu = document.getElementById('mobile-menu');
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        // Testimonial Carousel
+        const testimonialTrack = document.getElementById('testimonial-track');
+        const prevTestimonialBtn = document.getElementById('prev-testimonial');
+        const nextTestimonialBtn = document.getElementById('next-testimonial');
+        const testimonialDotsContainer = document.getElementById('testimonial-dots');
+
+        if (testimonialTrack && prevTestimonialBtn && nextTestimonialBtn && testimonialDotsContainer) {
+            const testimonials = Array.from(testimonialTrack.children);
+            let currentIndex = 0;
+
+            // Create dots
+            testimonials.forEach((_, index) => {
+                const dot = document.createElement('button');
+                dot.classList.add('w-3', 'h-3', 'bg-gray-400', 'rounded-full', 'transition-colors', 'duration-300', 'focus:outline-none');
+                if (index === 0) dot.classList.add('bg-blue-500'); // Active dot
+                dot.addEventListener('click', () => {
+                    currentIndex = index;
+                    updateCarousel();
+                });
+                testimonialDotsContainer.appendChild(dot);
+            });
+
+            const dots = Array.from(testimonialDotsContainer.children);
+
+            function updateCarousel() {
+                const offset = -currentIndex * 100; // Each testimonial takes 100% width
+                testimonialTrack.style.transform = `translateX(${offset}%)`;
+
+                // Update active dot
+                dots.forEach((dot, index) => {
+                    if (index === currentIndex) {
+                        dot.classList.add('bg-blue-500');
+                        dot.classList.remove('bg-gray-400');
+                    } else {
+                        dot.classList.remove('bg-blue-500');
+                        dot.classList.add('bg-gray-400');
+                    }
+                });
+            }
+
+            prevTestimonialBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex === 0) ? testimonials.length - 1 : currentIndex - 1;
+                updateCarousel();
+            });
+
+            nextTestimonialBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex === testimonials.length - 1) ? 0 : currentIndex + 1;
+                updateCarousel();
+            });
+
+            // Optional: Auto-play carousel
+            // setInterval(() => {
+            //     currentIndex = (currentIndex === testimonials.length - 1) ? 0 : currentIndex + 1;
+            //     updateCarousel();
+            // }, 5000); // Change testimonial every 5 seconds
+        }
+
+        // Contact Form Submission and Message Box
+        const contactForm = document.getElementById('contact-form');
+        const messageModal = document.getElementById('message-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalCloseButton = document.getElementById('modal-close-button');
+
+        function showMessageModal(title, message) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            messageModal.classList.remove('hidden');
+        }
+
+        function hideMessageModal() {
+            messageModal.classList.add('hidden');
+        }
+
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault(); // Prevent default form submission
+
+                // Simulate form submission success
+                // In a real application, you would send this data to a server
+                // using fetch() or XMLHttpRequest.
+                setTimeout(() => {
+                    showMessageModal('Message Sent!', 'Thank you for contacting us. We will get back to you shortly.');
+                    contactForm.reset(); // Clear the form
+                }, 500); // Simulate network delay
+            });
+        }
+
+        if (modalCloseButton) {
+            modalCloseButton.addEventListener('click', hideMessageModal);
+            messageModal.addEventListener('click', (e) => {
+                if (e.target === messageModal) { // Close if clicked outside the content
+                    hideMessageModal();
+                }
+            });
+        }
+
+        // Back to Top button functionality
+        const backToTopBtn = document.getElementById('back-to-top');
+
+        if (backToTopBtn) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) { // Show button after scrolling 300px
+                    backToTopBtn.classList.add('opacity-100', 'scale-100');
+                    backToTopBtn.classList.remove('opacity-0', 'scale-0');
+                } else {
+                    backToTopBtn.classList.add('opacity-0', 'scale-0');
+                    backToTopBtn.classList.remove('opacity-100', 'scale-100');
+                }
+            });
+
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        }
+
+        // Ensure all JavaScript is initialized after DOM content is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // All event listeners and initializations are fine here
+        });
+    </script>
+</body>
+</html>
