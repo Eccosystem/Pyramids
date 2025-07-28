@@ -1273,18 +1273,18 @@
             color: #333;
         }
 
-        /* Rune Guide Page Specific Styles */
-        /* Removed as per user request */
-
         /* Meditation Page Styles */
         #meditationPage {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* Changed to flex-start */
-            /* Removed min-height for flexible height */
+            /* Changed justify-content to center for better vertical alignment */
+            justify-content: center;
             text-align: center;
-            padding-bottom: 2rem; /* Added padding for spacing */
+            padding-bottom: 2rem;
+            /* Ensure min-height fills the viewport for centering */
+            min-height: calc(100vh - 80px); /* Adjusted for header/footer if any, or just 100vh */
+            margin-top: 0; /* Removed margin-top to allow centering */
         }
 
         .meditation-circle {
@@ -1346,8 +1346,24 @@
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
         }
 
-        /* NEW: Rune Casting Page Styles */
-        /* Removed as per user request */
+        /* NEW: Meditation Theme Selector */
+        .meditation-theme-selector {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background-color: rgba(0, 0, 0, 0.4);
+            color: #e0e0e0;
+            border: 1px solid rgba(74, 85, 104, 0.6);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .meditation-theme-selector:focus {
+            outline: none;
+            border-color: #ffcc00;
+            box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.3), 0 0 10px rgba(255, 215, 0, 0.2);
+        }
 
         /* Mist effect */
         .mist-effect {
@@ -1462,6 +1478,7 @@
             <div class="user-input-section">
                 <input type="text" id="userQuestionInput" placeholder="Ask the ancients a question...">
                 <button class="whisper-button" id="seekCounselButton">Seek Ancient Counsel</button>
+                <button class="whisper-button" id="dailyWisdomButton">Receive Daily Wisdom</button> <!-- New Daily Wisdom Button -->
             </div>
 
             </section>
@@ -1622,6 +1639,12 @@
                 <button class="meditation-button" id="startMeditation">Start Meditation</button>
                 <button class="meditation-button" id="stopMeditation">Stop Meditation</button>
             </div>
+            <select id="meditationThemeSelector" class="meditation-theme-selector">
+                <option value="general">General Guidance</option>
+                <option value="clarity">Seek Clarity</option>
+                <option value="peace">Find Inner Peace</option>
+                <option value="connection">Connect with Ancestors</option>
+            </select>
             <p id="meditationStatus" class="text-gray-400 mt-4"></p>
         </section>
 
@@ -1658,6 +1681,7 @@
             const toggleTranslationButton = document.getElementById('toggleTranslation');
             const userQuestionInput = document.getElementById('userQuestionInput');
             const seekCounselButton = document.getElementById('seekCounselButton');
+            const dailyWisdomButton = document.getElementById('dailyWisdomButton'); // New Daily Wisdom button
             const veilOverlay = document.getElementById('veilOverlay');
             const pyramidGroup = document.getElementById('pyramidGroup');
             const menuButton = document.getElementById('menuButton');
@@ -1666,7 +1690,7 @@
             const navLinks = document.querySelectorAll('.overlay-menu nav ul li a');
             const homePage = document.getElementById('homePage');
             const lorePage = document.getElementById('lorePage');
-            const wisdomsAndPropheciesPage = document.getElementById('wisdomsAndPropheciesPage'); // Corrected variable here
+            const wisdomsAndPropheciesPage = document.getElementById('wisdomsAndPropheciesPage');
             const contactPage = document.getElementById('contactPage');
             const meditationPage = document.getElementById('meditationPage');
             const discoveryLog = document.getElementById('discoveryLog');
@@ -1683,7 +1707,7 @@
             const mainContentArea = document.getElementById('mainContentArea');
             const audioToggleButton = document.getElementById('audioToggleButton');
             const userIdDisplay = document.getElementById('userIdDisplay');
-            const mistEffect = document.querySelector('.mist-effect'); // New mist effect element
+            const mistEffect = document.querySelector('.mist-effect');
 
             // Meditation specific elements
             const startMeditationButton = document.getElementById('startMeditation');
@@ -1691,17 +1715,14 @@
             const meditationCircle = document.getElementById('meditationCircle');
             const meditationStatus = document.getElementById('meditationStatus');
             const meditationRune = document.getElementById('meditationRune');
-
-            // Removed Rune Casting elements
-            // const castRunesButton = document.getElementById('castRunesButton');
-            // const runeCastingResults = document.getElementById('runeCastingResults');
-
+            const meditationThemeSelector = document.getElementById('meditationThemeSelector'); // New theme selector
 
             let translationVisible = false;
             let isGenerating = false;
             let isAmbientPlaying = false;
             let isMeditationPlaying = false;
             let currentMeditationRuneIndex = 0;
+            let meditationRuneInterval; // To store the interval ID for clearing
 
             // Firebase variables
             let app;
@@ -1813,26 +1834,61 @@
             }).toDestination();
             meditationDrone.volume.value = -20; // Start quieter
 
-            const meditationRunes = [
-                { symbol: 'ᛗ', name: 'Mannaz', meaning: 'Humanity, the Self, social order' },
-                { symbol: 'ᛟ', name: 'Othala', meaning: 'Inheritance, ancestral spiritual power' },
-                { symbol: 'ᛞ', name: 'Dagaz', meaning: 'Day, breakthrough, awakening' },
-                { symbol: 'ᛋ', name: 'Sowilo', meaning: 'Wholeness, success, solar energy' },
-                { symbol: 'ᛚ', name: 'Laguz', meaning: 'Flow, water, intuition, subconscious' }
-            ];
+            const meditationThemes = {
+                general: {
+                    runes: [
+                        { symbol: 'ᛗ', name: 'Mannaz', meaning: 'Humanity, the Self, social order' },
+                        { symbol: 'ᛟ', name: 'Othala', meaning: 'Inheritance, ancestral spiritual power' },
+                        { symbol: 'ᛞ', name: 'Dagaz', meaning: 'Day, breakthrough, awakening' }
+                    ],
+                    guidance: "Feel the ancient hum guiding your inner journey."
+                },
+                clarity: {
+                    runes: [
+                        { symbol: 'ᚲ', name: 'Kenaz', meaning: 'Illumination, knowledge, creativity' },
+                        { symbol: 'ᛋ', name: 'Sowilo', meaning: 'Wholeness, success, solar energy' },
+                        { symbol: 'ᛖ', name: 'Ehaz', meaning: 'Movement, progress, trust' }
+                    ],
+                    guidance: "Focus on the light within, seeking clarity in your path."
+                },
+                peace: {
+                    runes: [
+                        { symbol: 'ᛁ', name: 'Isa', meaning: 'Stillness, ice, self-control' },
+                        { symbol: 'ᚹ', name: 'Wunjo', meaning: 'Joy, comfort, harmony' },
+                        { symbol: 'ᛚ', name: 'Laguz', meaning: 'Flow, water, intuition, subconscious' }
+                    ],
+                    guidance: "Embrace the stillness, letting inner peace wash over you."
+                },
+                connection: {
+                    runes: [
+                        { symbol: 'ᛟ', name: 'Othala', meaning: 'Inheritance, ancestral spiritual power' },
+                        { symbol: 'ᛝ', name: 'Ingwaz', meaning: 'Fertility, completion, inner growth' },
+                        { symbol: 'ᛉ', name: 'Algiz', meaning: 'Protection, defense, connection to divine' }
+                    ],
+                    guidance: "Reach out to the echoes of your ancestors, feeling their timeless connection."
+                }
+            };
 
             function startMeditationAudio() {
                 if (!isMeditationPlaying) {
+                    const selectedTheme = meditationThemeSelector.value;
+                    const themeData = meditationThemes[selectedTheme];
+
                     meditationDrone.triggerAttack("A1");
                     meditationDrone.triggerAttack("E2", Tone.now() + 0.5); // Add a fifth for richness
                     isMeditationPlaying = true;
                     meditationCircle.classList.add('pulsing');
-                    meditationStatus.textContent = "Meditating... feel the ancient hum.";
-                    logDiscovery("Meditation started.");
+                    meditationStatus.textContent = themeData.guidance;
+                    logDiscovery(`Meditation started: ${selectedTheme} theme.`);
 
-                    // Cycle meditation runes
-                    cycleMeditationRune();
-                    setInterval(cycleMeditationRune, 10000); // Change rune every 10 seconds
+                    currentMeditationRuneIndex = 0; // Reset rune index for new theme
+                    meditationRune.textContent = themeData.runes[currentMeditationRuneIndex].symbol;
+
+                    // Clear any existing interval before setting a new one
+                    if (meditationRuneInterval) {
+                        clearInterval(meditationRuneInterval);
+                    }
+                    meditationRuneInterval = setInterval(() => cycleMeditationRune(selectedTheme), 10000); // Change rune every 10 seconds
                 }
             }
 
@@ -1843,14 +1899,18 @@
                     meditationCircle.classList.remove('pulsing');
                     meditationStatus.textContent = "Meditation ended. Inner peace found.";
                     logDiscovery("Meditation ended.");
+                    if (meditationRuneInterval) {
+                        clearInterval(meditationRuneInterval);
+                    }
                 }
             }
 
-            function cycleMeditationRune() {
-                currentMeditationRuneIndex = (currentMeditationRuneIndex + 1) % meditationRunes.length;
-                const rune = meditationRunes[currentMeditationRuneIndex];
+            function cycleMeditationRune(theme) {
+                const themeData = meditationThemes[theme];
+                currentMeditationRuneIndex = (currentMeditationRuneIndex + 1) % themeData.runes.length;
+                const rune = themeData.runes[currentMeditationRuneIndex];
                 meditationRune.textContent = rune.symbol;
-                meditationStatus.textContent = `Meditating on ${rune.name}: ${rune.meaning}`;
+                meditationStatus.textContent = `${themeData.guidance} Meditating on ${rune.name}: ${rune.meaning}`;
             }
             // --- End Sound Definitions ---
 
@@ -2016,13 +2076,28 @@
                         body: JSON.stringify(payload)
                     });
 
+                    if (!response.ok) {
+                        const errorBody = await response.text();
+                        console.error(`API Error: ${response.status} - ${response.statusText}`, errorBody);
+                        throw new Error(`API request failed: ${response.statusText}`);
+                    }
+
                     const result = await response.json();
 
                     if (result.candidates && result.candidates.length > 0 &&
                         result.candidates[0].content && result.candidates[0].content.parts &&
                         result.candidates[0].content.parts.length > 0) {
-                        const jsonText = result.candidates[0].content.parts[0].text;
-                        const parsedJson = JSON.parse(jsonText);
+                        const rawText = result.candidates[0].content.parts[0].text;
+                        let parsedJson;
+                        try {
+                            parsedJson = JSON.parse(rawText);
+                        } catch (parseError) {
+                            console.error("Error parsing JSON from API response:", parseError, "Raw text:", rawText);
+                            runicOutput.textContent = "ᛟᚱᚾ ᛗᚨᛚᚠᚢᚾᚲᛏᛁᛟᚾ"; // Rune for "Word malfunction"
+                            englishOutput.innerHTML = "<strong>Wisdom/Prophecy:</strong> The ancient echoes are garbled. Please try again.";
+                            logDiscovery("Failed to parse counsel. Invalid JSON response.");
+                            return; // Exit early if parsing fails
+                        }
 
                         runicOutput.textContent = parsedJson.runic;
                         englishOutput.innerHTML = `<strong>Wisdom/Prophecy:</strong> ${parsedJson.english.replace(/\n/g, '<br>')}`;
@@ -2031,16 +2106,16 @@
                     } else {
                         runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ"; // Rune for "Word not found"
                         englishOutput.innerHTML = "<strong>Wisdom/Prophecy:</strong> The ancient echoes are faint. Try another question.";
-                        logDiscovery("Failed to receive counsel. Unexpected API response.");
+                        logDiscovery("Failed to receive counsel. Unexpected API response structure.");
                     }
                 } catch (error) {
                     console.error("Error fetching ancient counsel:", error);
                     runicOutput.textContent = "ᛖᚱᚱᛟᚱ ᛞᛖᛖᛈ"; // Rune for "Error deep"
-                    englishOutput.innerHTML = "<strong>Wisdom/Prophecy:</strong> A disturbance in the ether prevents clear reception. Please try again.";
+                    englishOutput.innerHTML = `<strong>Wisdom/Prophecy:</strong> A disturbance in the ether prevents clear reception. Error: ${error.message}. Please try again.`;
                     logDiscovery(`Error seeking counsel: ${error.message}`);
                 } finally {
                     whisperBox.classList.remove('loading');
-                    toggleTranslationButton.style.display = 'block';
+                    toggleTranslationButton.style.display = 'block'; // Ensure button is always visible
                     translationVisible = false;
                     englishOutput.classList.remove('visible');
                     isGenerating = false;
@@ -2051,6 +2126,102 @@
                     }, 800);
                 }
             }
+
+            // NEW: Function to get daily wisdom
+            async function getDailyWisdom() {
+                if (isGenerating) {
+                    logDiscovery("The ancient energies are still coalescing. Please wait.");
+                    return;
+                }
+
+                isGenerating = true;
+                runicOutput.textContent = '';
+                englishOutput.innerHTML = '';
+                englishOutput.classList.remove('visible');
+                toggleTranslationButton.style.display = 'none';
+                whisperBox.classList.add('loading');
+                playCounselWhisper();
+                logDiscovery("Receiving daily wisdom...");
+
+                try {
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: `Generate a short, unique, mystical, daily prophecy or wisdom in two parts: first, a few words in a runic-like, cryptic style (use Futhark runes if possible, e.g., "ᛖᚾᛏᛖᚱ ᛞᚨᚷᚨᛉ"), and second, an English translation/interpretation of that wisdom/prophecy. Ensure the runic part is very short and symbolic, and the English part is a concise, insightful explanation. The wisdom should be general and inspiring, suitable for a daily reflection. Format the output as a JSON object with 'runic' and 'english' keys.` }] });
+
+                    const payload = {
+                        contents: chatHistory,
+                        generationConfig: {
+                            responseMimeType: "application/json",
+                            responseSchema: {
+                                type: "OBJECT",
+                                properties: {
+                                    "runic": { "type": "STRING" },
+                                    "english": { "type": "STRING" }
+                                },
+                                "propertyOrdering": ["runic", "english"]
+                            }
+                        }
+                    };
+
+                    const apiKey = ""; // Canvas will automatically provide this
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorBody = await response.text();
+                        console.error(`API Error: ${response.status} - ${response.statusText}`, errorBody);
+                        throw new Error(`API request failed: ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const rawText = result.candidates[0].content.parts[0].text;
+                        let parsedJson;
+                        try {
+                            parsedJson = JSON.parse(rawText);
+                        } catch (parseError) {
+                            console.error("Error parsing JSON from API response:", parseError, "Raw text:", rawText);
+                            runicOutput.textContent = "ᛟᚱᚾ ᛗᚨᛚᚠᚢᚾᚲᛏᛁᛟᚾ"; // Rune for "Word malfunction"
+                            englishOutput.innerHTML = "<strong>Daily Wisdom:</strong> The ancient echoes are garbled. Please try again.";
+                            logDiscovery("Failed to parse daily wisdom. Invalid JSON response.");
+                            return; // Exit early if parsing fails
+                        }
+
+                        runicOutput.textContent = parsedJson.runic;
+                        englishOutput.innerHTML = `<strong>Daily Wisdom:</strong> ${parsedJson.english.replace(/\n/g, '<br>')}`;
+                        logDiscovery(`Received daily wisdom: ${parsedJson.english.substring(0, 30)}...`);
+
+                    } else {
+                        runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ"; // Rune for "Word not found"
+                        englishOutput.innerHTML = "<strong>Daily Wisdom:</strong> The ancient echoes are faint. No wisdom today.";
+                        logDiscovery("Failed to receive daily wisdom. Unexpected API response structure.");
+                    }
+                } catch (error) {
+                    console.error("Error fetching daily wisdom:", error);
+                    runicOutput.textContent = "ᛖᚱᚱᛟᚱ ᛞᛖᛖᛈ"; // Rune for "Error deep"
+                    englishOutput.innerHTML = `<strong>Daily Wisdom:</strong> A disturbance in the ether prevents clear reception. Error: ${error.message}. Please try again.`;
+                    logDiscovery(`Error seeking daily wisdom: ${error.message}`);
+                } finally {
+                    whisperBox.classList.remove('loading');
+                    toggleTranslationButton.style.display = 'block'; // Ensure button is always visible
+                    translationVisible = false;
+                    englishOutput.classList.remove('visible');
+                    isGenerating = false;
+
+                    pyramidGroup.classList.add('pyramid-energized');
+                    setTimeout(() => {
+                        pyramidGroup.classList.remove('pyramid-energized');
+                    }, 800);
+                }
+            }
+
 
             // Function to provide dynamic lore expansion using Gemini API
             async function getDynamicLoreExpansion(title, content, insightContainer, button) {
@@ -2080,6 +2251,12 @@
                         body: JSON.stringify(payload)
                     });
 
+                    if (!response.ok) {
+                        const errorBody = await response.text();
+                        console.error(`API Error: ${response.status} - ${response.statusText}`, errorBody);
+                        throw new Error(`API request failed: ${response.statusText}`);
+                    }
+
                     const result = await response.json();
 
                     if (result.candidates && result.candidates.length > 0 &&
@@ -2091,11 +2268,11 @@
                         logDiscovery(`Received deeper insight for: "${title.substring(0, 20)}..."`);
                     } else {
                         insightContainer.textContent = "The ancient scrolls are unreadable at this moment. Try again.";
-                        logDiscovery("Failed to retrieve deeper insight. Unexpected API response.");
+                        logDiscovery("Failed to retrieve deeper insight. Unexpected API response structure.");
                     }
                 } catch (error) {
                     console.error("Error fetching lore expansion:", error);
-                    insightContainer.textContent = "A shimmer in the Veil prevents this insight from forming. Please try again.";
+                    insightContainer.textContent = `A shimmer in the Veil prevents this insight from forming. Error: ${error.message}. Please try again.`;
                     logDiscovery(`Error deepening insight: ${error.message}`);
                 } finally {
                     insightContainer.classList.remove('loading');
@@ -2165,6 +2342,10 @@
                     logDiscovery("Please ask a question to seek ancient counsel.");
                 }
             });
+
+            // NEW: Event listener for the "Receive Daily Wisdom" button
+            dailyWisdomButton.addEventListener('click', getDailyWisdom);
+
 
             // Event listener for Enter key in the input field
             userQuestionInput.addEventListener('keypress', (e) => {
@@ -2336,21 +2517,6 @@
                 });
             });
 
-            // Removed Rune Guide Card Hover Effects
-            // document.querySelectorAll('#runeGuidePage .rune-card').forEach(card => {
-            //     const runeSymbol = card.querySelector('.rune-symbol');
-            //     if (runeSymbol) { // Ensure runeSymbol exists before accessing its style
-            //         card.addEventListener('mouseover', () => {
-            //             playSmallPyramidSound(); // Use a subtle sound for hover
-            //         });
-
-            //         card.addEventListener('mouseout', () => {
-            //             // No specific action needed on mouseout for this effect
-            //         });
-            //     }
-            // });
-
-
             // NEW: Initial Entry Overlay Logic
             initialEntryOverlay.addEventListener('click', () => {
                 playEntryChime();
@@ -2381,71 +2547,6 @@
                 document.querySelector('.celestial-body').style.transform = `translate(${-x * 20}px, ${-y * 20}px)`;
                 mistEffect.style.transform = `translateX(${-x * 8}px)`; // Apply to mist
             });
-
-            // Removed Rune Casting Logic
-            // const runeMeanings = {
-            //     'ᚠ': { name: 'Fehu', meaning: 'Wealth, abundance, new beginnings' },
-            //     'ᚢ': { name: 'Uruz', meaning: 'Strength, primal force, courage' },
-            //     'ᚦ': { name: 'Thurisaz', meaning: 'Protection, conflict, powerful change' },
-            //     'ᚨ': { name: 'Ansuz', meaning: 'Communication, inspiration, divine breath' },
-            //     'ᚱ': { name: 'Raido', meaning: 'Journey, movement, rhythm' },
-            //     'ᚲ': { name: 'Kenaz', meaning: 'Illumination, knowledge, creativity' },
-            //     'ᚷ': { name: 'Gebo', meaning: 'Gift, partnership, generosity' },
-            //     'ᚹ': { name: 'Wunjo', meaning: 'Joy, comfort, harmony' },
-            //     'ᚺ': { name: 'Hagalaz', meaning: 'Disruption, chaos, natural forces' },
-            //     'ᚾ': { name: 'Naudiz', meaning: 'Need, constraint, resilience' },
-            //     'ᛁ': { name: 'Isa', meaning: 'Stillness, ice, self-control' },
-            //     'ᛃ': { name: 'Jera', meaning: 'Harvest, cycles, patience' },
-            //     'ᛇ': { name: 'Eihwaz', meaning: 'Endurance, transformation, death/rebirth' },
-            //     'ᛈ': { name: 'Perthro', meaning: 'Fate, mystery, chance' },
-            //     'ᛉ': { name: 'Algiz', meaning: 'Protection, defense, connection to divine' },
-            //     'ᛋ': { name: 'Sowilo', meaning: 'Wholeness, success, solar energy' },
-            //     'ᛏ': { name: 'Tiwaz', meaning: 'Justice, sacrifice, victory' },
-            //     'ᛒ': { name: 'Berkana', meaning: 'Growth, rebirth, new beginnings' },
-            //     'ᛖ': { name: 'Ehaz', meaning: 'Movement, progress, trust' },
-            //     'ᛗ': { name: 'Mannaz', meaning: 'Humanity, the Self, social order' },
-            //     'ᛚ': { name: 'Laguz', meaning: 'Flow, water, intuition, subconscious' },
-            //     'ᛝ': { name: 'Ingwaz', meaning: 'Fertility, completion, inner growth' },
-            //     'ᛟ': { name: 'Othala', meaning: 'Inheritance, homeland, spiritual heritage' },
-            //     'ᛞ': { name: 'Dagaz', meaning: 'Day, breakthrough, awakening' }
-            // };
-
-            // const allRuneSymbols = Object.keys(runeMeanings);
-
-            // function castRunes() {
-            //     runeCastingResults.innerHTML = ''; // Clear previous results
-            //     runeCastingResults.classList.remove('visible');
-            //     logDiscovery("Casting runes...");
-
-            //     // Simulate a casting animation/delay
-            //     setTimeout(() => {
-            //         const numRunesToCast = 3; // Cast 3 runes for a reading
-            //         const castedRunes = [];
-            //         for (let i = 0; i < numRunesToCast; i++) {
-            //             const randomIndex = Math.floor(Math.random() * allRuneSymbols.length);
-            //             const runeSymbol = allRuneSymbols[randomIndex];
-            //             castedRunes.push(runeSymbol);
-            //         }
-
-            //         castedRunes.forEach((symbol, index) => {
-            //             const runeData = runeMeanings[symbol];
-            //             const card = document.createElement('div');
-            //             card.classList.add('casted-rune-card');
-            //             card.style.animationDelay = `${index * 0.1}s`; // Stagger animation
-
-            //             card.innerHTML = `
-            //                 <div class="rune-symbol">${symbol}</div>
-            //                 <div class="rune-name">${runeData.name}</div>
-            //                 <div class="rune-meaning">${runeData.meaning}</div>
-            //             `;
-            //             runeCastingResults.appendChild(card);
-            //         });
-            //         runeCastingResults.classList.add('visible');
-            //         logDiscovery(`Runes cast: ${castedRunes.join(', ')}`);
-            //     }, 1000); // 1 second delay for casting animation
-            // }
-
-            // castRunesButton.addEventListener('click', castRunes);
         });
     </script>
 </body>
