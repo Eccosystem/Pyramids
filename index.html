@@ -6,6 +6,33 @@
     <title>Bosnian Pyramids & The Veil of Amenti</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Spectral:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Expose Firebase modules globally for use in the main script block
+        window.firebase = {
+            initializeApp,
+            getAuth,
+            signInAnonymously,
+            signInWithCustomToken,
+            onAuthStateChanged,
+            getFirestore,
+            doc,
+            getDoc,
+            addDoc,
+            setDoc,
+            updateDoc,
+            deleteDoc,
+            onSnapshot,
+            collection,
+            query,
+            orderBy,
+            limit
+        };
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
     <style>
         :root {
@@ -42,11 +69,6 @@
             background: radial-gradient(circle at center, #87CEEB 0%, #4682B4 100%); /* Sky blue */
         }
 
-        /* Removed dusk theme */
-        /* body[data-theme="dusk"] {
-            background: radial-gradient(circle at center, #FF7F50 0%, #8A2BE2 100%);
-        } */
-
         body[data-theme="night"] {
             background: radial-gradient(circle at center, #10141c 0%, #000000 100%); /* Dark, cosmic night */
         }
@@ -72,7 +94,7 @@
             background-attachment: fixed; /* Parallax effect */
         }
 
-        body[data-theme="day"]::before /* Removed dusk theme */ {
+        body[data-theme="day"]::before {
             opacity: 0; /* Hide dust/stars during day/dusk */
         }
 
@@ -95,7 +117,7 @@
             background-attachment: fixed; /* Parallax effect */
         }
 
-        body[data-theme="day"] .cosmic-dust-container /* Removed dusk theme */ {
+        body[data-theme="day"] .cosmic-dust-container {
             opacity: 0; /* Hide cosmic dust during day/dusk */
         }
 
@@ -1200,13 +1222,6 @@
             opacity: 0.8;
         }
 
-        /* Removed dusk celestial body */
-        /* body[data-theme="dusk"] .celestial-body {
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Sunrise_over_the_ocean.jpg/1280px-Sunrise_over_the_ocean.jpg');
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
-            opacity: 0.9;
-        } */
-
         body[data-theme="day"] .celestial-body {
             background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg/1280px-The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg'); /* Actual Day Sun image */
             box-shadow: 0 0 50px rgba(255, 215, 0, 1);
@@ -1298,9 +1313,9 @@
 
     <div class="runes-container"></div>
 
-    <div class="veil-overlay" id="veilOverlay"></div> <!-- Removed 'active' class -->
+    <div class="veil-overlay" id="veilOverlay"></div>
 
-    <div class="celestial-body" id="celestialBody"></div> <!-- New celestial body -->
+    <div class="celestial-body" id="celestialBody"></div>
 
     <div class="main-content-area" id="mainContentArea">
         <header class="app-header">
@@ -1310,7 +1325,6 @@
 
         <div class="theme-switcher">
             <button class="theme-button active" data-theme-name="night">Night</button>
-            <!-- Removed Dusk button -->
             <button class="theme-button" data-theme-name="day">Day</button>
         </div>
 
@@ -1337,7 +1351,7 @@
                 <div class="pyramid-of-sun-main">
                     <div class="pyramid-top" data-pyramid="sun-top">
                         <span class="pyramid-rune-top-left" style="--initial-rotation: -15deg;">ᛝ</span> <span class="pyramid-rune-top-right" style="--initial-rotation: 20deg;">ᛈ</span>
-                        <div class="pyramid-beam" id="pyramidBeam"></div> <!-- The main pyramid beam element -->
+                        <div class="pyramid-beam" id="pyramidBeam"></div>
                     </div>
                     <div class="pyramid-base" data-pyramid="sun-base">
                         <div class="pyramid-entrance" data-pyramid="sun-entrance">
@@ -1347,12 +1361,12 @@
                 </div>
 
                 <div id="pyramidLove" class="pyramid-small" data-pyramid="dragon">
-                    <h3 class="text-white text-sm font-bold">Pyramid of Dragon</h3> <!-- UPDATED: Name changed -->
-                    <div class="small-pyramid-beam" id="pyramidLoveBeam"></div> <!-- NEW: Beam for Love Pyramid -->
+                    <h3 class="text-white text-sm font-bold">Dragon</h3>
+                    <div class="small-pyramid-beam" id="pyramidLoveBeam"></div>
                 </div>
                 <div id="pyramidMoon" class="pyramid-small" data-pyramid="moon">
-                    <h3 class="text-white text-sm font-bold">Pyramid of Moon</h3>
-                    <div class="small-pyramid-beam" id="pyramidMoonBeam"></div> <!-- NEW: Beam for Moon Pyramid -->
+                    <h3 class="text-white text-sm font-bold">Moon</h3>
+                    <div class="small-pyramid-beam" id="pyramidMoonBeam"></div>
                 </div>
 
                 <div id="tunnelSunLove" class="tunnel-line"></div>
@@ -1652,7 +1666,7 @@
     </div>
 
     <div class="discovery-log-container" id="discoveryLog">
-        <h3>Discovery Log</h3>
+        <h3>Discovery Log <span id="userIdDisplay" class="text-xs text-gray-500 ml-2"></span></h3>
         <div id="logEntries">
             </div>
     </div>
@@ -1661,7 +1675,7 @@
 
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             const whisperBox = document.getElementById('whisperBox');
             const runicOutput = document.getElementById('runicOutput');
             const englishOutput = document.getElementById('englishOutput');
@@ -1685,22 +1699,58 @@
             const deepenInsightButtons = document.querySelectorAll('.deepen-insight-button');
             const loreSectionHeaders = document.querySelectorAll('.lore-section h3');
             const pyramidBeam = document.getElementById('pyramidBeam');
-            // Select all pyramid elements with data-pyramid attribute
             const pyramidElements = document.querySelectorAll('[data-pyramid]');
-
-
-            // Small pyramid beam elements
             const pyramidLoveBeam = document.getElementById('pyramidLoveBeam');
             const pyramidMoonBeam = document.getElementById('pyramidMoonBeam');
-
-            // Entry Overlay elements
             const initialEntryOverlay = document.getElementById('initialEntryOverlay');
             const mainContentArea = document.getElementById('mainContentArea');
             const audioToggleButton = document.getElementById('audioToggleButton');
+            const userIdDisplay = document.getElementById('userIdDisplay');
 
             let translationVisible = false;
             let isGenerating = false;
             let isAmbientPlaying = false;
+
+            // Firebase variables
+            let app;
+            let db;
+            let auth;
+            let userId;
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+            // Initialize Firebase
+            try {
+                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+                app = firebase.initializeApp(firebaseConfig);
+                db = firebase.getFirestore(app);
+                auth = firebase.getAuth(app);
+
+                // Sign in anonymously or with custom token
+                if (typeof __initial_auth_token !== 'undefined') {
+                    await firebase.signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await firebase.signInAnonymously(auth);
+                }
+
+                // Listen for auth state changes to get the user ID
+                firebase.onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        userIdDisplay.textContent = `User ID: ${userId}`;
+                        console.log("Firebase initialized. User ID:", userId);
+                        loadDiscoveryLog(); // Load log after user is authenticated
+                    } else {
+                        console.log("No user signed in.");
+                        userId = null;
+                        userIdDisplay.textContent = 'User ID: N/A';
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
+                logDiscovery("Error initializing ancient connection. Log may not persist.");
+            }
+
 
             // Tone.js setup - Ensure audio context is started on user interaction
             document.documentElement.addEventListener('mousedown', () => {
@@ -1710,159 +1760,58 @@
             });
 
             // --- Sound Definitions ---
+            const longReverb = new Tone.Freeverb({ roomSize: 0.9, dampening: 5000, wet: 0.7 }).toDestination();
+            const etherealDelay = new Tone.PingPongDelay({ delayTime: "4n", feedback: 0.7, wet: 0.6 }).connect(longReverb);
 
-            // Shared effects for ethereal sounds
-            const longReverb = new Tone.Freeverb({
-                roomSize: 0.9,
-                dampening: 5000,
-                wet: 0.7
-            }).toDestination();
+            const pyramidWhisperSynth = new Tone.Synth({ oscillator: { type: "triangle" }, envelope: { attack: 1.0, decay: 2.0, sustain: 0.2, release: 3.0 } }).connect(etherealDelay);
+            function playPyramidWhisper() { pyramidWhisperSynth.triggerAttackRelease("C1", "4s"); }
 
-            const etherealDelay = new Tone.PingPongDelay({
-                delayTime: "4n",
-                feedback: 0.7,
-                wet: 0.6
-            }).connect(longReverb);
+            const counselWhisperSynth = new Tone.NoiseSynth({ noise: { type: "pink" }, envelope: { attack: 0.05, decay: 1.0, sustain: 0.0, release: 1.5 } }).chain(new Tone.Filter(800, "lowpass"), etherealDelay);
+            function playCounselWhisper() { counselWhisperSynth.triggerAttackRelease("1.5s"); }
 
-            // 1. Pyramid Touch Whisper (deep, soft piano note)
-            const pyramidWhisperSynth = new Tone.Synth({
-                oscillator: { type: "triangle" },
-                envelope: { attack: 1.0, decay: 2.0, sustain: 0.2, release: 3.0 }
-            }).connect(etherealDelay);
+            const insightWhisperSynth = new Tone.PluckSynth({ attackNoise: 0.5, dampening: 4000, resonance: 0.9 }).chain(new Tone.Chorus(2, 3.5, 0.7), etherealDelay);
+            function playInsightWhisper() { insightWhisperSynth.triggerAttackRelease("G5", "1s"); insightWhisperSynth.triggerAttackRelease("C6", "1s", Tone.now() + 0.2); }
 
-            function playPyramidWhisper() {
-                pyramidWhisperSynth.triggerAttackRelease("C1", "4s");
-            }
+            const veilWhisperSynth = new Tone.AMSynth({ harmonicity: 1.5, oscillator: { type: "triangle" }, envelope: { attack: 2, decay: 3, sustain: 0.0, release: 5 }, modulation: { type: "sine" }, modulationEnvelope: { attack: 0.5, decay: 0.1, sustain: 1, release: 0.5 } }).connect(longReverb);
+            function playVeilWhisper() { veilWhisperSynth.triggerAttackRelease("A3", "4s"); }
 
-            // 2. Seek Counsel Whisper (airy, breathy)
-            const counselWhisperSynth = new Tone.NoiseSynth({
-                noise: { type: "pink" },
-                envelope: { attack: 0.05, decay: 1.0, sustain: 0.0, release: 1.5 }
-            }).chain(new Tone.Filter(800, "lowpass"), etherealDelay);
+            const menuToggleSynth = new Tone.Synth({ oscillator: { type: "triangle" }, envelope: { attack: 0.01, decay: 0.4, sustain: 0.0, release: 0.5 } }).toDestination();
+            function playMenuToggleSound() { menuToggleSynth.triggerAttackRelease("C5", "0.6s"); }
 
-            function playCounselWhisper() {
-                counselWhisperSynth.triggerAttackRelease("1.5s");
-            }
+            const logToggleSynth = new Tone.NoiseSynth({ noise: { type: "white" }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.3 } }).chain(new Tone.Filter(2000, "bandpass"), new Tone.Panner(0.5).toDestination());
+            function playLogToggleSound() { logToggleSynth.triggerAttackRelease("0.5s"); }
 
-            // 3. Deepen Insight Whisper (shimmering, high-frequency)
-            const insightWhisperSynth = new Tone.PluckSynth({
-                attackNoise: 0.5,
-                dampening: 4000,
-                resonance: 0.9
-            }).chain(new Tone.Chorus(2, 3.5, 0.7), etherealDelay);
+            const themeChangeSynth = new Tone.Synth({ oscillator: { type: "sine" }, envelope: { attack: 0.02, decay: 0.1, sustain: 0.0, release: 0.2 } }).toDestination();
+            function playThemeChangeSound() { themeChangeSynth.triggerAttackRelease("D5", "8n"); }
 
-            function playInsightWhisper() {
-                insightWhisperSynth.triggerAttackRelease("G5", "1s");
-                insightWhisperSynth.triggerAttackRelease("C6", "1s", Tone.now() + 0.2);
-            }
+            const entryChimeSynth = new Tone.Synth({ oscillator: { type: "sine" }, envelope: { attack: 0.5, decay: 1.0, sustain: 0.1, release: 2.0 } }).toDestination();
+            function playEntryChime() { entryChimeSynth.triggerAttackRelease("C3", "3s"); }
 
-            // 4. Veil Interaction Whisper (very ethereal, long decay)
-            const veilWhisperSynth = new Tone.AMSynth({
-                harmonicity: 1.5,
-                oscillator: { type: "triangle" },
-                envelope: { attack: 2, decay: 3, sustain: 0.0, release: 5 },
-                modulation: { type: "sine" },
-                modulationEnvelope: { attack: 0.5, decay: 0.1, sustain: 1, release: 0.5 }
-            }).connect(longReverb);
+            const beamSynth = new Tone.Synth({ oscillator: { type: "sine" }, envelope: { attack: 0.2, decay: 0.8, sustain: 0.1, release: 1.5 } }).chain(new Tone.Filter(1000, "lowpass"), longReverb);
+            function playBeamSound() { beamSynth.triggerAttackRelease("C5", "2s"); }
 
-            function playVeilWhisper() {
-                veilWhisperSynth.triggerAttackRelease("A3", "4s");
-            }
+            const smallPyramidSynth = new Tone.Synth({ oscillator: { type: "sine" }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.5 } }).toDestination();
+            function playSmallPyramidSound() { smallPyramidSynth.triggerAttackRelease("G4", "0.5s"); }
 
-            // 5. Menu Toggle Sound (Soft Piano-like sound)
-            const menuToggleSynth = new Tone.Synth({
-                oscillator: { type: "triangle" },
-                envelope: { attack: 0.01, decay: 0.4, sustain: 0.0, release: 0.5 }
-            }).toDestination();
-
-            function playMenuToggleSound() {
-                menuToggleSynth.triggerAttackRelease("C5", "0.6s");
-            }
-
-            // 6. Log Toggle Sound (subtle whoosh)
-            const logToggleSynth = new Tone.NoiseSynth({
-                noise: { type: "white" },
-                envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.3 }
-            }).chain(new Tone.Filter(2000, "bandpass"), new Tone.Panner(0.5).toDestination());
-
-            function playLogToggleSound() {
-                logToggleSynth.triggerAttackRelease("0.5s");
-            }
-
-            // 7. Theme Change Sound (soft, short tone)
-            const themeChangeSynth = new Tone.Synth({
-                oscillator: { type: "sine" },
-                envelope: { attack: 0.02, decay: 0.1, sustain: 0.0, release: 0.2 }
-            }).toDestination();
-
-            function playThemeChangeSound() {
-                themeChangeSynth.triggerAttackRelease("D5", "8n");
-            }
-
-            // 8. Entry Sound (deep, soft piano note)
-            const entryChimeSynth = new Tone.Synth({
-                oscillator: { type: "sine" },
-                envelope: { attack: 0.5, decay: 1.0, sustain: 0.1, release: 2.0 }
-            }).toDestination();
-
-            function playEntryChime() {
-                entryChimeSynth.triggerAttackRelease("C3", "3s");
-            }
-
-            // 9. Beam Activation Sound (more pleasant and efficient)
-            const beamSynth = new Tone.Synth({
-                oscillator: { type: "sine" }, // Smooth sine wave
-                envelope: {
-                    attack: 0.2,    // Gentle attack
-                    decay: 0.8,     // Slower decay
-                    sustain: 0.1,   // Slight sustain
-                    release: 1.5    // Long, fading release
-                }
-            }).chain(new Tone.Filter(1000, "lowpass"), longReverb); // Lowpass filter for softness, then reverb
-
-            function playBeamSound() {
-                beamSynth.triggerAttackRelease("C5", "2s"); // Single, higher note for a clear beam sound
-            }
-
-            // 10. Small Pyramid Interaction Sound (short, higher pitched chime)
-            const smallPyramidSynth = new Tone.Synth({
-                oscillator: { type: "sine" },
-                envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.5 }
-            }).toDestination();
-
-            function playSmallPyramidSound() {
-                smallPyramidSynth.triggerAttackRelease("G4", "0.5s");
-            }
-
-            // 11. Ambient Drone (very subtle, low frequency)
-            const ambientDrone = new Tone.AMSynth({
-                harmonicity: 0.5,
-                oscillator: { type: "sine" },
-                envelope: { attack: 5, decay: 0, sustain: 1, release: 5 },
-                modulation: { type: "sine" },
-                modulationEnvelope: { attack: 5, decay: 0, sustain: 1, release: 5 }
-            }).toDestination();
-            ambientDrone.volume.value = -30; // Very low volume
+            const ambientDrone = new Tone.AMSynth({ harmonicity: 0.5, oscillator: { type: "sine" }, envelope: { attack: 5, decay: 0, sustain: 1, release: 5 }, modulation: { type: "sine" }, modulationEnvelope: { attack: 5, decay: 0, sustain: 1, release: 5 } }).toDestination();
+            ambientDrone.volume.value = -30;
 
             function toggleAmbientAudio() {
                 if (isAmbientPlaying) {
                     ambientDrone.triggerRelease();
-                    audioToggleButton.textContent = '🔇';
+                    audioToggleButton.textContent = '�';
                     audioToggleButton.classList.remove('active');
                     logDiscovery("Ambient audio muted.");
                 } else {
-                    ambientDrone.triggerAttack("C2"); // Start a very low C note
+                    ambientDrone.triggerAttack("C2");
                     audioToggleButton.textContent = '🔊';
                     audioToggleButton.classList.add('active');
                     logDiscovery("Ambient audio playing.");
                 }
                 isAmbientPlaying = !isAmbientPlaying;
             }
-
             // --- End Sound Definitions ---
 
-
-            // Function to add cosmic dust particles
             function createCosmicDust() {
                 const container = document.querySelector('.cosmic-dust-container');
                 for (let i = 0; i < 50; i++) {
@@ -1892,7 +1841,6 @@
             }
             createCosmicDust();
 
-            // Function to generate and display a random rune background
             function createRuneBackground() {
                 const runes = ['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᚾ', 'ᛁ', 'ᛃ', 'ᛇ', 'ᛈ', 'ᛉ', 'ᛋ', 'ᛏ', 'ᛒ', 'ᛖ', 'ᛗ', 'ᛚ', 'ᛝ', 'ᛟ', 'ᛞ'];
                 const runeChar = runes[Math.floor(Math.random() * runes.length)];
@@ -1928,89 +1876,63 @@
 
             setInterval(createRuneBackground, 6000);
 
-            function logDiscovery(message) {
-                const entry = document.createElement('div');
-                entry.classList.add('log-entry', 'text-gray-400');
-                entry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
-                logEntries.prepend(entry);
+            // Function to add discovery log entries to Firestore and display them
+            async function logDiscovery(message) {
+                if (!db || !userId) {
+                    console.warn("Firestore not initialized or user not authenticated. Log entry not saved.");
+                    // Still display in UI for immediate feedback
+                    const entry = document.createElement('div');
+                    entry.classList.add('log-entry', 'text-gray-400');
+                    entry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+                    logEntries.prepend(entry);
+                    return;
+                }
+
+                try {
+                    const logCollectionRef = firebase.collection(db, `artifacts/${appId}/users/${userId}/discovery_log`);
+                    await firebase.addDoc(logCollectionRef, {
+                        message: message,
+                        timestamp: new Date()
+                    });
+                } catch (e) {
+                    console.error("Error adding document to Firestore: ", e);
+                    // Fallback to displaying in UI if Firestore fails
+                    const entry = document.createElement('div');
+                    entry.classList.add('log-entry', 'text-gray-400');
+                    entry.textContent = `${new Date().toLocaleTimeString()} (Failed to save): ${message}`;
+                    logEntries.prepend(entry);
+                }
             }
 
-            // Pre-defined wisdoms and prophecies for static responses
-            const staticWisdoms = [
-                {
-                    runic: "ᚠᛖᚺᚢ ᚢᚾᛞ ᛟᚦᚨᛚᚨ",
-                    english: {
-                        wisdom: "True wealth lies not in accumulation, but in the spirit's free flow and the wisdom gained from ancestral roots.",
-                        prophecy: "The old ways shall return, not as relics, but as foundational truths for a new era."
-                    }
-                },
-                {
-                    runic: "ᚢᚱᚢᛉ ᛞᚨᚷᚨᛉ",
-                    english: {
-                        wisdom: "Strength is found in transformation, as each dawn brings new light and the chance to shed what no longer serves.",
-                        prophecy: "A sudden, illuminating shift will unveil hidden paths for those who dare to walk them."
-                    }
-                },
-                {
-                    runic: "ᚦᚢᚱᛁᛋᚨᛉ ᛇᚱ",
-                    english: {
-                        wisdom: "Patience in the face of chaos carves a path through the storm, revealing the ice-clear vision beyond.",
-                        prophecy: "The severing of old ties, though painful, will free vital energy for collective healing."
-                    }
-                },
-                {
-                    runic: "ᚨᚾᛋᚢᛉ ᛗᚨᚾᚾᚨᛉ",
-                    english: {
-                        wisdom: "The spoken word carries power; speak truth and listen to the whispers of the divine within all.",
-                        prophecy: "Communication will transcend the mundane, leading to profound understanding between disparate souls."
-                    }
-                },
-                {
-                    runic: "ᚱᚨᛁᛞᛟ ᛚᚨᚷᚢᛉ",
-                    english: {
-                        wisdom: "The journey itself is the destination; embrace the flow of life's currents, for they lead to destiny.",
-                        prophecy: "Ancient waterways, once forgotten, will reveal passages to submerged knowledge."
-                    }
-                },
-                {
-                    runic: "ᚲᚨᚾᚾᚨᛉ ᛋᛟᚢᛁᛚᛟ",
-                    english: {
-                        wisdom: "Kindle the inner flame, for it is the light that reveals hidden truths and burns away illusions.",
-                        prophecy: "A new sun will rise from within, illuminating the collective consciousness and dispelling the shadows of ignorance."
-                    }
-                },
-                {
-                    runic: "ᚷᛖᛒᛟ ᚹᚢᚾᛃᛟ",
-                    english: {
-                        wisdom: "Generosity of spirit brings joy, for true gifts are given freely, without expectation.",
-                        prophecy: "A great alliance will form, built on mutual respect and shared prosperity, transcending old divisions."
-                    }
-                },
-                {
-                    runic: "ᚺᚨᚷᚨᛚᚨᛉ ᚾᚨᚢᛞᛁᛉ",
-                    english: {
-                        wisdom: "From destruction, new patterns emerge; embrace the necessary chaos for genuine growth.",
-                        prophecy: "A cosmic tremor will reset the frequencies, aligning human endeavor with universal harmony."
-                    }
-                },
-                {
-                    runic: "ᛁᛋᚨ ᛃᛖᚱᚨ",
-                    english: {
-                        wisdom: "Stillness allows for reflection, revealing the cycles of time and the seeds of future harvests.",
-                        prophecy: "The long winter of forgetfulness shall end, and the bounty of rediscovered knowledge will nourish all."
-                    }
-                },
-                {
-                    runic: "ᛈᛖᚱᚦᚱᛟ ᛖᛁᚹᚨᛉ",
-                    english: {
-                        wisdom: "Destiny is a game of chance and choice; ride the currents of change with adaptability and grace.",
-                        prophecy: "The Veil will thin completely, allowing direct communion with ancient consciousness and forgotten realms."
-                    }
+            // Function to load discovery log entries from Firestore
+            function loadDiscoveryLog() {
+                if (!db || !userId) {
+                    console.warn("Firestore not initialized or user not authenticated. Cannot load log.");
+                    return;
                 }
-            ];
 
-            // Function to provide a static whisper (no API key needed)
-            function getStaticWhisper(promptContext) {
+                const logCollectionRef = firebase.collection(db, `artifacts/${appId}/users/${userId}/discovery_log`);
+                const q = firebase.query(logCollectionRef, firebase.orderBy('timestamp', 'desc'), firebase.limit(20)); // Limit to last 20 entries
+
+                firebase.onSnapshot(q, (snapshot) => {
+                    logEntries.innerHTML = ''; // Clear current entries
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const entry = document.createElement('div');
+                        entry.classList.add('log-entry', 'text-gray-400');
+                        const date = data.timestamp ? data.timestamp.toDate().toLocaleTimeString() : 'N/A';
+                        entry.textContent = `${date}: ${data.message}`;
+                        logEntries.appendChild(entry); // Append to keep chronological order in display
+                    });
+                }, (error) => {
+                    console.error("Error fetching discovery log: ", error);
+                    logDiscovery("Failed to load past discoveries.");
+                });
+            }
+
+
+            // Function to get dynamic whisper from LLM
+            async function getDynamicWhisper(promptContext) {
                 if (isGenerating) {
                     logDiscovery("The ancient energies are still coalescing. Please wait.");
                     return;
@@ -2026,14 +1948,53 @@
                 playCounselWhisper();
                 logDiscovery(`Seeking counsel for: "${promptContext || 'general wisdom'}"...`);
 
-                // Simulate API delay
-                setTimeout(() => {
-                    const randomWisdom = staticWisdoms[Math.floor(Math.random() * staticWisdoms.length)];
+                const prompt = `You are an ancient, mystical entity residing within the Bosnian Pyramids. Provide a cryptic, runic-like whisper (2-3 short sentences) and then its English translation (1-2 sentences) related to the following context: "${promptContext}". The runic text should be symbolic, not a direct translation of English. Focus on themes of ancient wisdom, cosmic energy, hidden truths, or spiritual awakening.`;
 
-                    runicOutput.textContent = randomWisdom.runic;
-                    englishOutput.innerHTML = `<strong>Wisdom:</strong> ${randomWisdom.english.wisdom.replace(/\n/g, '<br>')}<br><strong>Prophecy:</strong> ${randomWisdom.english.prophecy.replace(/\n/g, '<br>')}`;
-                    logDiscovery(`Received new prophecy: ${randomWisdom.english.wisdom.substring(0, 30)}...`);
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Canvas will provide this API key at runtime
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        // Attempt to parse runic and English parts
+                        const parts = text.split('\n');
+                        let runicPart = '';
+                        let englishPart = '';
+
+                        if (parts.length >= 2) {
+                            runicPart = parts[0].trim();
+                            englishPart = parts.slice(1).join('\n').trim();
+                        } else {
+                            // Fallback if the format is not as expected
+                            runicPart = "ᛚᛟᚱᛖ ᚹᚺᛁᛋᛈᛖᚱ"; // Generic rune
+                            englishPart = text;
+                        }
+
+                        runicOutput.textContent = runicPart;
+                        englishOutput.innerHTML = englishPart.replace(/\n/g, '<br>'); // Preserve newlines as breaks
+                        logDiscovery(`Received new whisper: ${englishPart.substring(0, 30)}...`);
+
+                    } else {
+                        throw new Error("Invalid response structure from LLM.");
+                    }
+                } catch (error) {
+                    console.error("Error seeking ancient counsel:", error);
+                    runicOutput.textContent = "ᛖᚱᚱᛟᚱ";
+                    englishOutput.innerHTML = "A disturbance in the Veil prevents clear communication. Try again.";
+                    logDiscovery(`Failed to seek counsel: ${error.message}`);
+                } finally {
                     whisperBox.classList.remove('loading');
                     toggleTranslationButton.style.display = 'block';
                     translationVisible = false;
@@ -2044,11 +2005,11 @@
                     setTimeout(() => {
                         pyramidGroup.classList.remove('pyramid-energized');
                     }, 800);
-                }, 1500); // Simulate network delay
+                }
             }
 
-            // Function to provide a static lore expansion (no API key needed)
-            function getStaticLoreExpansion(title, content, insightContainer, button) {
+            // Function to get dynamic lore expansion from LLM
+            async function getDynamicLoreExpansion(title, content, insightContainer, button) {
                 if (button.disabled) {
                     logDiscovery("Insight already being generated or recently generated. Please wait.");
                     return;
@@ -2061,25 +2022,43 @@
                 playInsightWhisper();
                 logDiscovery(`Deepening insight for: "${title}"...`);
 
-                const staticInsights = [
-                    "The ancient texts hint at a cosmic resonance within these structures, aligning them with distant stellar bodies, not just earthly ley lines.",
-                    "The Veil is said to be a frequency filter, and certain tones or intentions can thin it, allowing glimpses of higher truths to permeate.",
-                    "The Keepers are not merely human; some are believed to be consciousnesses interwoven with the very fabric of the pyramids, timeless and vigilant.",
-                    "The Awakening is prophesied to be a collective shift, where humanity's heart-frequency aligns with the Earth's, unlocking dormant potentials within the pyramids and within ourselves."
-                ];
+                const prompt = `You are an ancient, all-knowing entity. Provide a deeper, more esoteric insight (2-4 sentences) into the following lore topic: "${title}". The existing lore states: "${content}". Expand on it with mystical, philosophical, or hidden aspects related to ancient civilizations, energy, consciousness, or the Veil of Amenti.`;
 
-                // Simulate API delay
-                setTimeout(() => {
-                    const randomInsight = staticInsights[Math.floor(Math.random() * staticInsights.length)];
-                    insightContainer.textContent = randomInsight;
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Canvas will provide this API key at runtime
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        insightContainer.textContent = text;
+                        insightContainer.classList.add('visible');
+                        logDiscovery(`Received deeper insight for: "${title.substring(0, 20)}..."`);
+                    } else {
+                        throw new Error("Invalid response structure from LLM for insight.");
+                    }
+                } catch (error) {
+                    console.error("Error deepening insight:", error);
+                    insightContainer.textContent = "The ancient knowledge is obscured. Try again later.";
                     insightContainer.classList.add('visible');
-                    logDiscovery(`Received deeper insight for: "${title.substring(0, 20)}..."`);
-
+                    logDiscovery(`Failed to deepen insight: ${error.message}`);
+                } finally {
                     insightContainer.classList.remove('loading');
                     setTimeout(() => {
                         button.disabled = false;
-                    }, 3000);
-                }, 1500); // Simulate network delay
+                    }, 3000); // Re-enable button after a short delay
+                }
             }
 
 
@@ -2091,7 +2070,7 @@
 
                     if (pyramidPart === 'sun-top' || pyramidPart === 'sun-base' || pyramidPart === 'sun-entrance') {
                         playPyramidWhisper();
-                        getStaticWhisper(`a general wisdom from the ${pyramidPart} pyramid.`);
+                        getDynamicWhisper(`a general wisdom from the ${pyramidPart} pyramid.`);
 
                         // Activate the main beam briefly
                         pyramidBeam.classList.add('active');
@@ -2106,7 +2085,7 @@
                         setTimeout(() => {
                             element.style.transform = element.style.transform.replace(' scale(1.08) rotateY(10deg)', '');
                         }, 500);
-                        getStaticWhisper(`a specific insight from the ${pyramidPart} pyramid.`);
+                        getDynamicWhisper(`a specific insight from the ${pyramidPart} pyramid.`);
 
                         // Activate the corresponding small pyramid beam
                         if (pyramidPart === 'dragon') {
@@ -2115,7 +2094,6 @@
                             pyramidLoveBeam.classList.add('active');
                             setTimeout(() => {
                                 pyramidLoveBeam.classList.remove('active');
-                                // Optionally reset background if needed, but not required if CSS handles default
                             }, 1500); // Small beam active for 1.5 seconds
                         } else if (pyramidPart === 'moon') {
                             // Set red beam for Moon pyramid (explicitly, though CSS default is red)
@@ -2123,7 +2101,6 @@
                             pyramidMoonBeam.classList.add('active');
                             setTimeout(() => {
                                 pyramidMoonBeam.classList.remove('active');
-                                // Optionally reset background if needed, but not required if CSS handles default
                             }, 1500); // Small beam active for 1.5 seconds
                         }
                     }
@@ -2135,7 +2112,7 @@
                 const question = userQuestionInput.value.trim();
                 if (question) {
                     playCounselWhisper();
-                    getStaticWhisper(question);
+                    getDynamicWhisper(question);
                     userQuestionInput.value = '';
                 } else {
                     logDiscovery("Please ask a question to seek ancient counsel.");
@@ -2244,7 +2221,7 @@
                     const title = loreSection.querySelector('h3').textContent;
                     const content = loreSection.querySelector('p').textContent;
                     const insightContainer = loreSection.querySelector('.llm-insight-container');
-                    getStaticLoreExpansion(title, content, insightContainer, button);
+                    getDynamicLoreExpansion(title, content, insightContainer, button);
                 });
             });
 
@@ -2274,3 +2251,4 @@
     </script>
 </body>
 </html>
+�
