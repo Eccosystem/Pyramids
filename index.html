@@ -2255,96 +2255,8 @@
                 });
             }
 
-            // Pre-defined wisdoms and prophecies for static responses
-            const staticWisdoms = [
-                {
-                    runic: "ᚠᛖᚺᚢ ᚢᚾᛞ ᛟᚦᚨᛚᚨ",
-                    english: {
-                        wisdom: "True wealth lies not in accumulation, but in the spirit's free flow and the wisdom gained from ancestral roots.",
-                        prophecy: "The old ways shall return, not as relics, but as foundational truths for a new era."
-                    }
-                },
-                {
-                    runic: "ᚢᚱᚢᛉ ᛞᚨᚷᚨᛉ",
-                    english: {
-                        wisdom: "Strength is found in transformation, as each dawn brings new light and the chance to shed what no longer serves.",
-                        prophecy: "A sudden, illuminating shift will unveil hidden paths for those who dare to walk them."
-                    }
-                },
-                {
-                    runic: "ᚦᚢᚱᛁᛋᚨᛉ ᛇᚱ",
-                    english: {
-                        wisdom: "Patience in the face of chaos carves a path through the storm, revealing the ice-clear vision beyond.",
-                        prophecy: "The severing of old ties, though painful, will free vital energy for collective healing."
-                    }
-                },
-                {
-                    runic: "ᚨᚾᛋᚢᛉ ᛗᚨᚾᚾᚨᛉ",
-                    english: {
-                        wisdom: "The spoken word carries power; speak truth and listen to the whispers of the divine within all.",
-                        prophecy: "Communication will transcend the mundane, leading to profound understanding between disparate souls."
-                    }
-                },
-                {
-                    runic: "ᚱᚨᛁᛞᛟ ᛚᚨᚷᚢᛉ",
-                    english: {
-                        wisdom: "The journey itself is the destination; embrace the flow of life's currents, for they lead to destiny.",
-                        prophecy: "Ancient waterways, once forgotten, will reveal passages to submerged knowledge."
-                    }
-                },
-                {
-                    runic: "ᚲᚨᚾᚾᚨᛉ ᛋᛟᚢᛁᛚᛟ",
-                    english: {
-                        wisdom: "Kindle the inner flame, for it is the light that reveals hidden truths and burns away illusions.",
-                        prophecy: "A new sun will rise from within, illuminating the collective consciousness and dispelling the shadows of ignorance."
-                    }
-                },
-                {
-                    runic: "ᚷᛖᛒᛟ ᚹᚢᚾᛃᛟ",
-                    english: {
-                        wisdom: "Generosity of spirit brings joy, for true gifts are given freely, without expectation.",
-                        prophecy: "A great alliance will form, built on mutual respect and shared prosperity, transcending old divisions."
-                    }
-                },
-                {
-                    runic: "ᚺᚨᚷᚨᛚᚨᛉ ᚾᚨᚢᛞᛁᛉ",
-                    english: {
-                        wisdom: "From destruction, new patterns emerge; embrace the necessary chaos for genuine growth.",
-                        prophecy: "A cosmic tremor will reset the frequencies, aligning human endeavor with universal harmony."
-                    }
-                },
-                {
-                    runic: "ᛁᛋᚨ ᛃᛖᚱᚨ",
-                    english: {
-                        wisdom: "Stillness allows for reflection, revealing the cycles of time and the seeds of future harvests.",
-                        prophecy: "The long winter of forgetfulness shall end, and the bounty of rediscovered knowledge will nourish all."
-                    }
-                },
-                {
-                    runic: "ᛈᛖᚱᚦᚱᛟ ᛖᛁᚹᚨᛉ",
-                    english: {
-                        wisdom: "Destiny is a game of chance and choice; ride the currents of change with adaptability and grace.",
-                        prophecy: "The Veil will thin completely, allowing direct communion with ancient consciousness and forgotten realms."
-                    }
-                },
-                {
-                    runic: "ᛗᚨᚾᚾᚨᛉ ᛚᚨᚷᚢᛉ",
-                    english: {
-                        wisdom: "The essence of humanity flows like water, adapting and carving new paths through the landscape of existence.",
-                        prophecy: "A great current of collective consciousness will rise, sweeping away old illusions and revealing shared truths."
-                    }
-                },
-                {
-                    runic: "ᛟᚦᚨᛚᚨ ᛞᚨᚷᚨᛉ",
-                    english: {
-                        wisdom: "True heritage is not merely blood, but the awakening of ancestral wisdom within, illuminating the path forward.",
-                        prophecy: "A new dawn will break upon forgotten lands, revealing the sacred foundations of a renewed world."
-                    }
-                }
-            ];
-
-            // Function to provide a static whisper (no API key needed)
-            function getStaticWhisper(promptContext) {
+            // Function to provide dynamic ancient counsel using Gemini API
+            async function getAncientCounsel(promptContext) {
                 if (isGenerating) {
                     logDiscovery("The ancient energies are still coalescing. Please wait.");
                     return;
@@ -2356,18 +2268,60 @@
                 englishOutput.classList.remove('visible');
                 toggleTranslationButton.style.display = 'none';
                 whisperBox.classList.add('loading');
-
                 playCounselWhisper();
-                logDiscovery(`Seeking counsel for: "${promptContext || 'general wisdom'}"...`);
+                logDiscovery(`Seeking counsel for: "${promptContext}"...`);
 
-                // Simulate API delay
-                setTimeout(() => {
-                    const randomWisdom = staticWisdoms[Math.floor(Math.random() * staticWisdoms.length)];
+                try {
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: `Generate a short, mystical, ancient-sounding prophecy or wisdom in two parts: first, a few words in a runic-like, cryptic style (use Futhark runes if possible, e.g., "ᛖᚾᛏᛖᚱ ᛞᚨᚷᚨᛉ"), and second, an English translation/interpretation of that wisdom/prophecy. The response should be directly related to the user's question: "${promptContext}". Ensure the runic part is very short and symbolic, and the English part is a concise, insightful explanation. Format the output as a JSON object with 'runic' and 'english' keys.` }] });
 
-                    runicOutput.textContent = randomWisdom.runic;
-                    englishOutput.innerHTML = `<strong>Wisdom:</strong> ${randomWisdom.english.wisdom.replace(/\n/g, '<br>')}<br><strong>Prophecy:</strong> ${randomWisdom.english.prophecy.replace(/\n/g, '<br>')}`;
-                    logDiscovery(`Received new prophecy: ${randomWisdom.english.wisdom.substring(0, 30)}...`);
+                    const payload = {
+                        contents: chatHistory,
+                        generationConfig: {
+                            responseMimeType: "application/json",
+                            responseSchema: {
+                                type: "OBJECT",
+                                properties: {
+                                    "runic": { "type": "STRING" },
+                                    "english": { "type": "STRING" }
+                                },
+                                "propertyOrdering": ["runic", "english"]
+                            }
+                        }
+                    };
 
+                    const apiKey = ""; // Canvas will automatically provide this
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const jsonText = result.candidates[0].content.parts[0].text;
+                        const parsedJson = JSON.parse(jsonText);
+
+                        runicOutput.textContent = parsedJson.runic;
+                        englishOutput.innerHTML = `<strong>Wisdom/Prophecy:</strong> ${parsedJson.english.replace(/\n/g, '<br>')}`;
+                        logDiscovery(`Received new counsel: ${parsedJson.english.substring(0, 30)}...`);
+
+                    } else {
+                        runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ"; // Rune for "Word not found"
+                        englishOutput.innerHTML = "<strong>Wisdom/Prophecy:</strong> The ancient echoes are faint. Try another question.";
+                        logDiscovery("Failed to receive counsel. Unexpected API response.");
+                    }
+                } catch (error) {
+                    console.error("Error fetching ancient counsel:", error);
+                    runicOutput.textContent = "ᛖᚱᚱᛟᚱ ᛞᛖᛖᛈ"; // Rune for "Error deep"
+                    englishOutput.innerHTML = "<strong>Wisdom/Prophecy:</strong> A disturbance in the ether prevents clear reception. Please try again.";
+                    logDiscovery(`Error seeking counsel: ${error.message}`);
+                } finally {
                     whisperBox.classList.remove('loading');
                     toggleTranslationButton.style.display = 'block';
                     translationVisible = false;
@@ -2378,31 +2332,11 @@
                     setTimeout(() => {
                         pyramidGroup.classList.remove('pyramid-energized');
                     }, 800);
-                }, 1500); // Simulate network delay
+                }
             }
 
-            // Expanded static insights for lore sections
-            const staticLoreInsights = {
-                "The Genesis of Pyramids": [
-                    "Beyond channeling cosmic energies, these pyramids served as vibrational anchors, stabilizing Earth's energetic grid during tumultuous cosmic alignments.",
-                    "Ancient blueprints suggest the pyramids were also vast libraries, storing knowledge not in physical form, but encoded within their crystalline structures, accessible through specific frequencies."
-                ],
-                "The Veil of Amenti": [
-                    "The Veil is not a prison, but a protective layer, ensuring humanity's evolution unfolds at its own pace. Its thinning is a sign of collective readiness, not weakness.",
-                    "Esoteric texts describe the Veil as a 'dream-membrane,' where collective unconscious thoughts manifest as fleeting realities, influencing our waking world more than we know."
-                ],
-                "Guardians of the Echoes": [
-                    "The true Guardians are not always visible; some exist as pure consciousness, guiding subtle shifts in human perception and protecting the sacred sites from energetic corruption.",
-                    "Their communication is often through synchronicity and intuitive nudges, a language of the soul understood by those who are attuned to the planet's pulse."
-                ],
-                "The Great Awakening": [
-                    "This Awakening is not a singular event, but a series of cascading revelations, where individual consciousness expands, leading to a collective re-membering of our true cosmic origins.",
-                    "As the pyramids hum with renewed power, they act as tuning forks, helping to recalibrate human bio-energetic fields to receive higher dimensional frequencies."
-                ]
-            };
-
-            // Function to provide a static lore expansion (no API key needed)
-            function getStaticLoreExpansion(title, content, insightContainer, button) {
+            // Function to provide dynamic lore expansion using Gemini API
+            async function getDynamicLoreExpansion(title, content, insightContainer, button) {
                 if (button.disabled) {
                     logDiscovery("Insight already being generated or recently generated. Please wait.");
                     return;
@@ -2415,20 +2349,43 @@
                 playInsightWhisper();
                 logDiscovery(`Deepening insight for: "${title}"...`);
 
-                // Simulate API delay
-                setTimeout(() => {
-                    const insightsForTitle = staticLoreInsights[title] || ["A deeper truth is revealed when the seeker is ready to perceive it."];
-                    const randomInsight = insightsForTitle[Math.floor(Math.random() * insightsForTitle.length)];
+                try {
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: `Expand on the following lore section in a mystical, ancient, and insightful tone. Focus on adding a deeper, esoteric layer to the provided text. The section title is "${title}" and the current content is: "${content}". Provide a concise paragraph of expanded insight.` }] });
 
-                    insightContainer.textContent = randomInsight;
-                    insightContainer.classList.add('visible');
-                    logDiscovery(`Received deeper insight for: "${title.substring(0, 20)}..."`);
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; // Canvas will automatically provide this
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        insightContainer.textContent = text;
+                        insightContainer.classList.add('visible');
+                        logDiscovery(`Received deeper insight for: "${title.substring(0, 20)}..."`);
+                    } else {
+                        insightContainer.textContent = "The ancient scrolls are unreadable at this moment. Try again.";
+                        logDiscovery("Failed to retrieve deeper insight. Unexpected API response.");
+                    }
+                } catch (error) {
+                    console.error("Error fetching lore expansion:", error);
+                    insightContainer.textContent = "A shimmer in the Veil prevents this insight from forming. Please try again.";
+                    logDiscovery(`Error deepening insight: ${error.message}`);
+                } finally {
                     insightContainer.classList.remove('loading');
                     setTimeout(() => {
                         button.disabled = false;
-                    }, 3000);
-                }, 1500); // Simulate network delay
+                    }, 3000); // Re-enable button after 3 seconds
+                }
             }
 
 
@@ -2440,7 +2397,8 @@
 
                     if (pyramidPart === 'sun-top' || pyramidPart === 'sun-base' || pyramidPart === 'sun-entrance') {
                         playPyramidWhisper();
-                        getStaticWhisper(`a general wisdom from the ${pyramidPart} pyramid.`);
+                        // Call the dynamic counsel function
+                        getAncientCounsel(`a general wisdom from the ${pyramidPart} pyramid.`);
 
                         // Activate the main beam briefly
                         pyramidBeam.classList.add('active');
@@ -2455,7 +2413,8 @@
                         setTimeout(() => {
                             element.style.transform = element.style.transform.replace(' scale(1.08) rotateY(10deg)', '');
                         }, 500);
-                        getStaticWhisper(`a specific insight from the ${pyramidPart} pyramid.`);
+                        // Call the dynamic counsel function
+                        getAncientCounsel(`a specific insight from the ${pyramidPart} pyramid.`);
 
                         // Activate the corresponding small pyramid beam
                         if (pyramidPart === 'dragon') {
@@ -2483,8 +2442,7 @@
             seekCounselButton.addEventListener('click', () => {
                 const question = userQuestionInput.value.trim();
                 if (question) {
-                    playCounselWhisper();
-                    getStaticWhisper(question);
+                    getAncientCounsel(question); // Call the dynamic counsel function
                     userQuestionInput.value = '';
                 } else {
                     logDiscovery("Please ask a question to seek ancient counsel.");
@@ -2613,7 +2571,7 @@
                     const title = loreSection.querySelector('h3').textContent;
                     const content = loreSection.querySelector('p').textContent;
                     const insightContainer = loreSection.querySelector('.llm-insight-container');
-                    getStaticLoreExpansion(title, content, insightContainer, button);
+                    getDynamicLoreExpansion(title, content, insightContainer, button);
                 });
             });
 
