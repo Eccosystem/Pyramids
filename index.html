@@ -879,10 +879,15 @@
             color: #e0e0e0;
             margin-top: 2rem;
             z-index: 10;
+            opacity: 0; /* For smooth transition */
+            transform: translateY(20px); /* For smooth transition */
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
         }
 
         .hidden-page.active {
             display: flex; /* Show when active */
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .lore-content-area {
@@ -913,11 +918,22 @@
             overflow: hidden;
             transition: max-height 0.5s ease-out;
             padding: 0 1rem; /* Add padding for content */
+            position: relative; /* For icon positioning */
         }
 
         .lore-section-content.expanded {
             max-height: 500px; /* Adjust as needed for content length */
             padding-bottom: 1rem; /* Add bottom padding when expanded */
+        }
+
+        .lore-section-icon {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 24px;
+            height: 24px;
+            color: #FFD700;
+            opacity: 0.6;
         }
 
         /* New: Deepen Insight button */
@@ -1273,11 +1289,13 @@
             text-align: center;
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative; /* For hover effect */
         }
 
         #runeGuidePage .rune-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+            border-color: #FFD700; /* Highlight border on hover */
         }
 
         #runeGuidePage .rune-symbol {
@@ -1286,6 +1304,12 @@
             color: #FFD700;
             text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
             margin-bottom: 0.5rem;
+            transition: font-size 0.2s ease, text-shadow 0.2s ease;
+        }
+
+        #runeGuidePage .rune-card:hover .rune-symbol {
+            font-size: 3.5rem; /* Larger on hover */
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.6);
         }
 
         #runeGuidePage .rune-name {
@@ -1299,6 +1323,74 @@
             color: #ccc;
         }
 
+        /* Meditation Page Styles */
+        #meditationPage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            text-align: center;
+        }
+
+        .meditation-circle {
+            width: clamp(150px, 30vw, 250px);
+            height: clamp(150px, 30vw, 250px);
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.4), rgba(255, 215, 0, 0.0));
+            border-radius: 50%;
+            margin: 2rem auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            transition: all 1s ease-in-out;
+        }
+
+        .meditation-circle.pulsing {
+            animation: pulse-meditation 2s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulse-meditation {
+            from { transform: scale(1); box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
+            to { transform: scale(1.05); box-shadow: 0 0 50px rgba(255, 215, 0, 0.8); }
+        }
+
+        .meditation-circle .rune-symbol {
+            font-size: clamp(4rem, 8vw, 6rem);
+            color: #FFD700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
+        }
+
+        .meditation-controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .meditation-button {
+            background: linear-gradient(to bottom right, #5a6578, #3d4758);
+            color: #ffcc00;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            border: none;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .meditation-button:hover {
+            background: linear-gradient(to bottom right, #6a7588, #4d5768);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .meditation-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+        }
     </style>
 </head>
 <body data-theme="night">
@@ -1336,6 +1428,7 @@
                     <li><a href="#" data-page="lore">Lore</a></li>
                     <li><a href="#" data-page="wisdoms">Wisdoms & Prophecies</a></li>
                     <li><a href="#" data-page="rune-guide">Rune Guide</a></li>
+                    <li><a href="#" data-page="meditation">Meditation</a></li> <!-- New Menu Item -->
                     <li><a href="#" data-page="contact">Contact the Keepers</a></li>
                 </ul>
             </nav>
@@ -1394,7 +1487,7 @@
 
             <div class="lore-content-area w-full">
                 <div class="lore-section">
-                    <h3 class="text-2xl font-bold text-yellow-300 mb-2 cursor-pointer" data-toggle-id="lore1">The Genesis of Pyramids</h3>
+                    <h3 class="text-2xl font-bold text-yellow-300 mb-2 cursor-pointer" data-toggle-id="lore1" data-icon="pyramid">The Genesis of Pyramids</h3>
                     <div class="lore-section-content" id="lore1">
                         <p>
                             Whispers from deep time suggest that these pyramids are not mere mounds of earth,
@@ -1407,7 +1500,7 @@
                     </div>
                 </div>
                 <div class="lore-section">
-                    <h3 class="text-2xl font-bold text-yellow-300 mb-2 cursor-pointer" data-toggle-id="lore2">The Veil of Amenti</h3>
+                    <h3 class="text-2xl font-bold text-yellow-300 mb-2 cursor-pointer" data-toggle-id="lore2" data-icon="veil">The Veil of Amenti</h3>
                     <div class="lore-section-content" id="lore2">
                         <p>
                             The Veil of Amenti, a concept long debated in esoteric circles, is said to be a energetic
@@ -1421,7 +1514,7 @@
                     </div>
                 </div>
                 <div class="lore-section">
-                    <h3 class="text-2xl font-bold text-yellow-300 mb-2 cursor-pointer" data-toggle-id="lore3">Guardians of the Echoes</h3>
+                    <h3 class="text-2xl font-bold text-yellow-300 mb-2 cursor-pointer" data-toggle-id="lore3" data-icon="guardian">Guardians of the Echoes</h3>
                     <div class="lore-section-content" id="lore3">
                         <p>
                             Through ages, certain lineages and secret societies have known of these structures. They are
@@ -1435,7 +1528,7 @@
                     </div>
                 </div>
                 <div class="lore-section">
-                    <h3 class="text-2xl font-bold text-yellow-300 mb-2 cursor-pointer" data-toggle-id="lore4">The Great Awakening</h3>
+                    <h3 class="text-2xl font-bold text-yellow-300 mb-2 cursor-pointer" data-toggle-id="lore4" data-icon="awakening">The Great Awakening</h3>
                     <div class="lore-section-content" id="lore4">
                         <p>
                             Prophecies speak of a Great Awakening, a time when humanity will be ready to fully
@@ -1649,6 +1742,22 @@
             </div>
         </section>
 
+        <section id="meditationPage" class="hidden-page">
+            <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Guided Meditation</h2>
+            <p class="text-gray-300 text-center mb-8">
+                Connect with the ancient energies through focused intention.
+                Allow the subtle vibrations to guide your inner journey.
+            </p>
+            <div class="meditation-circle" id="meditationCircle">
+                <div class="rune-symbol">ᛗ</div> <!-- Mannaz rune for humanity/self -->
+            </div>
+            <div class="meditation-controls">
+                <button class="meditation-button" id="startMeditation">Start Meditation</button>
+                <button class="meditation-button" id="stopMeditation">Stop Meditation</button>
+            </div>
+            <p id="meditationStatus" class="text-gray-400 mt-4"></p>
+        </section>
+
         <section id="contactPage" class="hidden-page">
             <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Contact the Keepers</h2>
             <p class="text-gray-300 text-center mb-8">
@@ -1692,6 +1801,8 @@
             const lorePage = document.getElementById('lorePage');
             const wisdomsAndPropheciesPage = document.getElementById('wisdomsAndProphecies');
             const contactPage = document.getElementById('contactPage');
+            const runeGuidePage = document.getElementById('runeGuidePage'); // Get new page
+            const meditationPage = document.getElementById('meditationPage'); // Get new page
             const discoveryLog = document.getElementById('discoveryLog');
             const logEntries = document.getElementById('logEntries');
             const toggleLogButton = document.getElementById('toggleLogButton');
@@ -1707,9 +1818,17 @@
             const audioToggleButton = document.getElementById('audioToggleButton');
             const userIdDisplay = document.getElementById('userIdDisplay');
 
+            // Meditation specific elements
+            const startMeditationButton = document.getElementById('startMeditation');
+            const stopMeditationButton = document.getElementById('stopMeditation');
+            const meditationCircle = document.getElementById('meditationCircle');
+            const meditationStatus = document.getElementById('meditationStatus');
+
+
             let translationVisible = false;
             let isGenerating = false;
             let isAmbientPlaying = false;
+            let isMeditationPlaying = false;
 
             // Firebase variables
             let app;
@@ -1799,16 +1918,47 @@
             function toggleAmbientAudio() {
                 if (isAmbientPlaying) {
                     ambientDrone.triggerRelease();
-                    audioToggleButton.textContent = '�';
+                    audioToggleButton.textContent = '🔇';
                     audioToggleButton.classList.remove('active');
                     logDiscovery("Ambient audio muted.");
                 } else {
                     ambientDrone.triggerAttack("C2");
-                    audioToggleButton.textContent = '🔊';
+                    audioToggleButton.textContent = '�';
                     audioToggleButton.classList.add('active');
                     logDiscovery("Ambient audio playing.");
                 }
                 isAmbientPlaying = !isAmbientPlaying;
+            }
+
+            // New: Meditation Drone
+            const meditationDrone = new Tone.FMSynth({
+                harmonicity: 3.1,
+                oscillator: { type: "sine" },
+                envelope: { attack: 4, decay: 0, sustain: 1, release: 4 },
+                modulation: { type: "square" },
+                modulationEnvelope: { attack: 2, decay: 0, sustain: 1, release: 2 }
+            }).toDestination();
+            meditationDrone.volume.value = -20; // Start quieter
+
+            function startMeditationAudio() {
+                if (!isMeditationPlaying) {
+                    meditationDrone.triggerAttack("A1");
+                    meditationDrone.triggerAttack("E2", Tone.now() + 0.5); // Add a fifth for richness
+                    isMeditationPlaying = true;
+                    meditationCircle.classList.add('pulsing');
+                    meditationStatus.textContent = "Meditating... feel the ancient hum.";
+                    logDiscovery("Meditation started.");
+                }
+            }
+
+            function stopMeditationAudio() {
+                if (isMeditationPlaying) {
+                    meditationDrone.triggerRelease();
+                    isMeditationPlaying = false;
+                    meditationCircle.classList.remove('pulsing');
+                    meditationStatus.textContent = "Meditation ended. Inner peace found.";
+                    logDiscovery("Meditation ended.");
+                }
             }
             // --- End Sound Definitions ---
 
@@ -1930,9 +2080,96 @@
                 });
             }
 
+            // Pre-defined wisdoms and prophecies for static responses
+            const staticWisdoms = [
+                {
+                    runic: "ᚠᛖᚺᚢ ᚢᚾᛞ ᛟᚦᚨᛚᚨ",
+                    english: {
+                        wisdom: "True wealth lies not in accumulation, but in the spirit's free flow and the wisdom gained from ancestral roots.",
+                        prophecy: "The old ways shall return, not as relics, but as foundational truths for a new era."
+                    }
+                },
+                {
+                    runic: "ᚢᚱᚢᛉ ᛞᚨᚷᚨᛉ",
+                    english: {
+                        wisdom: "Strength is found in transformation, as each dawn brings new light and the chance to shed what no longer serves.",
+                        prophecy: "A sudden, illuminating shift will unveil hidden paths for those who dare to walk them."
+                    }
+                },
+                {
+                    runic: "ᚦᚢᚱᛁᛋᚨᛉ ᛇᚱ",
+                    english: {
+                        wisdom: "Patience in the face of chaos carves a path through the storm, revealing the ice-clear vision beyond.",
+                        prophecy: "The severing of old ties, though painful, will free vital energy for collective healing."
+                    }
+                },
+                {
+                    runic: "ᚨᚾᛋᚢᛉ ᛗᚨᚾᚾᚨᛉ",
+                    english: {
+                        wisdom: "The spoken word carries power; speak truth and listen to the whispers of the divine within all.",
+                        prophecy: "Communication will transcend the mundane, leading to profound understanding between disparate souls."
+                    }
+                },
+                {
+                    runic: "ᚱᚨᛁᛞᛟ ᛚᚨᚷᚢᛉ",
+                    english: {
+                        wisdom: "The journey itself is the destination; embrace the flow of life's currents, for they lead to destiny.",
+                        prophecy: "Ancient waterways, once forgotten, will reveal passages to submerged knowledge."
+                    }
+                },
+                {
+                    runic: "ᚲᚨᚾᚾᚨᛉ ᛋᛟᚢᛁᛚᛟ",
+                    english: {
+                        wisdom: "Kindle the inner flame, for it is the light that reveals hidden truths and burns away illusions.",
+                        prophecy: "A new sun will rise from within, illuminating the collective consciousness and dispelling the shadows of ignorance."
+                    }
+                },
+                {
+                    runic: "ᚷᛖᛒᛟ ᚹᚢᚾᛃᛟ",
+                    english: {
+                        wisdom: "Generosity of spirit brings joy, for true gifts are given freely, without expectation.",
+                        prophecy: "A great alliance will form, built on mutual respect and shared prosperity, transcending old divisions."
+                    }
+                },
+                {
+                    runic: "ᚺᚨᚷᚨᛚᚨᛉ ᚾᚨᚢᛞᛁᛉ",
+                    english: {
+                        wisdom: "From destruction, new patterns emerge; embrace the necessary chaos for genuine growth.",
+                        prophecy: "A cosmic tremor will reset the frequencies, aligning human endeavor with universal harmony."
+                    }
+                },
+                {
+                    runic: "ᛁᛋᚨ ᛃᛖᚱᚨ",
+                    english: {
+                        wisdom: "Stillness allows for reflection, revealing the cycles of time and the seeds of future harvests.",
+                        prophecy: "The long winter of forgetfulness shall end, and the bounty of rediscovered knowledge will nourish all."
+                    }
+                },
+                {
+                    runic: "ᛈᛖᚱᚦᚱᛟ ᛖᛁᚹᚨᛉ",
+                    english: {
+                        wisdom: "Destiny is a game of chance and choice; ride the currents of change with adaptability and grace.",
+                        prophecy: "The Veil will thin completely, allowing direct communion with ancient consciousness and forgotten realms."
+                    }
+                },
+                {
+                    runic: "ᛗᚨᚾᚾᚨᛉ ᛚᚨᚷᚢᛉ",
+                    english: {
+                        wisdom: "The essence of humanity flows like water, adapting and carving new paths through the landscape of existence.",
+                        prophecy: "A great current of collective consciousness will rise, sweeping away old illusions and revealing shared truths."
+                    }
+                },
+                {
+                    runic: "ᛟᚦᚨᛚᚨ ᛞᚨᚷᚨᛉ",
+                    english: {
+                        wisdom: "True heritage is not merely blood, but the awakening of ancestral wisdom within, illuminating the path forward.",
+                        prophecy: "A new dawn will break upon forgotten lands, revealing the sacred foundations of a renewed world."
+                    }
+                }
+            ];
 
-            // Function to get dynamic whisper from LLM
-            async function getDynamicWhisper(promptContext) {
+            // Function to provide a static whisper (no API key needed)
+            function getStaticWhisper(promptContext) {
                 if (isGenerating) {
                     logDiscovery("The ancient energies are still coalescing. Please wait.");
                     return;
@@ -1948,53 +2185,14 @@
                 playCounselWhisper();
                 logDiscovery(`Seeking counsel for: "${promptContext || 'general wisdom'}"...`);
 
-                const prompt = `You are an ancient, mystical entity residing within the Bosnian Pyramids. Provide a cryptic, runic-like whisper (2-3 short sentences) and then its English translation (1-2 sentences) related to the following context: "${promptContext}". The runic text should be symbolic, not a direct translation of English. Focus on themes of ancient wisdom, cosmic energy, hidden truths, or spiritual awakening.`;
+                // Simulate API delay
+                setTimeout(() => {
+                    const randomWisdom = staticWisdoms[Math.floor(Math.random() * staticWisdoms.length)];
 
-                let chatHistory = [];
-                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // Canvas will provide this API key at runtime
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                    runicOutput.textContent = randomWisdom.runic;
+                    englishOutput.innerHTML = `<strong>Wisdom:</strong> ${randomWisdom.english.wisdom.replace(/\n/g, '<br>')}<br><strong>Prophecy:</strong> ${randomWisdom.english.prophecy.replace(/\n/g, '<br>')}`;
+                    logDiscovery(`Received new prophecy: ${randomWisdom.english.wisdom.substring(0, 30)}...`);
 
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    const result = await response.json();
-
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const text = result.candidates[0].content.parts[0].text;
-                        // Attempt to parse runic and English parts
-                        const parts = text.split('\n');
-                        let runicPart = '';
-                        let englishPart = '';
-
-                        if (parts.length >= 2) {
-                            runicPart = parts[0].trim();
-                            englishPart = parts.slice(1).join('\n').trim();
-                        } else {
-                            // Fallback if the format is not as expected
-                            runicPart = "ᛚᛟᚱᛖ ᚹᚺᛁᛋᛈᛖᚱ"; // Generic rune
-                            englishPart = text;
-                        }
-
-                        runicOutput.textContent = runicPart;
-                        englishOutput.innerHTML = englishPart.replace(/\n/g, '<br>'); // Preserve newlines as breaks
-                        logDiscovery(`Received new whisper: ${englishPart.substring(0, 30)}...`);
-
-                    } else {
-                        throw new Error("Invalid response structure from LLM.");
-                    }
-                } catch (error) {
-                    console.error("Error seeking ancient counsel:", error);
-                    runicOutput.textContent = "ᛖᚱᚱᛟᚱ";
-                    englishOutput.innerHTML = "A disturbance in the Veil prevents clear communication. Try again.";
-                    logDiscovery(`Failed to seek counsel: ${error.message}`);
-                } finally {
                     whisperBox.classList.remove('loading');
                     toggleTranslationButton.style.display = 'block';
                     translationVisible = false;
@@ -2005,11 +2203,31 @@
                     setTimeout(() => {
                         pyramidGroup.classList.remove('pyramid-energized');
                     }, 800);
-                }
+                }, 1500); // Simulate network delay
             }
 
-            // Function to get dynamic lore expansion from LLM
-            async function getDynamicLoreExpansion(title, content, insightContainer, button) {
+            // Expanded static insights for lore sections
+            const staticLoreInsights = {
+                "The Genesis of Pyramids": [
+                    "Beyond channeling cosmic energies, these pyramids served as vibrational anchors, stabilizing Earth's energetic grid during tumultuous cosmic alignments.",
+                    "Ancient blueprints suggest the pyramids were also vast libraries, storing knowledge not in physical form, but encoded within their crystalline structures, accessible through specific frequencies."
+                ],
+                "The Veil of Amenti": [
+                    "The Veil is not a prison, but a protective layer, ensuring humanity's evolution unfolds at its own pace. Its thinning is a sign of collective readiness, not weakness.",
+                    "Esoteric texts describe the Veil as a 'dream-membrane,' where collective unconscious thoughts manifest as fleeting realities, influencing our waking world more than we know."
+                ],
+                "Guardians of the Echoes": [
+                    "The true Guardians are not always visible; some exist as pure consciousness, guiding subtle shifts in human perception and protecting the sacred sites from energetic corruption.",
+                    "Their communication is often through synchronicity and intuitive nudges, a language of the soul understood by those who are attuned to the planet's pulse."
+                ],
+                "The Great Awakening": [
+                    "This Awakening is not a singular event, but a series of cascading revelations, where individual consciousness expands, leading to a collective re-membering of our true cosmic origins.",
+                    "As the pyramids hum with renewed power, they act as tuning forks, helping to recalibrate human bio-energetic fields to receive higher dimensional frequencies."
+                ]
+            };
+
+            // Function to provide a static lore expansion (no API key needed)
+            function getStaticLoreExpansion(title, content, insightContainer, button) {
                 if (button.disabled) {
                     logDiscovery("Insight already being generated or recently generated. Please wait.");
                     return;
@@ -2022,43 +2240,20 @@
                 playInsightWhisper();
                 logDiscovery(`Deepening insight for: "${title}"...`);
 
-                const prompt = `You are an ancient, all-knowing entity. Provide a deeper, more esoteric insight (2-4 sentences) into the following lore topic: "${title}". The existing lore states: "${content}". Expand on it with mystical, philosophical, or hidden aspects related to ancient civilizations, energy, consciousness, or the Veil of Amenti.`;
+                // Simulate API delay
+                setTimeout(() => {
+                    const insightsForTitle = staticLoreInsights[title] || ["A deeper truth is revealed when the seeker is ready to perceive it."];
+                    const randomInsight = insightsForTitle[Math.floor(Math.random() * insightsForTitle.length)];
 
-                let chatHistory = [];
-                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // Canvas will provide this API key at runtime
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    const result = await response.json();
-
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const text = result.candidates[0].content.parts[0].text;
-                        insightContainer.textContent = text;
-                        insightContainer.classList.add('visible');
-                        logDiscovery(`Received deeper insight for: "${title.substring(0, 20)}..."`);
-                    } else {
-                        throw new Error("Invalid response structure from LLM for insight.");
-                    }
-                } catch (error) {
-                    console.error("Error deepening insight:", error);
-                    insightContainer.textContent = "The ancient knowledge is obscured. Try again later.";
+                    insightContainer.textContent = randomInsight;
                     insightContainer.classList.add('visible');
-                    logDiscovery(`Failed to deepen insight: ${error.message}`);
-                } finally {
+                    logDiscovery(`Received deeper insight for: "${title.substring(0, 20)}..."`);
+
                     insightContainer.classList.remove('loading');
                     setTimeout(() => {
                         button.disabled = false;
-                    }, 3000); // Re-enable button after a short delay
-                }
+                    }, 3000);
+                }, 1500); // Simulate network delay
             }
 
 
@@ -2070,7 +2265,7 @@
 
                     if (pyramidPart === 'sun-top' || pyramidPart === 'sun-base' || pyramidPart === 'sun-entrance') {
                         playPyramidWhisper();
-                        getDynamicWhisper(`a general wisdom from the ${pyramidPart} pyramid.`);
+                        getStaticWhisper(`a general wisdom from the ${pyramidPart} pyramid.`);
 
                         // Activate the main beam briefly
                         pyramidBeam.classList.add('active');
@@ -2085,7 +2280,7 @@
                         setTimeout(() => {
                             element.style.transform = element.style.transform.replace(' scale(1.08) rotateY(10deg)', '');
                         }, 500);
-                        getDynamicWhisper(`a specific insight from the ${pyramidPart} pyramid.`);
+                        getStaticWhisper(`a specific insight from the ${pyramidPart} pyramid.`);
 
                         // Activate the corresponding small pyramid beam
                         if (pyramidPart === 'dragon') {
@@ -2094,6 +2289,7 @@
                             pyramidLoveBeam.classList.add('active');
                             setTimeout(() => {
                                 pyramidLoveBeam.classList.remove('active');
+                                // Optionally reset background if needed, but not required if CSS handles default
                             }, 1500); // Small beam active for 1.5 seconds
                         } else if (pyramidPart === 'moon') {
                             // Set red beam for Moon pyramid (explicitly, though CSS default is red)
@@ -2101,6 +2297,7 @@
                             pyramidMoonBeam.classList.add('active');
                             setTimeout(() => {
                                 pyramidMoonBeam.classList.remove('active');
+                                // Optionally reset background if needed, but not required if CSS handles default
                             }, 1500); // Small beam active for 1.5 seconds
                         }
                     }
@@ -2112,7 +2309,7 @@
                 const question = userQuestionInput.value.trim();
                 if (question) {
                     playCounselWhisper();
-                    getDynamicWhisper(question);
+                    getStaticWhisper(question);
                     userQuestionInput.value = '';
                 } else {
                     logDiscovery("Please ask a question to seek ancient counsel.");
@@ -2183,6 +2380,11 @@
                     targetPage.classList.remove('hidden-page');
                     targetPage.classList.add('active');
                 }
+
+                // Stop meditation if navigating away from meditation page
+                if (pageName !== 'meditation' && isMeditationPlaying) {
+                    stopMeditationAudio();
+                }
             }
 
             // Initially hide all pages and only activate 'home' after entry
@@ -2221,9 +2423,25 @@
                     const title = loreSection.querySelector('h3').textContent;
                     const content = loreSection.querySelector('p').textContent;
                     const insightContainer = loreSection.querySelector('.llm-insight-container');
-                    getDynamicLoreExpansion(title, content, insightContainer, button);
+                    getStaticLoreExpansion(title, content, insightContainer, button);
                 });
             });
+
+            // Function to get SVG icon based on data-icon attribute
+            function getLoreIconSVG(iconName) {
+                switch (iconName) {
+                    case 'pyramid':
+                        return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pyramid"><path d="M2.5 16.81l8.37 3.75a2 2 0 001.76 0l8.37-3.75A2 2 0 0022 15.07V8.93a2 2 0 00-1.03-1.74l-8.37-3.75a2 2 0 00-1.76 0L2.5 7.19A2 2 0 002 8.93v6.14a2 2 0 00.5 1.74z"/><path d="M12 22v-8"/><path d="M2.5 16.81L12 14v8"/><path d="M21.5 16.81L12 14v8"/></svg>`;
+                    case 'veil':
+                        return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cloud"><path d="M17.5 14.5a.75.75 0 000 1.5h.5a.75.75 0 000-1.5z"/><path d="M10 20a5 5 0 01-4.75-5.25A4.5 4.5 0 017 7h.5A4.5 4.5 0 0115 7.5a4.5 4.5 0 011-.5h.5A3.5 3.5 0 0120 10c0 1.5-.5 2.5-1.25 3.25A4.5 4.5 0 0117.5 18H10z"/></svg>`;
+                    case 'guardian':
+                        return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
+                    case 'awakening':
+                        return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun"><circle cx="12" cy="12" r="8"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M4.93 19.07l1.41-1.41"/><path d="M17.66 6.34l1.41-1.41"/></svg>`;
+                    default:
+                        return '';
+                }
+            }
 
             // Interactive Lore Sections (Expand/Collapse)
             loreSectionHeaders.forEach(header => {
@@ -2232,9 +2450,42 @@
                     const contentElement = document.getElementById(contentId);
                     if (contentElement) {
                         contentElement.classList.toggle('expanded');
+                        // Add/remove icon based on expansion
+                        let icon = contentElement.querySelector('.lore-section-icon');
+                        if (contentElement.classList.contains('expanded')) {
+                            if (!icon) {
+                                const iconName = header.dataset.icon;
+                                if (iconName) {
+                                    icon = document.createElement('div');
+                                    icon.classList.add('lore-section-icon');
+                                    icon.innerHTML = getLoreIconSVG(iconName);
+                                    contentElement.appendChild(icon);
+                                }
+                            }
+                        } else {
+                            if (icon) {
+                                icon.remove();
+                            }
+                        }
                     }
                 });
             });
+
+            // Rune Guide Card Hover Effects
+            document.querySelectorAll('#runeGuidePage .rune-card').forEach(card => {
+                const runeSymbol = card.querySelector('.rune-symbol');
+                // The line 'const originalFontSize = runeSymbol.style.fontSize;' was removed here
+                // as it was unused and could cause a TypeError if runeSymbol was null.
+
+                card.addEventListener('mouseover', () => {
+                    playSmallPyramidSound(); // Use a subtle sound for hover
+                });
+
+                card.addEventListener('mouseout', () => {
+                    // No specific action needed on mouseout for this effect
+                });
+            });
+
 
             // NEW: Initial Entry Overlay Logic
             initialEntryOverlay.addEventListener('click', () => {
@@ -2247,6 +2498,10 @@
 
             // Audio Toggle Button Event Listener
             audioToggleButton.addEventListener('click', toggleAmbientAudio);
+
+            // Meditation Button Event Listeners
+            startMeditationButton.addEventListener('click', startMeditationAudio);
+            stopMeditationButton.addEventListener('click', stopMeditationAudio);
         });
     </script>
 </body>
