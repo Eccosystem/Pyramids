@@ -882,12 +882,14 @@
             opacity: 0; /* For smooth transition */
             transform: translateY(20px); /* For smooth transition */
             transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+            pointer-events: none; /* Prevent interaction when hidden */
         }
 
         .hidden-page.active {
             display: flex; /* Show when active */
             opacity: 1;
             transform: translateY(0);
+            pointer-events: auto; /* Allow interaction when active */
         }
 
         .lore-content-area {
@@ -1391,6 +1393,136 @@
             transform: translateY(0);
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
         }
+
+        /* NEW: Rune Casting Page Styles */
+        #runeCastingPage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            text-align: center;
+        }
+
+        .cast-runes-button {
+            background: linear-gradient(to bottom right, #8B0000, #CD5C5C); /* Dark Red to Indian Red */
+            color: #FFD700; /* Gold text */
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            border: none;
+            outline: none;
+            font-size: 1.2rem;
+            margin-top: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cast-runes-button:hover {
+            background: linear-gradient(to bottom right, #A52A2A, #DC143C); /* Brown to Crimson */
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .cast-runes-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .cast-runes-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -75%;
+            width: 50%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: skewX(-20deg);
+            transition: all 0.5s ease;
+        }
+
+        .cast-runes-button:hover::before {
+            left: 125%;
+        }
+
+        .rune-casting-results {
+            margin-top: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            max-width: 800px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+
+        .rune-casting-results.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .casted-rune-card {
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+            width: 150px; /* Fixed width for consistency */
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .casted-rune-card .rune-symbol {
+            font-family: 'Spectral', serif;
+            font-size: 4rem;
+            color: #FFD700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            margin-bottom: 0.5rem;
+        }
+
+        .casted-rune-card .rune-name {
+            font-weight: bold;
+            color: #e0e0e0;
+            margin-bottom: 0.25rem;
+        }
+
+        .casted-rune-card .rune-meaning {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        /* Mist effect */
+        .mist-effect {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%; /* Mist covers bottom 30% of screen */
+            background: linear-gradient(to top, rgba(255, 255, 255, 0.08), transparent);
+            pointer-events: none;
+            z-index: 5; /* Above background, below pyramids */
+            opacity: 0; /* Hidden by default */
+            transition: opacity 2s ease-in-out;
+            animation: mist-drift 40s linear infinite alternate;
+        }
+
+        body[data-theme="night"] .mist-effect {
+            opacity: 0.3; /* More visible at night */
+        }
+
+        body[data-theme="day"] .mist-effect {
+            opacity: 0.1; /* Subtle during day */
+        }
+
+        @keyframes mist-drift {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(5%); }
+        }
+
     </style>
 </head>
 <body data-theme="night">
@@ -1408,6 +1540,8 @@
     <div class="veil-overlay" id="veilOverlay"></div>
 
     <div class="celestial-body" id="celestialBody"></div>
+
+    <div class="mist-effect"></div> <!-- New Mist Effect -->
 
     <div class="main-content-area" id="mainContentArea">
         <header class="app-header">
@@ -1428,7 +1562,8 @@
                     <li><a href="#" data-page="lore">Lore</a></li>
                     <li><a href="#" data-page="wisdoms">Wisdoms & Prophecies</a></li>
                     <li><a href="#" data-page="rune-guide">Rune Guide</a></li>
-                    <li><a href="#" data-page="meditation">Meditation</a></li> <!-- New Menu Item -->
+                    <li><a href="#" data-page="rune-casting">Rune Casting</a></li> <!-- New Menu Item -->
+                    <li><a href="#" data-page="meditation">Meditation</a></li>
                     <li><a href="#" data-page="contact">Contact the Keepers</a></li>
                 </ul>
             </nav>
@@ -1642,7 +1777,7 @@
                 <div class="rune-card">
                     <div class="rune-symbol">ᚨ</div>
                     <div class="rune-name">Ansuz</div>
-                    <div class="rune-meaning">Communication, inspiration, divine breath</div>
+                    <div the="rune-meaning">Communication, inspiration, divine breath</div>
                 </div>
                 <div class="rune-card">
                     <div class="rune-symbol">ᚱ</div>
@@ -1742,6 +1877,17 @@
             </div>
         </section>
 
+        <section id="runeCastingPage" class="hidden-page">
+            <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Rune Casting</h2>
+            <p class="text-gray-300 text-center mb-8">
+                Cast the ancient runes to receive a glimpse into your path and hidden insights.
+            </p>
+            <button class="cast-runes-button" id="castRunesButton">Cast the Runes</button>
+            <div class="rune-casting-results" id="runeCastingResults">
+                <!-- Casted runes will appear here -->
+            </div>
+        </section>
+
         <section id="meditationPage" class="hidden-page">
             <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Guided Meditation</h2>
             <p class="text-gray-300 text-center mb-8">
@@ -1749,7 +1895,7 @@
                 Allow the subtle vibrations to guide your inner journey.
             </p>
             <div class="meditation-circle" id="meditationCircle">
-                <div class="rune-symbol">ᛗ</div> <!-- Mannaz rune for humanity/self -->
+                <div class="rune-symbol" id="meditationRune">ᛗ</div> <!-- Mannaz rune for humanity/self -->
             </div>
             <div class="meditation-controls">
                 <button class="meditation-button" id="startMeditation">Start Meditation</button>
@@ -1801,8 +1947,9 @@
             const lorePage = document.getElementById('lorePage');
             const wisdomsAndPropheciesPage = document.getElementById('wisdomsAndProphecies');
             const contactPage = document.getElementById('contactPage');
-            const runeGuidePage = document.getElementById('runeGuidePage'); // Get new page
-            const meditationPage = document.getElementById('meditationPage'); // Get new page
+            const runeGuidePage = document.getElementById('runeGuidePage');
+            const meditationPage = document.getElementById('meditationPage');
+            const runeCastingPage = document.getElementById('runeCastingPage'); // New page element
             const discoveryLog = document.getElementById('discoveryLog');
             const logEntries = document.getElementById('logEntries');
             const toggleLogButton = document.getElementById('toggleLogButton');
@@ -1817,18 +1964,25 @@
             const mainContentArea = document.getElementById('mainContentArea');
             const audioToggleButton = document.getElementById('audioToggleButton');
             const userIdDisplay = document.getElementById('userIdDisplay');
+            const mistEffect = document.querySelector('.mist-effect'); // New mist effect element
 
             // Meditation specific elements
             const startMeditationButton = document.getElementById('startMeditation');
             const stopMeditationButton = document.getElementById('stopMeditation');
             const meditationCircle = document.getElementById('meditationCircle');
             const meditationStatus = document.getElementById('meditationStatus');
+            const meditationRune = document.getElementById('meditationRune');
+
+            // Rune Casting elements
+            const castRunesButton = document.getElementById('castRunesButton');
+            const runeCastingResults = document.getElementById('runeCastingResults');
 
 
             let translationVisible = false;
             let isGenerating = false;
             let isAmbientPlaying = false;
             let isMeditationPlaying = false;
+            let currentMeditationRuneIndex = 0;
 
             // Firebase variables
             let app;
@@ -1940,6 +2094,14 @@
             }).toDestination();
             meditationDrone.volume.value = -20; // Start quieter
 
+            const meditationRunes = [
+                { symbol: 'ᛗ', name: 'Mannaz', meaning: 'Humanity, the Self, social order' },
+                { symbol: 'ᛟ', name: 'Othala', meaning: 'Inheritance, ancestral spiritual power' },
+                { symbol: 'ᛞ', name: 'Dagaz', meaning: 'Day, breakthrough, awakening' },
+                { symbol: 'ᛋ', name: 'Sowilo', meaning: 'Wholeness, success, solar energy' },
+                { symbol: 'ᛚ', name: 'Laguz', meaning: 'Flow, water, intuition, subconscious' }
+            ];
+
             function startMeditationAudio() {
                 if (!isMeditationPlaying) {
                     meditationDrone.triggerAttack("A1");
@@ -1948,6 +2110,10 @@
                     meditationCircle.classList.add('pulsing');
                     meditationStatus.textContent = "Meditating... feel the ancient hum.";
                     logDiscovery("Meditation started.");
+
+                    // Cycle meditation runes
+                    cycleMeditationRune();
+                    setInterval(cycleMeditationRune, 10000); // Change rune every 10 seconds
                 }
             }
 
@@ -1959,6 +2125,13 @@
                     meditationStatus.textContent = "Meditation ended. Inner peace found.";
                     logDiscovery("Meditation ended.");
                 }
+            }
+
+            function cycleMeditationRune() {
+                currentMeditationRuneIndex = (currentMeditationRuneIndex + 1) % meditationRunes.length;
+                const rune = meditationRunes[currentMeditationRuneIndex];
+                meditationRune.textContent = rune.symbol;
+                meditationStatus.textContent = `Meditating on ${rune.name}: ${rune.meaning}`;
             }
             // --- End Sound Definitions ---
 
@@ -2368,17 +2541,32 @@
             });
 
             function showPage(pageName) {
-                // Hide all pages
-                document.querySelectorAll('section[id$="Page"]').forEach(page => {
-                    page.classList.remove('active');
-                    page.classList.add('hidden-page');
+                // Get all pages
+                const allPages = document.querySelectorAll('section[id$="Page"]');
+
+                // Apply fade-out and hide old pages
+                allPages.forEach(page => {
+                    if (page.classList.contains('active')) {
+                        page.style.opacity = '0';
+                        page.style.transform = 'translateY(20px)';
+                        page.style.pointerEvents = 'none'; // Disable interactions during fade-out
+                        setTimeout(() => {
+                            page.classList.remove('active');
+                            page.classList.add('hidden-page');
+                        }, 700); // Match CSS transition duration
+                    }
                 });
 
-                // Show the requested page
+                // Show the requested page after a slight delay for transition
                 const targetPage = document.getElementById(`${pageName}Page`);
                 if (targetPage) {
-                    targetPage.classList.remove('hidden-page');
-                    targetPage.classList.add('active');
+                    setTimeout(() => {
+                        targetPage.classList.remove('hidden-page');
+                        targetPage.classList.add('active');
+                        targetPage.style.opacity = '1';
+                        targetPage.style.transform = 'translateY(0)';
+                        targetPage.style.pointerEvents = 'auto'; // Enable interactions when active
+                    }, 500); // Start fade-in after old page starts fading out
                 }
 
                 // Stop meditation if navigating away from meditation page
@@ -2474,16 +2662,15 @@
             // Rune Guide Card Hover Effects
             document.querySelectorAll('#runeGuidePage .rune-card').forEach(card => {
                 const runeSymbol = card.querySelector('.rune-symbol');
-                // The line 'const originalFontSize = runeSymbol.style.fontSize;' was removed here
-                // as it was unused and could cause a TypeError if runeSymbol was null.
+                if (runeSymbol) { // Ensure runeSymbol exists before accessing its style
+                    card.addEventListener('mouseover', () => {
+                        playSmallPyramidSound(); // Use a subtle sound for hover
+                    });
 
-                card.addEventListener('mouseover', () => {
-                    playSmallPyramidSound(); // Use a subtle sound for hover
-                });
-
-                card.addEventListener('mouseout', () => {
-                    // No specific action needed on mouseout for this effect
-                });
+                    card.addEventListener('mouseout', () => {
+                        // No specific action needed on mouseout for this effect
+                    });
+                }
             });
 
 
@@ -2502,6 +2689,86 @@
             // Meditation Button Event Listeners
             startMeditationButton.addEventListener('click', startMeditationAudio);
             stopMeditationButton.addEventListener('click', stopMeditationAudio);
+
+            // Parallax effect for main content based on mouse position
+            mainContentArea.addEventListener('mousemove', (e) => {
+                const x = (e.clientX / window.innerWidth - 0.5) * 2; // -1 to 1
+                const y = (e.clientY / window.innerHeight - 0.5) * 2; // -1 to 1
+
+                // Apply subtle transforms to background elements
+                document.body.style.backgroundPositionX = `${-x * 5}px`;
+                document.body.style.backgroundPositionY = `${-y * 5}px`;
+                document.body.style.setProperty('--x-offset', `${-x * 10}px`); // For cosmic dust
+                document.body.style.setProperty('--y-offset', `${-y * 10}px`); // For cosmic dust
+                document.querySelector('.runes-container').style.transform = `translate(${x * 15}px, ${y * 15}px)`;
+                document.querySelector('.celestial-body').style.transform = `translate(${-x * 20}px, ${-y * 20}px)`;
+                mistEffect.style.transform = `translateX(${-x * 8}px)`; // Apply to mist
+            });
+
+            // Rune Casting Logic
+            const runeMeanings = {
+                'ᚠ': { name: 'Fehu', meaning: 'Wealth, abundance, new beginnings' },
+                'ᚢ': { name: 'Uruz', meaning: 'Strength, primal force, courage' },
+                'ᚦ': { name: 'Thurisaz', meaning: 'Protection, conflict, powerful change' },
+                'ᚨ': { name: 'Ansuz', meaning: 'Communication, inspiration, divine breath' },
+                'ᚱ': { name: 'Raido', meaning: 'Journey, movement, rhythm' },
+                'ᚲ': { name: 'Kenaz', meaning: 'Illumination, knowledge, creativity' },
+                'ᚷ': { name: 'Gebo', meaning: 'Gift, partnership, generosity' },
+                'ᚹ': { name: 'Wunjo', meaning: 'Joy, comfort, harmony' },
+                'ᚺ': { name: 'Hagalaz', meaning: 'Disruption, chaos, natural forces' },
+                'ᚾ': { name: 'Naudiz', meaning: 'Need, constraint, resilience' },
+                'ᛁ': { name: 'Isa', meaning: 'Stillness, ice, self-control' },
+                'ᛃ': { name: 'Jera', meaning: 'Harvest, cycles, patience' },
+                'ᛇ': { name: 'Eihwaz', meaning: 'Endurance, transformation, death/rebirth' },
+                'ᛈ': { name: 'Perthro', meaning: 'Fate, mystery, chance' },
+                'ᛉ': { name: 'Algiz', meaning: 'Protection, defense, connection to divine' },
+                'ᛋ': { name: 'Sowilo', meaning: 'Wholeness, success, solar energy' },
+                'ᛏ': { name: 'Tiwaz', meaning: 'Justice, sacrifice, victory' },
+                'ᛒ': { name: 'Berkana', meaning: 'Growth, rebirth, new beginnings' },
+                'ᛖ': { name: 'Ehaz', meaning: 'Movement, progress, trust' },
+                'ᛗ': { name: 'Mannaz', meaning: 'Humanity, the Self, social order' },
+                'ᛚ': { name: 'Laguz', meaning: 'Flow, water, intuition, subconscious' },
+                'ᛝ': { name: 'Ingwaz', meaning: 'Fertility, completion, inner growth' },
+                'ᛟ': { name: 'Othala', meaning: 'Inheritance, homeland, spiritual heritage' },
+                'ᛞ': { name: 'Dagaz', meaning: 'Day, breakthrough, awakening' }
+            };
+
+            const allRuneSymbols = Object.keys(runeMeanings);
+
+            function castRunes() {
+                runeCastingResults.innerHTML = ''; // Clear previous results
+                runeCastingResults.classList.remove('visible');
+                logDiscovery("Casting runes...");
+
+                // Simulate a casting animation/delay
+                setTimeout(() => {
+                    const numRunesToCast = 3; // Cast 3 runes for a reading
+                    const castedRunes = [];
+                    for (let i = 0; i < numRunesToCast; i++) {
+                        const randomIndex = Math.floor(Math.random() * allRuneSymbols.length);
+                        const runeSymbol = allRuneSymbols[randomIndex];
+                        castedRunes.push(runeSymbol);
+                    }
+
+                    castedRunes.forEach((symbol, index) => {
+                        const runeData = runeMeanings[symbol];
+                        const card = document.createElement('div');
+                        card.classList.add('casted-rune-card');
+                        card.style.animationDelay = `${index * 0.1}s`; // Stagger animation
+
+                        card.innerHTML = `
+                            <div class="rune-symbol">${symbol}</div>
+                            <div class="rune-name">${runeData.name}</div>
+                            <div class="rune-meaning">${runeData.meaning}</div>
+                        `;
+                        runeCastingResults.appendChild(card);
+                    });
+                    runeCastingResults.classList.add('visible');
+                    logDiscovery(`Runes cast: ${castedRunes.join(', ')}`);
+                }, 1000); // 1 second delay for casting animation
+            }
+
+            castRunesButton.addEventListener('click', castRunes);
         });
     </script>
 </body>
