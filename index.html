@@ -55,7 +55,7 @@
             flex-direction: column; /* Allow content to stack vertically */
             justify-content: flex-start; /* Align content to the top for scrolling */
             align-items: center;
-            min-height: 100vh;
+            /* Removed min-height: 100vh; to allow content to define height */
             margin: 0;
             overflow-y: auto; /* Allow vertical scrolling */
             overflow-x: hidden; /* Hide horizontal scrollbar */
@@ -146,7 +146,7 @@
             box-sizing: border-box;
             z-index: 10; /* Ensure it's above background effects */
             /* Removed min-height: 100vh; */
-            padding-bottom: 25vh; /* Add padding for log and toggle button */
+            padding-bottom: 5rem; /* Reduced padding for log and toggle button */
             opacity: 0; /* Initially hidden */
             transition: opacity 1.5s ease-in-out;
         }
@@ -877,7 +877,7 @@
             flex-direction: column;
             align-items: center;
             color: #e0e0e0;
-            margin-top: 2rem;
+            margin-top: 1rem; /* Adjusted margin-top */
             z-index: 10;
             opacity: 0; /* For smooth transition */
             transform: translateY(20px); /* For smooth transition */
@@ -1000,7 +1000,7 @@
 
 
         /* Wisdoms and Prophecies Section */
-        #wisdomsAndProphecies {
+        #wisdomsAndPropheciesPage { /* Corrected ID here */
             margin-top: 3rem;
             color: #FFD700;
             text-align: center;
@@ -1015,7 +1015,7 @@
             animation: fadeIn 2s ease-in-out;
         }
 
-        #wisdomsAndProphecies h2 {
+        #wisdomsAndPropheciesPage h2 { /* Corrected ID here */
             font-family: 'Spectral', serif;
             font-size: clamp(1.8rem, 4vw, 3rem);
             margin-bottom: 1.5rem;
@@ -1274,56 +1274,7 @@
         }
 
         /* Rune Guide Page Specific Styles */
-        #runeGuidePage .rune-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-            width: 100%;
-            max-width: 800px;
-        }
-
-        #runeGuidePage .rune-card {
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            border-radius: 0.75rem;
-            padding: 1rem;
-            text-align: center;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            position: relative; /* For hover effect */
-        }
-
-        #runeGuidePage .rune-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
-            border-color: #FFD700; /* Highlight border on hover */
-        }
-
-        #runeGuidePage .rune-symbol {
-            font-family: 'Spectral', serif;
-            font-size: 3rem;
-            color: #FFD700;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
-            margin-bottom: 0.5rem;
-            transition: font-size 0.2s ease, text-shadow 0.2s ease;
-        }
-
-        #runeGuidePage .rune-card:hover .rune-symbol {
-            font-size: 3.5rem; /* Larger on hover */
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.6);
-        }
-
-        #runeGuidePage .rune-name {
-            font-weight: bold;
-            color: #e0e0e0;
-            margin-bottom: 0.25rem;
-        }
-
-        #runeGuidePage .rune-meaning {
-            font-size: 0.85rem;
-            color: #ccc;
-        }
+        /* Removed as per user request */
 
         /* Meditation Page Styles */
         #meditationPage {
@@ -1331,7 +1282,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start; /* Changed to flex-start */
-            /* Removed min-height: 60vh; */
+            /* Removed min-height for flexible height */
             text-align: center;
             padding-bottom: 2rem; /* Added padding for spacing */
         }
@@ -1396,106 +1347,7 @@
         }
 
         /* NEW: Rune Casting Page Styles */
-        #runeCastingPage {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start; /* Changed to flex-start */
-            /* Removed min-height: 60vh; */
-            text-align: center;
-            padding-bottom: 2rem; /* Added padding for spacing */
-        }
-
-        .cast-runes-button {
-            background: linear-gradient(to bottom right, #8B0000, #CD5C5C); /* Dark Red to Indian Red */
-            color: #FFD700; /* Gold text */
-            padding: 1rem 2rem;
-            border-radius: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-            border: none;
-            outline: none;
-            font-size: 1.2rem;
-            margin-top: 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cast-runes-button:hover {
-            background: linear-gradient(to bottom right, #A52A2A, #DC143C); /* Brown to Crimson */
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-        }
-
-        .cast-runes-button:active {
-            transform: translateY(0);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-        }
-
-        .cast-runes-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -75%;
-            width: 50%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: skewX(-20deg);
-            transition: all 0.5s ease;
-        }
-
-        .cast-runes-button:hover::before {
-            left: 125%;
-        }
-
-        .rune-casting-results {
-            margin-top: 2rem;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1.5rem;
-            max-width: 800px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
-        }
-
-        .rune-casting-results.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .casted-rune-card {
-            background-color: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 0.75rem;
-            padding: 1rem;
-            text-align: center;
-            width: 150px; /* Fixed width for consistency */
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
-            animation: fadeIn 0.8s ease-out forwards;
-        }
-
-        .casted-rune-card .rune-symbol {
-            font-family: 'Spectral', serif;
-            font-size: 4rem;
-            color: #FFD700;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-            margin-bottom: 0.5rem;
-        }
-
-        .casted-rune-card .rune-name {
-            font-weight: bold;
-            color: #e0e0e0;
-            margin-bottom: 0.25rem;
-        }
-
-        .casted-rune-card .rune-meaning {
-            font-size: 0.9rem;
-            color: #ccc;
-        }
+        /* Removed as per user request */
 
         /* Mist effect */
         .mist-effect {
@@ -1563,8 +1415,6 @@
                     <li><a href="#" data-page="home">Home</a></li>
                     <li><a href="#" data-page="lore">Lore</a></li>
                     <li><a href="#" data-page="wisdomsAndProphecies">Wisdoms & Prophecies</a></li>
-                    <li><a href="#" data-page="rune-guide">Rune Guide</a></li>
-                    <li><a href="#" data-page="rune-casting">Rune Casting</a></li> <!-- New Menu Item -->
                     <li><a href="#" data-page="meditation">Meditation</a></li>
                     <li><a href="#" data-page="contact">Contact the Keepers</a></li>
                 </ul>
@@ -1618,7 +1468,7 @@
 
         <section id="lorePage" class="hidden-page">
             <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Ancient Lore & Hidden Truths</h2>
-            <p class="text-gray-300 text-center mb-8">
+            <p class="text-gray-300 text-center mb-4">
                 Explore the deeper narratives woven into the fabric of these ancient structures.
             </p>
 
@@ -1681,8 +1531,12 @@
             </div>
         </section>
 
-        <section id="wisdomsAndProphecies" class="hidden-page">
+        <section id="wisdomsAndPropheciesPage" class="hidden-page">
             <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Wisdoms & Prophecies</h2>
+            <p class="text-gray-300 text-center mb-4">
+                Connect with the ancient energies through focused intention.
+                Allow the subtle vibrations to guide your inner journey.
+            </p>
             <div class="wisdom-entry">
                 <div class="runic-text-lg">ᚠᛖᚺᚢ ᚢᚾᛞ ᛟᚦᚨᛚᚨ</div>
                 <div class="english-translation-lg">
@@ -1755,144 +1609,9 @@
             </div>
         </section>
 
-        <section id="runeGuidePage" class="hidden-page">
-            <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Rune Guide</h2>
-            <p class="text-gray-300 text-center mb-8">
-                Explore the meanings of the ancient runic symbols that permeate this sacred space.
-            </p>
-            <div class="rune-grid">
-                <div class="rune-card">
-                    <div class="rune-symbol">ᚠ</div>
-                    <div class="rune-name">Fehu</div>
-                    <div class="rune-meaning">Wealth, abundance, new beginnings</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᚢ</div>
-                    <div class="rune-name">Uruz</div>
-                    <div class="rune-meaning">Strength, primal force, courage</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᚦ</div>
-                    <div class="rune-name">Thurisaz</div>
-                    <div class="rune-meaning">Protection, conflict, powerful change</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᚨ</div>
-                    <div class="rune-name">Ansuz</div>
-                    <div the="rune-meaning">Communication, inspiration, divine breath</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᚱ</div>
-                    <div class="rune-name">Raido</div>
-                    <div class="rune-meaning">Journey, movement, rhythm</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᚲ</div>
-                    <div class="rune-name">Kenaz</div>
-                    <div class="rune-meaning">Illumination, knowledge, creativity</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᚷ</div>
-                    <div class="rune-name">Gebo</div>
-                    <div class="rune-meaning">Gift, partnership, generosity</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᚹ</div>
-                    <div class="rune-name">Wunjo</div>
-                    <div class="rune-meaning">Joy, comfort, harmony</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᚺ</div>
-                    <div class="rune-name">Hagalaz</div>
-                    <div class="rune-meaning">Disruption, chaos, natural forces</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᚾ</div>
-                    <div class="rune-name">Naudiz</div>
-                    <div class="rune-meaning">Need, constraint, resilience</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᛁ</div>
-                    <div class="rune-name">Isa</div>
-                    <div class="rune-meaning">Stillness, ice, self-control</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᛃ</div>
-                    <div class="rune-name">Jera</div>
-                    <div class="rune-meaning">Harvest, cycles, patience</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᛇ</div>
-                    <div class="rune-name">Eihwaz</div>
-                    <div class="rune-meaning">Endurance, transformation, death/rebirth</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᛈ</div>
-                    <div class="rune-name">Perthro</div>
-                    <div class="rune-meaning">Fate, mystery, chance</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᛉ</div>
-                    <div class="rune-name">Algiz</div>
-                    <div class="rune-meaning">Protection, defense, connection to divine</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᛋ</div>
-                    <div class="rune-name">Sowilo</div>
-                    <div class="rune-meaning">Wholeness, success, solar energy</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᛏ</div>
-                    <div class="rune-name">Tiwaz</div>
-                    <div class="rune-meaning">Justice, sacrifice, victory</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᛒ</div>
-                    <div class="rune-name">Berkana</div>
-                    <div class="rune-meaning">Growth, rebirth, new beginnings</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᛖ</div>
-                    <div class="rune-name">Ehaz</div>
-                    <div class="rune-meaning">Movement, progress, trust</div>
-                </div>
-                <div class="rune-card">
-                    <div the="rune-symbol">ᛚ</div>
-                    <div class="rune-name">Laguz</div>
-                    <div class="rune-meaning">Flow, water, intuition</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᛝ</div>
-                    <div class="rune-name">Ingwaz</div>
-                    <div class="rune-meaning">Fertility, completion, inner growth</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᛟ</div>
-                    <div class="rune-name">Othala</div>
-                    <div class="rune-meaning">Inheritance, homeland, spiritual heritage</div>
-                </div>
-                <div class="rune-card">
-                    <div class="rune-symbol">ᛞ</div>
-                    <div class="rune-name">Dagaz</div>
-                    <div class="rune-meaning">Day, breakthrough, awakening</div>
-                </div>
-            </div>
-        </section>
-
-        <section id="runeCastingPage" class="hidden-page">
-            <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Rune Casting</h2>
-            <p class="text-gray-300 text-center mb-8">
-                Cast the ancient runes to receive a glimpse into your path and hidden insights.
-            </p>
-            <button class="cast-runes-button" id="castRunesButton">Cast the Runes</button>
-            <div class="rune-casting-results" id="runeCastingResults">
-                <!-- Casted runes will appear here -->
-            </div>
-        </section>
-
         <section id="meditationPage" class="hidden-page">
             <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Guided Meditation</h2>
-            <p class="text-gray-300 text-center mb-8">
+            <p class="text-gray-300 text-center mb-4">
                 Connect with the ancient energies through focused intention.
                 Allow the subtle vibrations to guide your inner journey.
             </p>
@@ -1908,7 +1627,7 @@
 
         <section id="contactPage" class="hidden-page">
             <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Contact the Keepers</h2>
-            <p class="text-gray-300 text-center mb-8">
+            <p class="text-gray-300 text-center mb-4">
                 The Keepers of the Echoes communicate through subtle means.
                 Leave your message, and if the vibrations align, a response may find you.
             </p>
@@ -1947,11 +1666,9 @@
             const navLinks = document.querySelectorAll('.overlay-menu nav ul li a');
             const homePage = document.getElementById('homePage');
             const lorePage = document.getElementById('lorePage');
-            const wisdomsAndPropheciesPage = document.getElementById('wisdomsAndProphecies');
+            const wisdomsAndPropheciesPage = document.getElementById('wisdomsAndPropheciesPage'); // Corrected variable here
             const contactPage = document.getElementById('contactPage');
-            const runeGuidePage = document.getElementById('runeGuidePage');
             const meditationPage = document.getElementById('meditationPage');
-            const runeCastingPage = document.getElementById('runeCastingPage'); // New page element
             const discoveryLog = document.getElementById('discoveryLog');
             const logEntries = document.getElementById('logEntries');
             const toggleLogButton = document.getElementById('toggleLogButton');
@@ -1975,9 +1692,9 @@
             const meditationStatus = document.getElementById('meditationStatus');
             const meditationRune = document.getElementById('meditationRune');
 
-            // Rune Casting elements
-            const castRunesButton = document.getElementById('castRunesButton');
-            const runeCastingResults = document.getElementById('runeCastingResults');
+            // Removed Rune Casting elements
+            // const castRunesButton = document.getElementById('castRunesButton');
+            // const runeCastingResults = document.getElementById('runeCastingResults');
 
 
             let translationVisible = false;
@@ -2619,19 +2336,19 @@
                 });
             });
 
-            // Rune Guide Card Hover Effects
-            document.querySelectorAll('#runeGuidePage .rune-card').forEach(card => {
-                const runeSymbol = card.querySelector('.rune-symbol');
-                if (runeSymbol) { // Ensure runeSymbol exists before accessing its style
-                    card.addEventListener('mouseover', () => {
-                        playSmallPyramidSound(); // Use a subtle sound for hover
-                    });
+            // Removed Rune Guide Card Hover Effects
+            // document.querySelectorAll('#runeGuidePage .rune-card').forEach(card => {
+            //     const runeSymbol = card.querySelector('.rune-symbol');
+            //     if (runeSymbol) { // Ensure runeSymbol exists before accessing its style
+            //         card.addEventListener('mouseover', () => {
+            //             playSmallPyramidSound(); // Use a subtle sound for hover
+            //         });
 
-                    card.addEventListener('mouseout', () => {
-                        // No specific action needed on mouseout for this effect
-                    });
-                }
-            });
+            //         card.addEventListener('mouseout', () => {
+            //             // No specific action needed on mouseout for this effect
+            //         });
+            //     }
+            // });
 
 
             // NEW: Initial Entry Overlay Logic
@@ -2665,70 +2382,70 @@
                 mistEffect.style.transform = `translateX(${-x * 8}px)`; // Apply to mist
             });
 
-            // Rune Casting Logic
-            const runeMeanings = {
-                'ᚠ': { name: 'Fehu', meaning: 'Wealth, abundance, new beginnings' },
-                'ᚢ': { name: 'Uruz', meaning: 'Strength, primal force, courage' },
-                'ᚦ': { name: 'Thurisaz', meaning: 'Protection, conflict, powerful change' },
-                'ᚨ': { name: 'Ansuz', meaning: 'Communication, inspiration, divine breath' },
-                'ᚱ': { name: 'Raido', meaning: 'Journey, movement, rhythm' },
-                'ᚲ': { name: 'Kenaz', meaning: 'Illumination, knowledge, creativity' },
-                'ᚷ': { name: 'Gebo', meaning: 'Gift, partnership, generosity' },
-                'ᚹ': { name: 'Wunjo', meaning: 'Joy, comfort, harmony' },
-                'ᚺ': { name: 'Hagalaz', meaning: 'Disruption, chaos, natural forces' },
-                'ᚾ': { name: 'Naudiz', meaning: 'Need, constraint, resilience' },
-                'ᛁ': { name: 'Isa', meaning: 'Stillness, ice, self-control' },
-                'ᛃ': { name: 'Jera', meaning: 'Harvest, cycles, patience' },
-                'ᛇ': { name: 'Eihwaz', meaning: 'Endurance, transformation, death/rebirth' },
-                'ᛈ': { name: 'Perthro', meaning: 'Fate, mystery, chance' },
-                'ᛉ': { name: 'Algiz', meaning: 'Protection, defense, connection to divine' },
-                'ᛋ': { name: 'Sowilo', meaning: 'Wholeness, success, solar energy' },
-                'ᛏ': { name: 'Tiwaz', meaning: 'Justice, sacrifice, victory' },
-                'ᛒ': { name: 'Berkana', meaning: 'Growth, rebirth, new beginnings' },
-                'ᛖ': { name: 'Ehaz', meaning: 'Movement, progress, trust' },
-                'ᛗ': { name: 'Mannaz', meaning: 'Humanity, the Self, social order' },
-                'ᛚ': { name: 'Laguz', meaning: 'Flow, water, intuition, subconscious' },
-                'ᛝ': { name: 'Ingwaz', meaning: 'Fertility, completion, inner growth' },
-                'ᛟ': { name: 'Othala', meaning: 'Inheritance, homeland, spiritual heritage' },
-                'ᛞ': { name: 'Dagaz', meaning: 'Day, breakthrough, awakening' }
-            };
+            // Removed Rune Casting Logic
+            // const runeMeanings = {
+            //     'ᚠ': { name: 'Fehu', meaning: 'Wealth, abundance, new beginnings' },
+            //     'ᚢ': { name: 'Uruz', meaning: 'Strength, primal force, courage' },
+            //     'ᚦ': { name: 'Thurisaz', meaning: 'Protection, conflict, powerful change' },
+            //     'ᚨ': { name: 'Ansuz', meaning: 'Communication, inspiration, divine breath' },
+            //     'ᚱ': { name: 'Raido', meaning: 'Journey, movement, rhythm' },
+            //     'ᚲ': { name: 'Kenaz', meaning: 'Illumination, knowledge, creativity' },
+            //     'ᚷ': { name: 'Gebo', meaning: 'Gift, partnership, generosity' },
+            //     'ᚹ': { name: 'Wunjo', meaning: 'Joy, comfort, harmony' },
+            //     'ᚺ': { name: 'Hagalaz', meaning: 'Disruption, chaos, natural forces' },
+            //     'ᚾ': { name: 'Naudiz', meaning: 'Need, constraint, resilience' },
+            //     'ᛁ': { name: 'Isa', meaning: 'Stillness, ice, self-control' },
+            //     'ᛃ': { name: 'Jera', meaning: 'Harvest, cycles, patience' },
+            //     'ᛇ': { name: 'Eihwaz', meaning: 'Endurance, transformation, death/rebirth' },
+            //     'ᛈ': { name: 'Perthro', meaning: 'Fate, mystery, chance' },
+            //     'ᛉ': { name: 'Algiz', meaning: 'Protection, defense, connection to divine' },
+            //     'ᛋ': { name: 'Sowilo', meaning: 'Wholeness, success, solar energy' },
+            //     'ᛏ': { name: 'Tiwaz', meaning: 'Justice, sacrifice, victory' },
+            //     'ᛒ': { name: 'Berkana', meaning: 'Growth, rebirth, new beginnings' },
+            //     'ᛖ': { name: 'Ehaz', meaning: 'Movement, progress, trust' },
+            //     'ᛗ': { name: 'Mannaz', meaning: 'Humanity, the Self, social order' },
+            //     'ᛚ': { name: 'Laguz', meaning: 'Flow, water, intuition, subconscious' },
+            //     'ᛝ': { name: 'Ingwaz', meaning: 'Fertility, completion, inner growth' },
+            //     'ᛟ': { name: 'Othala', meaning: 'Inheritance, homeland, spiritual heritage' },
+            //     'ᛞ': { name: 'Dagaz', meaning: 'Day, breakthrough, awakening' }
+            // };
 
-            const allRuneSymbols = Object.keys(runeMeanings);
+            // const allRuneSymbols = Object.keys(runeMeanings);
 
-            function castRunes() {
-                runeCastingResults.innerHTML = ''; // Clear previous results
-                runeCastingResults.classList.remove('visible');
-                logDiscovery("Casting runes...");
+            // function castRunes() {
+            //     runeCastingResults.innerHTML = ''; // Clear previous results
+            //     runeCastingResults.classList.remove('visible');
+            //     logDiscovery("Casting runes...");
 
-                // Simulate a casting animation/delay
-                setTimeout(() => {
-                    const numRunesToCast = 3; // Cast 3 runes for a reading
-                    const castedRunes = [];
-                    for (let i = 0; i < numRunesToCast; i++) {
-                        const randomIndex = Math.floor(Math.random() * allRuneSymbols.length);
-                        const runeSymbol = allRuneSymbols[randomIndex];
-                        castedRunes.push(runeSymbol);
-                    }
+            //     // Simulate a casting animation/delay
+            //     setTimeout(() => {
+            //         const numRunesToCast = 3; // Cast 3 runes for a reading
+            //         const castedRunes = [];
+            //         for (let i = 0; i < numRunesToCast; i++) {
+            //             const randomIndex = Math.floor(Math.random() * allRuneSymbols.length);
+            //             const runeSymbol = allRuneSymbols[randomIndex];
+            //             castedRunes.push(runeSymbol);
+            //         }
 
-                    castedRunes.forEach((symbol, index) => {
-                        const runeData = runeMeanings[symbol];
-                        const card = document.createElement('div');
-                        card.classList.add('casted-rune-card');
-                        card.style.animationDelay = `${index * 0.1}s`; // Stagger animation
+            //         castedRunes.forEach((symbol, index) => {
+            //             const runeData = runeMeanings[symbol];
+            //             const card = document.createElement('div');
+            //             card.classList.add('casted-rune-card');
+            //             card.style.animationDelay = `${index * 0.1}s`; // Stagger animation
 
-                        card.innerHTML = `
-                            <div class="rune-symbol">${symbol}</div>
-                            <div class="rune-name">${runeData.name}</div>
-                            <div class="rune-meaning">${runeData.meaning}</div>
-                        `;
-                        runeCastingResults.appendChild(card);
-                    });
-                    runeCastingResults.classList.add('visible');
-                    logDiscovery(`Runes cast: ${castedRunes.join(', ')}`);
-                }, 1000); // 1 second delay for casting animation
-            }
+            //             card.innerHTML = `
+            //                 <div class="rune-symbol">${symbol}</div>
+            //                 <div class="rune-name">${runeData.name}</div>
+            //                 <div class="rune-meaning">${runeData.meaning}</div>
+            //             `;
+            //             runeCastingResults.appendChild(card);
+            //         });
+            //         runeCastingResults.classList.add('visible');
+            //         logDiscovery(`Runes cast: ${castedRunes.join(', ')}`);
+            //     }, 1000); // 1 second delay for casting animation
+            // }
 
-            castRunesButton.addEventListener('click', castRunes);
+            // castRunesButton.addEventListener('click', castRunes);
         });
     </script>
 </body>
