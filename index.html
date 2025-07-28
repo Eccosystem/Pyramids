@@ -1330,9 +1330,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-height: 60vh;
+            justify-content: flex-start; /* Changed to flex-start */
+            /* Removed min-height: 60vh; */
             text-align: center;
+            padding-bottom: 2rem; /* Added padding for spacing */
         }
 
         .meditation-circle {
@@ -1399,9 +1400,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-height: 60vh;
+            justify-content: flex-start; /* Changed to flex-start */
+            /* Removed min-height: 60vh; */
             text-align: center;
+            padding-bottom: 2rem; /* Added padding for spacing */
         }
 
         .cast-runes-button {
@@ -2077,7 +2079,7 @@
                     logDiscovery("Ambient audio muted.");
                 } else {
                     ambientDrone.triggerAttack("C2");
-                    audioToggleButton.textContent = '�';
+                    audioToggleButton.textContent = '🔊';
                     audioToggleButton.classList.add('active');
                     logDiscovery("Ambient audio playing.");
                 }
@@ -2773,4 +2775,3 @@
     </script>
 </body>
 </html>
-�
