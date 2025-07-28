@@ -3,526 +3,2273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ Pegg Electrical Maintenance - Your Trusted Electricians</title>
-    <!-- Inter Font from Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS CDN -->
+    <title>Bosnian Pyramids & The Veil of Amenti</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Spectral:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
     <style>
-        /* Custom styles and overrides for Tailwind */
+        :root {
+            /* Define base sizes for the pyramid that scale with viewport width, clamped between min/max */
+            --pyramid-base-width: clamp(200px, 40vw, 400px);
+            --pyramid-height: calc(var(--pyramid-base-width) / 2); /* For 45-degree angle sides */
+            --entrance-width: calc(var(--pyramid-base-width) * 0.25);
+            --entrance-height: calc(var(--pyramid-base-width) * 0.35);
+
+            /* New: Sizes for smaller pyramids */
+            --small-pyramid-base-width: clamp(80px, 15vw, 150px);
+            --small-pyramid-height: calc(var(--small-pyramid-base-width) / 2);
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            @apply bg-gray-50 text-gray-800;
+            /* Default: Night theme */
+            background: radial-gradient(circle at center, #10141c 0%, #000000 100%);
+            display: flex;
+            flex-direction: column; /* Allow content to stack vertically */
+            justify-content: flex-start; /* Align content to the top for scrolling */
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow-y: auto; /* Allow vertical scrolling */
+            overflow-x: hidden; /* Hide horizontal scrollbar */
+            position: relative;
+            animation: background-pulse 20s ease-in-out infinite alternate;
+            transition: background 2s ease-in-out; /* Smooth transition for theme changes */
         }
 
-        .section-padding {
-            @apply py-16 md:py-24;
+        /* Theme-specific backgrounds */
+        body[data-theme="day"] {
+            background: radial-gradient(circle at center, #87CEEB 0%, #4682B4 100%); /* Sky blue */
         }
 
-        /* Basic styling for sections for visual separation */
-        section:nth-child(even) {
-            @apply bg-white;
-        }
-        section:nth-child(odd):not(.hero) {
-            @apply bg-gray-50;
+        /* Removed dusk theme */
+        /* body[data-theme="dusk"] {
+            background: radial-gradient(circle at center, #FF7F50 0%, #8A2BE2 100%);
+        } */
+
+        body[data-theme="night"] {
+            background: radial-gradient(circle at center, #10141c 0%, #000000 100%); /* Dark, cosmic night */
         }
 
-        /* Custom scrollbar for better aesthetics */
-        ::-webkit-scrollbar {
-            width: 8px;
+        @keyframes background-pulse {
+            0% { background-color: #10141c; }
+            100% { background-color: #151a25; }
         }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
+
+        /* Enhanced subtle dust/star effect in background */
+        body::before {
+            content: '';
+            position: fixed; /* Keep background fixed while scrolling */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 4px 4px; /* Slightly larger particles */
+            opacity: 0.4; /* More visible */
+            animation: drift 80s linear infinite; /* Slower, more subtle drift */
+            transition: opacity 2s ease-in-out; /* Smooth transition for dust opacity */
+            background-attachment: fixed; /* Parallax effect */
         }
-        ::-webkit-scrollbar-thumb {
-            background: #3b82f6; /* Blue-500 */
-            border-radius: 10px;
+
+        body[data-theme="day"]::before /* Removed dusk theme */ {
+            opacity: 0; /* Hide dust/stars during day/dusk */
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #2563eb; /* Blue-600 */
+
+        @keyframes drift {
+            from { background-position: 0 0; }
+            to { background-position: 200% 200%; } /* Longer drift path */
         }
+
+        /* New: Cosmic Dust Container */
+        .cosmic-dust-container {
+            position: fixed; /* Keep cosmic dust fixed while scrolling */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0; /* Behind everything */
+            transition: opacity 2s ease-in-out; /* Smooth transition for dust container opacity */
+            background-attachment: fixed; /* Parallax effect */
+        }
+
+        body[data-theme="day"] .cosmic-dust-container /* Removed dusk theme */ {
+            opacity: 0; /* Hide cosmic dust during day/dusk */
+        }
+
+        .cosmic-dust-particle {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: dust-float 30s linear infinite;
+        }
+
+        @keyframes dust-float {
+            0% { transform: translate(var(--x-start), var(--y-start)) scale(var(--scale-start)); opacity: 0; }
+            20% { opacity: 0.5; }
+            80% { opacity: 0.5; }
+            100% { transform: translate(var(--x-end), var(--y-end)) scale(var(--scale-end)); opacity: 0; }
+        }
+
+        /* New main wrapper for all content */
+        .main-content-area {
+            width: 95%; /* Use a percentage to be fluid */
+            max-width: 900px; /* Max width for desktop */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            box-sizing: border-box;
+            z-index: 10; /* Ensure it's above background effects */
+            min-height: 100vh;
+            padding-bottom: 25vh; /* Add padding for log and toggle button */
+            opacity: 0; /* Initially hidden */
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .main-content-area.active {
+            opacity: 1; /* Visible after entry */
+        }
+
+        /* Header for the menu */
+        .app-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            margin-bottom: 1rem;
+            color: #FFD700;
+            z-index: 20; /* Above other content */
+        }
+
+        .app-header h1 {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            margin: 0;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            animation: none; /* Disable color shift for header title */
+        }
+
+        .menu-button {
+            background: none;
+            border: none;
+            color: #FFD700;
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .menu-button:hover {
+            background-color: rgba(255, 215, 0, 0.1);
+            transform: scale(1.1);
+        }
+
+        /* Overlay Menu */
+        .overlay-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .overlay-menu.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .overlay-menu-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: none;
+            border: none;
+            color: #FFD700;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .overlay-menu-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .overlay-menu nav ul {
+            list-style: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        .overlay-menu nav ul li {
+            margin-bottom: 1.5rem;
+        }
+
+        .overlay-menu nav ul li a {
+            color: #e0e0e0;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            text-decoration: none;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        .overlay-menu nav ul li a:hover {
+            color: #FFD700;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+
+        /* Container for the visual pyramid models and tunnels */
+        .pyramids-visual-group {
+            position: relative; /* All pyramids and tunnels will be positioned relative to this */
+            width: 100%; /* Take full width of its parent */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* This group will now hold the glow, not the individual pyramid-container */
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.3), 0 0 100px rgba(255, 215, 0, 0.1);
+            animation: pyramid-glow 5s infinite alternate ease-in-out;
+            border-radius: 2rem;
+            transition: box-shadow 0.5s ease-in-out; /* For energy surge */
+            padding-bottom: calc(var(--small-pyramid-height) + 2rem); /* Ensure space for small pyramids below */
+            margin-top: 2rem; /* Space between intro text and pyramid group */
+        }
+
+        @keyframes pyramid-glow {
+            from { box-shadow: 0 0 50px rgba(255, 215, 0, 0.3), 0 0 100px rgba(255, 215, 0, 0.1); }
+            to { box-shadow: 0 0 60px rgba(255, 215, 0, 0.5), 0 0 120px rgba(255, 215, 0, 0.2); }
+        }
+
+        /* New: Pyramid Energized effect */
+        .pyramid-energized {
+            animation: pyramid-energy-surge 0.8s ease-out; /* Short, intense burst */
+            box-shadow: 0 0 80px rgba(255, 215, 0, 0.8), 0 0 150px rgba(255, 215, 0, 0.5);
+        }
+
+        @keyframes pyramid-energy-surge {
+            0% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.3), 0 0 100px rgba(255, 215, 0, 0.1); }
+            50% { box-shadow: 0 0 100px rgba(255, 215, 0, 1), 0 0 200px rgba(255, 215, 0, 0.8); }
+            100% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.3), 0 0 100px rgba(255, 215, 0, 0.1); }
+        }
+
+        /* Main Pyramid of Sun */
+        .pyramid-of-sun-main {
+            position: relative;
+            width: var(--pyramid-base-width); /* Still uses the main pyramid size */
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: clamp(1.5rem, 5vw, 3rem); /* Padding around the pyramid elements */
+            border-radius: 2rem; /* Keep rounded corners */
+        }
+
+
+        .pyramid-top, .pyramid-base, .pyramid-entrance {
+            cursor: pointer; /* Indicate interactivity */
+            transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+        }
+
+        .pyramid-top:hover, .pyramid-base:hover, .pyramid-entrance:hover {
+            transform: translateY(-5px) scale(1.02);
+            filter: brightness(1.1);
+        }
+
+
+        .pyramid-top {
+            width: 0;
+            height: 0;
+            /* Dimensions are now based on CSS variables, scaling with --pyramid-base-width */
+            border-left: calc(var(--pyramid-base-width) / 2) solid transparent;
+            border-right: calc(var(--pyramid-base-width) / 2) solid transparent;
+            /* Enhanced border-bottom for lighting effect */
+            border-bottom: var(--pyramid-height) solid #DAA520; /* Lighter gold for top surface */
+            margin-bottom: calc(-1 * var(--pyramid-height) / 2); /* Adjusted overlap */
+            position: relative;
+            z-index: 10;
+            border-radius: 1rem 1rem 0 0;
+            /* Enhanced box-shadow for depth and lighting */
+            box-shadow: inset 0 -25px 50px rgba(0, 0, 0, 0.7),
+                        0 5px 15px rgba(255, 215, 0, 0.2),
+                        0 10px 30px rgba(0, 0, 0, 0.5);
+            filter: brightness(0.95); /* Slightly brighter */
+            /* New: Subtle gradient for more depth */
+            background: linear-gradient(to top, #DAA520, #FFD700);
+        }
+
+        .pyramid-base {
+            width: var(--pyramid-base-width); /* Scales with --pyramid-base-width */
+            height: var(--pyramid-height); /* Scales with --pyramid-height */
+            /* Changed to linear gradient for more visual interest */
+            background: linear-gradient(to bottom, #D4AF37, #B8860B); /* Gold gradient */
+            position: relative;
+            z-index: 5;
+            border-radius: 0 0 2rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-bottom: calc(var(--pyramid-base-width) * 0.075); /* Responsive padding */
+            /* Enhanced box-shadow for depth */
+            box-shadow: inset 0 25px 50px rgba(0, 0, 0, 0.7),
+                        0 5px 15px rgba(255, 215, 0, 0.2),
+                        0 10px 30px rgba(0, 0, 0, 0.5);
+            filter: brightness(0.9);
+            /* New: Pulse animation for the base */
+            animation: base-pulse 4s infinite alternate ease-in-out;
+        }
+
+        @keyframes base-pulse {
+            0% { transform: scale(1); box-shadow: inset 0 25px 50px rgba(0, 0, 0, 0.7), 0 5px 15px rgba(255, 215, 0, 0.2), 0 10px 30px rgba(0, 0, 0, 0.5); }
+            100% { transform: scale(1.005); box-shadow: inset 0 25px 60px rgba(0, 0, 0, 0.8), 0 8px 20px rgba(255, 215, 0, 0.3), 0 15px 40px rgba(0, 0, 0, 0.6); }
+        }
+
+        .pyramid-entrance {
+            width: var(--entrance-width); /* Scales with --entrance-width */
+            height: var(--entrance-height); /* Scales with --entrance-height */
+            background-color: #1e1f14;
+            border-radius: 0.75rem;
+            position: relative;
+            overflow: hidden;
+            /* Enhanced box-shadow for deeper tunnel effect */
+            box-shadow: inset 0 0 60px rgb(121, 120, 120),
+                        0 0 15px rgba(0, 0, 0, 0.8); /* Outer shadow for depth */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-bottom: calc(var(--entrance-width) * 0.1); /* Responsive padding */
+            /* New: Inner glow for the entrance */
+            box-shadow: inset 0 0 80px rgba(255, 215, 0, 0.2), inset 0 0 100px rgba(255, 215, 0, 0.1), 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+
+        .entrance-glow {
+            width: calc(var(--entrance-width) * 0.8); /* Scales relative to entrance */
+            height: calc(var(--entrance-height) * 0.4); /* Scales relative to entrance */
+            background: radial-gradient(circle, rgba(255, 180, 0, 0.15) 0%, transparent 80%);
+            position: absolute;
+            bottom: 0px;
+            border-radius: 50%;
+            filter: blur(25px);
+            opacity: 0.6;
+            animation: pulse-glow 3s infinite alternate, flicker 0.5s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            from {
+                transform: scale(0.9);
+                opacity: 0.6;
+            }
+            to {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.6; }
+            50% { opacity: 0.55; }
+            100% { opacity: 0.6; }
+        }
+
+        /* Runic letters styling (background) */
+        .runes-container {
+            position: fixed; /* Keep runes fixed while scrolling */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+            background-attachment: fixed; /* Parallax effect */
+        }
+
+        .rune {
+            position: absolute;
+            font-size: clamp(2rem, 4vw, 4rem); /* Responsive font size */
+            color: #B8860B; /* Dark gold color */
+            opacity: 0;
+            /* New: More complex animation for runes */
+            animation: fade-in-out 18s ease-in-out infinite, rune-drift 18s linear infinite;
+            text-shadow: 0 0 12px #f3be36, 0 0 20px rgba(243, 175, 3, 0.5);
+            transform: rotate(var(--rotation, 0deg));
+        }
+
+        @keyframes fade-in-out {
+            0% { opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { opacity: 0; }
+        }
+
+        @keyframes rune-drift {
+            0% { transform: translateY(0) rotate(var(--rotation-start, 0deg)); }
+            100% { transform: translateY(var(--y-offset, 100vh)) rotate(var(--rotation-end, 360deg)); }
+        }
+
+        /* Styling for the new whisper box */
+        .whisper-box {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(74, 85, 104, 0.6);
+            border-radius: 0.75rem;
+            padding: clamp(0.8rem, 2vw, 1.2rem); /* Responsive padding */
+            margin-top: clamp(1rem, 4vw, 2rem); /* Responsive margin */
+            min-height: clamp(50px, 10vw, 70px); /* Responsive min-height */
+            display: flex;
+            flex-direction: column; /* Changed to column to stack rune and text */
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #e0e0e0;
+            font-style: italic;
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem); /* Responsive font size */
+            max-width: 90%;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6);
+            /* New: LLM output animation */
+            animation: fade-in-text 1s ease-out forwards;
+            position: relative; /* For positioning the toggle button */
+        }
+
+        @keyframes fade-in-text {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* New: Loading animation for whisper box */
+        .whisper-box.loading::after {
+            content: '...';
+            animation: blinking-dots 1s infinite;
+        }
+
+        @keyframes blinking-dots {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Runic text inside whisper box */
+        .runic-text {
+            font-family: 'Spectral', serif; /* Use a mystical serif font */
+            font-size: clamp(1.5rem, 3vw, 2.2rem); /* Larger for impact */
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.1em;
+            color: #FFD700; /* Gold for runes */
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+            min-height: 1.5em; /* Ensure space even when empty */
+        }
+
+        /* English translation text */
+        .english-translation {
+            font-style: italic;
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            color: #e0e0e0;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.5s ease-in-out, max-height 0.5s ease-in-out;
+        }
+
+        .english-translation.visible {
+            opacity: 1;
+            max-height: 500px; /* Increased max-height for more content */
+            margin-top: 0.5rem;
+        }
+
+        /* Runic toggle button */
+        .runic-toggle {
+            background: none;
+            border: none;
+            color: #FFD700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.3rem;
+            border-radius: 50%;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+            position: absolute; /* Position relative to whisper-box */
+            top: 0.5rem;
+            right: 0.5rem;
+            opacity: 0.7;
+            display: none; /* Hidden by default, shown when content is loaded */
+        }
+
+        .runic-toggle:hover {
+            background-color: rgba(255, 215, 0, 0.1);
+            color: #e0e0e0;
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        /* Styling for the whisper button */
+        .whisper-button {
+            background: linear-gradient(to bottom right, #5a6578, #3d4758);
+            color: #ffcc00;
+            padding: 0.6rem 1.2rem; /* Reduced padding */
+            border-radius: 0.8rem; /* Slightly less rounded */
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            border: none;
+            outline: none;
+            margin-top: 1rem; /* Reduced margin */
+            font-size: 0.85rem; /* Reduced font size */
+            position: relative; /* For glow effect */
+            overflow: hidden; /* For shine effect */
+        }
+
+        .whisper-button:hover {
+            background: linear-gradient(to bottom right, #6a7588, #4d5768);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .whisper-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        /* New: Button shine effect on hover */
+        .whisper-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -75%;
+            width: 50%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: skewX(-20deg);
+            transition: all 0.5s ease;
+        }
+
+        .whisper-button:hover::before {
+            left: 125%;
+        }
+
+
+        /* Runic inscriptions on pyramid surface */
+        .pyramid-rune-top-left, .pyramid-rune-top-right, .pyramid-rune-base-left, .pyramid-rune-base-right {
+            position: absolute;
+            font-size: clamp(1.8rem, 3vw, 3rem); /* Responsive font size */
+            color: #FFD700;
+            text-shadow: 0 0 25px #FFD700, 0 0 35px rgba(255, 215, 0, 0.7);
+            opacity: 0;
+            animation: surface-rune-reveal 7s ease-in-out infinite alternate;
+            pointer-events: none;
+            z-index: 11;
+        }
+
+        .pyramid-rune-top-left {
+            top: calc(var(--pyramid-height) * 0.25); /* Responsive position */
+            left: calc(var(--pyramid-base-width) * 0.15); /* Responsive position */
+            transform: rotate(-15deg);
+            animation-delay: 1s;
+        }
+
+        .pyramid-rune-top-right {
+            top: calc(var(--pyramid-height) * 0.35); /* Responsive position */
+            right: calc(var(--pyramid-base-width) * 0.15); /* Responsive position */
+            transform: rotate(20deg);
+            animation-delay: 3s;
+        }
+
+        .pyramid-rune-base-left {
+            bottom: calc(var(--pyramid-height) * 0.45); /* Responsive position */
+            left: calc(var(--pyramid-base-width) * 0.2); /* Responsive position */
+            transform: rotate(10deg);
+            animation-delay: 5s;
+        }
+
+        .pyramid-rune-base-right {
+            bottom: calc(var(--pyramid-height) * 0.35); /* Responsive position */
+            right: calc(var(--pyramid-base-width) * 0.2); /* Responsive position */
+            transform: rotate(-25deg);
+            animation-delay: 7s;
+        }
+
+        @keyframes surface-rune-reveal {
+            0% { opacity: 0; transform: scale(0.8) rotate(var(--initial-rotation, 0deg)); }
+            20% { opacity: 0.95; transform: scale(1.05) rotate(var(--initial-rotation, 0deg)); }
+            80% { opacity: 0.95; transform: scale(1.05) rotate(var(--initial-rotation, 0deg)); }
+            100% { opacity: 0; transform: scale(0.8) rotate(var(--initial-rotation, 0deg)); }
+        }
+
+        /* New styling for "ENTER" runes at the entrance */
+        .entrance-runes {
+            position: relative;
+            font-size: clamp(2.2rem, 3.5vw, 3.5rem); /* Responsive font size */
+            color: #FFD700; /* Ensured gold color */
+            text-shadow: 0 0 40px #FFD700, 0 0 60px rgba(255, 215, 0, 0.9), 0 0 90px rgba(255, 215, 0, 0.7);
+            letter-spacing: 0.25em;
+            animation: entrance-rune-pulse 1s infinite alternate;
+            z-index: 12;
+            margin-bottom: clamp(0.5rem, 1.5vw, 15px); /* Responsive margin */
+            opacity: 1; /* Ensure it's always visible */
+        }
+
+        @keyframes entrance-rune-pulse {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Responsive adjustments for overall text and button sizes */
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem); /* Responsive H1 */
+            /* Animation for color change */
+            animation: color-shift 10s infinite alternate ease-in-out;
+        }
+
+        @keyframes color-shift {
+            0% { color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); } /* Gold */
+            25% { color: #DAA520; text-shadow: 0 0 12px rgba(218, 165, 32, 0.8); } /* Goldenrod */
+            50% { color: #B8860B; text-shadow: 0 0 15px rgba(184, 134, 11, 0.8); } /* DarkGoldenrod */
+            75% { color: #DAA520; text-shadow: 0 0 12px rgba(218, 165, 32, 0.8); } /* Goldenrod */
+            100% { color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); } /* Gold */
+        }
+
+        p {
+            font-size: clamp(0.9rem, 1.8vw, 1.2rem); /* Responsive paragraph */
+        }
+
+        /* New: Veil effect */
+        .veil-overlay {
+            position: fixed; /* Keep veil fixed while scrolling */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+            pointer-events: auto; /* Allow clicks */
+            z-index: 2;
+            animation: veil-shimmer 25s ease-in-out infinite alternate;
+            transition: opacity 0.5s ease-in-out, background 0.5s ease-in-out;
+        }
+
+        @keyframes veil-shimmer {
+            0% { opacity: 0.1; transform: scale(1); }
+            50% { opacity: 0.05; transform: scale(1.05); }
+            100% { opacity: 0.1; transform: scale(1); }
+        }
+
+        .veil-overlay.active {
+            opacity: 0.0; /* Temporarily less opaque */
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.0) 0%, transparent 70%);
+        }
+
+        /* New: Discovery Log styles */
+        .discovery-log-container {
+            position: fixed; /* Keep log fixed while scrolling */
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            max-height: 20vh; /* Limit height */
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #ccc;
+            padding: 1rem;
+            border-top: 1px solid rgba(74, 85, 104, 0.6);
+            overflow-y: auto; /* Enable scrolling */
+            font-size: 0.8rem;
+            z-index: 999;
+            display: none; /* Hidden by default */
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .discovery-log-container.active {
+            display: block; /* Show when active */
+        }
+
+        .log-entry {
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed rgba(74, 85, 104, 0.3);
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-toggle-button {
+            position: fixed; /* Keep toggle button fixed while scrolling */
+            bottom: 20vh; /* Position above the log */
+            left: 1rem; /* Moved to the left */
+            transform: translateX(0); /* Removed horizontal centering */
+            background: linear-gradient(to bottom right, #5a6578, #3d4758);
+            color: #ffcc00;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .log-toggle-button:hover {
+            background: linear-gradient(to bottom right, #6a7588, #4d5768);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        }
+
+        /* New: Styles for the smaller pyramids */
+        .pyramid-small {
+            position: absolute;
+            width: var(--small-pyramid-base-width); /* Changed to actual width for containing beam */
+            height: var(--small-pyramid-height); /* Changed to actual height for containing beam */
+            /* Removed border-left/right/bottom for a solid base, will use background for shape */
+            background: linear-gradient(to top, #DAA520, #FFD700); /* Gradient for small pyramids */
+            z-index: 8;
+            border-radius: 0.5rem 0.5rem 0 0;
+            box-shadow: inset 0 -15px 30px rgba(0, 0, 0, 0.7),
+                        0 2px 8px rgba(255, 215, 0, 0.2),
+                        0 5px 15px rgba(0, 0, 0, 0.5);
+            filter: brightness(0.95); /* Slightly brighter */
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+            display: flex; /* To center text */
+            flex-direction: column; /* Allow text and beam to stack */
+            justify-content: flex-end; /* Align content to the bottom */
+            align-items: center;
+            padding-bottom: 1rem; /* Added padding to ensure text fits */
+            animation: small-pyramid-glow 3s infinite alternate ease-in-out; /* Subtle glow for smaller pyramids */
+            /* Add clip-path for triangle shape */
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        @keyframes small-pyramid-glow {
+            from { box-shadow: inset 0 -15px 30px rgba(0, 0, 0, 0.7), 0 0 10px rgba(255, 215, 0, 0.2); }
+            to { box-shadow: inset 0 -15px 30px rgba(0, 0, 0, 0.7), 0 0 15px rgba(255, 215, 0, 0.4); }
+        }
+
+        .pyramid-small h3 {
+            position: relative;
+            margin-top: 0; /* Removed margin-top */
+            width: 100%;
+            text-align: center;
+            z-index: 1; /* Ensure text is above beam if needed */
+        }
+
+        .pyramid-small:hover {
+            transform: translateY(-3px) scale(1.05);
+            filter: brightness(1.0);
+        }
+
+        /* Adjusted positioning for smaller pyramids */
+        #pyramidLove {
+            top: 55%; /* Moved higher */
+            left: 20%;
+            transform: translateX(-50%) rotate(-10deg);
+        }
+
+        #pyramidMoon {
+            top: 58%; /* Moved higher, slightly offset from love pyramid */
+            right: 20%;
+            transform: translateX(50%) rotate(15deg);
+        }
+
+        /* New: Tunnel connection lines (simplified) */
+        .tunnel-line {
+            position: absolute;
+            background: linear-gradient(to right, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.8), rgba(255, 215, 0, 0.2));
+            height: 2px;
+            z-index: 6;
+            filter: blur(1px);
+            animation: tunnel-pulse 3s infinite alternate, energy-flow 1s linear infinite; /* Added energy-flow */
+            background-size: 200% 100%; /* For energy flow animation */
+        }
+
+        @keyframes tunnel-pulse {
+            from { opacity: 0.4; }
+            to { opacity: 0.8; }
+        }
+
+        @keyframes energy-flow {
+            0% { background-position: 200% 0; }
+            100% { background-position: 0% 0; }
+        }
+
+        /* Specific tunnel positioning - these will need fine-tuning based on responsive layout */
+        /* Adjusted tunnel positions to connect to new pyramid locations */
+        #tunnelSunLove {
+            top: 50%; /* Adjusted to connect from main pyramid's lower side */
+            left: 35%;
+            width: 20%; /* Adjusted width for connection */
+            transform: rotate(-30deg);
+            transform-origin: 0% 50%;
+        }
+
+        #tunnelSunMoon {
+            top: 53%; /* Adjusted to connect from main pyramid's lower side */
+            right: 35%;
+            width: 20%; /* Adjusted width for connection */
+            transform: rotate(30deg);
+            transform-origin: 100% 50%;
+        }
+
+        /* Styling for user input section */
+        .user-input-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-width: 500px;
+            margin-top: 2rem;
+            gap: 0.75rem;
+        }
+
+        .user-input-section input[type="text"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(74, 85, 104, 0.6);
+            background-color: rgba(0, 0, 0, 0.4);
+            color: #e0e0e0;
+            font-size: 1rem;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .user-input-section input[type="text"]:focus {
+            outline: none;
+            border-color: #ffcc00;
+            box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.3), 0 0 10px rgba(255, 215, 0, 0.2);
+        }
+
+        /* Styles for the new hidden lore page */
+        .hidden-page {
+            display: none; /* Hidden by default */
+            width: 95%;
+            max-width: 900px;
+            padding: 1rem;
+            box-sizing: border-box;
+            flex-direction: column;
+            align-items: center;
+            color: #e0e0e0;
+            margin-top: 2rem;
+            z-index: 10;
+        }
+
+        .hidden-page.active {
+            display: flex; /* Show when active */
+        }
+
+        .lore-content-area {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(74, 85, 104, 0.6);
+            border-radius: 0.75rem;
+            padding: clamp(1rem, 3vw, 2rem);
+            margin-top: 1.5rem;
+            text-align: left;
+            font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+            line-height: 1.6;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6);
+            /* Removed animation here */
+        }
+
+        /* Styles for interactive lore sections */
+        .lore-section {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(74, 85, 104, 0.4);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            width: 100%;
+            overflow: hidden; /* For smooth transition */
+        }
+
+        .lore-section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+            padding: 0 1rem; /* Add padding for content */
+        }
+
+        .lore-section-content.expanded {
+            max-height: 500px; /* Adjust as needed for content length */
+            padding-bottom: 1rem; /* Add bottom padding when expanded */
+        }
+
+        /* New: Deepen Insight button */
+        .deepen-insight-button {
+            background: linear-gradient(to bottom right, #4a5568, #2d3748);
+            color: #90CDF4; /* Light blue for mystical feel */
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+            border: none;
+            outline: none;
+            font-size: 0.8rem;
+            margin-top: 0.8rem;
+        }
+
+        .deepen-insight-button:hover {
+            background: linear-gradient(to bottom right, #5a6578, #3d4758);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .deepen-insight-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .deepen-insight-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* New: LLM Insight container */
+        .llm-insight-container {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            background-color: rgba(255, 255, 255, 0.08);
+            border-left: 3px solid #90CDF4; /* Blue accent */
+            border-radius: 0.5rem;
+            font-style: italic;
+            color: #c0d9f0; /* Lighter blue-gray */
+            font-size: 0.9rem;
+            line-height: 1.4;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.7s ease-out, max-height 0.7s ease-out;
+        }
+
+        .llm-insight-container.visible {
+            opacity: 1;
+            max-height: 500px; /* Adjusted for more content */
+        }
+
+        .llm-insight-container.loading::after {
+            content: '...';
+            animation: blinking-dots 1s infinite;
+            margin-left: 0.5rem;
+        }
+
+
+        /* Wisdoms and Prophecies Section */
+        #wisdomsAndProphecies {
+            margin-top: 3rem;
+            color: #FFD700;
+            text-align: center;
+            width: 100%;
+            max-width: 700px;
+            padding: 1rem;
+            box-sizing: border-box;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 1rem;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        #wisdomsAndProphecies h2 {
+            font-family: 'Spectral', serif;
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            color: #FFD700;
+        }
+
+        .wisdom-entry {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .wisdom-entry:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .wisdom-entry .runic-text-lg {
+            font-family: 'Spectral', serif;
+            font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+            color: #FFD700;
+            text-shadow: 0 0 12px rgba(255, 215, 0, 0.7);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.15em;
+        }
+
+        .wisdom-entry .english-translation-lg {
+            font-style: italic;
+            font-size: clamp(1rem, 1.8vw, 1.3rem);
+            color: #e0e0e0;
+            line-height: 1.5;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Theme switcher buttons styling */
+        .theme-switcher {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+            z-index: 20;
+        }
+
+        .theme-button {
+            background: linear-gradient(to bottom, #7a7a7a, #5a5a5a);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .theme-button:hover {
+            background: linear-gradient(to bottom, #8a8a8a, #6a6a6a);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .theme-button.active {
+            background: linear-gradient(to bottom, #ffcc00, #b8860b);
+            color: #333;
+            border-color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            transform: translateY(-1px);
+        }
+
+        /* NEW: Initial Entry Overlay Styles */
+        #initialEntryOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at center, #000000 0%, #1a0033 100%); /* Deep space purple/black */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000; /* Higher than everything else */
+            color: #FFD700;
+            transition: opacity 1.5s ease-out, visibility 1.5s ease-out; /* Smooth fade-out */
+        }
+
+        #initialEntryOverlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none; /* Make it unclickable when hidden */
+        }
+
+        .entry-content {
+            text-align: center;
+            padding: 2rem;
+            background-color: rgba(0, 0, 0, 0.4);
+            border-radius: 1rem;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+            animation: entry-glow 3s infinite alternate;
+            cursor: pointer; /* Indicate it's clickable */
+        }
+
+        @keyframes entry-glow {
+            from { box-shadow: 0 0 50px rgba(255, 215, 0, 0.5); }
+            to { box-shadow: 0 0 70px rgba(255, 215, 0, 0.8); }
+        }
+
+        .entry-title {
+            font-size: clamp(3rem, 7vw, 5rem);
+            font-family: 'Spectral', serif;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.6);
+            animation: fadeIn 2s ease-out;
+        }
+
+        .entry-runes {
+            font-family: 'Spectral', serif;
+            font-size: clamp(4rem, 10vw, 8rem);
+            color: #FFD700;
+            text-shadow: 0 0 60px #FFD700, 0 0 90px rgba(255, 215, 0, 0.9), 0 0 120px rgba(255, 215, 0, 0.7);
+            letter-spacing: 0.25em;
+            animation: entrance-rune-pulse 1.5s infinite alternate; /* Re-using existing animation */
+            margin-bottom: 1rem;
+        }
+
+        .entry-instruction {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            color: #e0e0e0;
+            opacity: 0.8;
+            animation: fadeIn 3s ease-out;
+            animation-delay: 0.5s;
+        }
+
+        /* NEW: Pyramid Beam */
+        .pyramid-beam {
+            position: absolute;
+            bottom: 100%; /* Position above the pyramid top */
+            left: 50%;
+            transform: translateX(-50%);
+            width: clamp(15px, 3vw, 30px); /* Responsive width - made narrower */
+            height: 200px; /* Initial height, can be animated */
+            background: linear-gradient(to top, rgba(255, 215, 0, 0.8), rgba(255, 215, 0, 0.0));
+            filter: blur(1px); /* Reduced blur for a straighter look */
+            opacity: 0; /* Hidden by default */
+            z-index: 9; /* Below the pyramid top, but above base */
+            pointer-events: none; /* Ensure it's not clickable */
+            /* Removed transition here as animation will handle it */
+        }
+
+        .pyramid-beam.active {
+            animation: beam-pulse 5s infinite alternate ease-in-out; /* Changed duration to 5s */
+            opacity: 1; /* Fully visible when active */
+        }
+
+        @keyframes beam-pulse {
+            0% { 
+                transform: translateX(-50%) scaleY(1); 
+                opacity: 0.4; 
+                background: linear-gradient(to top, rgba(255, 215, 0, 0.8), rgba(255, 215, 0, 0.0)); /* Golden */
+            } 
+            50% { 
+                transform: translateX(-50%) scaleY(1.1); 
+                opacity: 1; 
+                background: linear-gradient(to top, rgba(255, 0, 0, 0.8), rgba(255, 0, 0, 0.0)); /* Red */
+            }
+            100% { 
+                transform: translateX(-50%) scaleY(1); 
+                opacity: 0.4; 
+                background: linear-gradient(to top, rgba(255, 215, 0, 0.8), rgba(255, 215, 0, 0.0)); /* Golden */
+            } 
+        }
+
+        /* NEW: Small Pyramid Beam */
+        .small-pyramid-beam {
+            position: absolute;
+            bottom: 100%; /* Position above the small pyramid top */
+            left: 50%;
+            transform: translateX(-50%);
+            width: clamp(8px, 2vw, 15px); /* Increased width for better visibility */
+            height: 200px; /* Straight up height - Matches main pyramid beam */
+            background: linear-gradient(to top, rgba(255, 0, 0, 0.8), rgba(255, 0, 0, 0.0)); /* Default: Red color for Moon */
+            filter: blur(0.5px); /* Reduced blur for a straighter look */
+            opacity: 0; /* Hidden by default */
+            z-index: 9; /* Below the pyramid text, but above pyramid base */
+            pointer-events: none;
+            transition: opacity 0.3s ease-out; /* Smooth fade in/out */
+        }
+
+        @keyframes small-beam-pulse {
+            0% { transform: translateX(-50%) scaleY(1); opacity: 0.8; } /* Increased opacity for better visibility */
+            50% { transform: translateX(-50%) scaleY(1.1); opacity: 1; }
+            100% { transform: translateX(-50%) scaleY(1); opacity: 0.8; } /* Increased opacity for better visibility */
+        }
+
+
+        /* New: Sun/Moon elements */
+        .celestial-body {
+            position: fixed;
+            top: 5%;
+            right: 5%;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            z-index: 0; /* Behind main content */
+            transition: opacity 2s ease-in-out, background-color 2s ease-in-out, box-shadow 2s ease-in-out, background-image 2s ease-in-out; /* Added background-image transition */
+            background-size: cover; /* Ensure image covers the circle */
+            background-position: center; /* Center the image */
+        }
+
+        body[data-theme="night"] .celestial-body {
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/FullMoon2010.jpg/1200px-FullMoon2010.jpg'); /* Actual Moon image */
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+            opacity: 0.8;
+        }
+
+        /* Removed dusk celestial body */
+        /* body[data-theme="dusk"] .celestial-body {
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Sunrise_over_the_ocean.jpg/1280px-Sunrise_over_the_ocean.jpg');
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+            opacity: 0.9;
+        } */
+
+        body[data-theme="day"] .celestial-body {
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg/1280px-The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg'); /* Actual Day Sun image */
+            box-shadow: 0 0 50px rgba(255, 215, 0, 1);
+            opacity: 1;
+        }
+
+        /* Ambient sound toggle button */
+        .audio-toggle-button {
+            position: fixed;
+            bottom: 1rem;
+            left: 1rem;
+            background: linear-gradient(to bottom right, #5a6578, #3d4758);
+            color: #ffcc00;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .audio-toggle-button:hover {
+            background: linear-gradient(to bottom right, #6a7588, #4d5768);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        }
+
+        .audio-toggle-button.active {
+            background: linear-gradient(to bottom right, #ffcc00, #b8860b);
+            color: #333;
+        }
+
+        /* Rune Guide Page Specific Styles */
+        #runeGuidePage .rune-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        #runeGuidePage .rune-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #runeGuidePage .rune-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        #runeGuidePage .rune-symbol {
+            font-family: 'Spectral', serif;
+            font-size: 3rem;
+            color: #FFD700;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        #runeGuidePage .rune-name {
+            font-weight: bold;
+            color: #e0e0e0;
+            margin-bottom: 0.25rem;
+        }
+
+        #runeGuidePage .rune-meaning {
+            font-size: 0.85rem;
+            color: #ccc;
+        }
+
     </style>
 </head>
-<body class="scroll-smooth">
-    <!-- Header/Navigation Section -->
-    <header class="bg-gray-900 text-white shadow-lg sticky top-0 z-50">
-        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <svg class="h-8 w-8 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v2.059a2.99 2.99 0 01-.871 2.105 3.003 3.003 0 01-1.47 1.054 3.003 3.003 0 01-2.105.871A2.99 2.99 0 015 8v-.059l-.7.7a1 1 0 01-1.4-1.4l1.7-1.7V4a1 1 0 011-1h1a1 1 0 011 1v2h.059c.712-.008 1.402.164 2.047.487l.006-.003c.531.267 1.01.626 1.42.923a1 1 0 011.414 1.414l-1.42 1.42V18a1 1 0 01-1 1h-1a1 1 0 01-1-1v-2.059a2.99 2.99 0 01.871-2.105 3.003 3.003 0 011.47-1.054 3.003 3.003 0 012.105-.871A2.99 2.99 0 0115 12v.059l.7-.7a1 1 0 011.4 1.4l-1.7 1.7V16a1 1 0 01-1 1h-1a1 1 0 01-1-1v-2h-.059c-.712.008-1.402-.164-2.047-.487l-.006.003c-.531-.267-1.01-.626-1.42-.923a1 1 0 01-1.414-1.414l1.42-1.42V2a1 1 0 011-1h1z" clip-rule="evenodd"></path>
-                </svg>
-                <a href="#home" class="text-2xl font-extrabold tracking-tight rounded-md p-1 hover:text-yellow-400 transition-colors duration-300">Pegg Electrical Maintenance</a>
-            </div>
-            <ul class="hidden md:flex space-x-6">
-                <li><a href="#home" class="hover:text-yellow-400 transition-colors duration-300 p-2 rounded-md">Home</a></li>
-                <li><a href="#about" class="hover:text-yellow-400 transition-colors duration-300 p-2 rounded-md">About Us</a></li>
-                <li><a href="#services" class="hover:text-yellow-400 transition-colors duration-300 p-2 rounded-md">Services</a></li>
-                <li><a href="#testimonials" class="hover:text-yellow-400 transition-colors duration-300 p-2 rounded-md">Testimonials</a></li>
-                <li><a href="#contact" class="hover:text-yellow-400 transition-colors duration-300 p-2 rounded-md">Contact</a></li>
-            </ul>
-            <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
-                <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-                </svg>
-            </button>
-        </nav>
-        <!-- Mobile Menu (hidden by default) -->
-        <div id="mobile-menu" class="hidden md:hidden bg-gray-800 py-4">
-            <ul class="flex flex-col items-center space-y-4">
-                <li><a href="#home" class="block text-white hover:text-yellow-400 transition-colors duration-300 py-2">Home</a></li>
-                <li><a href="#about" class="block text-white hover:text-yellow-400 transition-colors duration-300 py-2">About Us</a></li>
-                <li><a href="#services" class="block text-white hover:text-yellow-400 transition-colors duration-300 py-2">Services</a></li>
-                <li><a href="#testimonials" class="block text-white hover:text-yellow-400 transition-colors duration-300 py-2">Testimonials</a></li>
-                <li><a href="#contact" class="block text-white hover:text-yellow-400 transition-colors duration-300 py-2">Contact</a></li>
-            </ul>
-        </div>
-    </header>
-
-    <main>
-        <!-- Hero Section -->
-        <section id="home" class="relative bg-gradient-to-r from-blue-700 to-blue-900 text-white flex items-center justify-center text-center section-padding min-h-[70vh] rounded-b-xl overflow-hidden">
-            <!-- Background overlay for visual effect -->
-            <div class="absolute inset-0 bg-black opacity-30 rounded-b-xl"></div>
-            <div class="absolute inset-0 z-0 overflow-hidden">
-                <!-- Example of a subtle background pattern or image -->
-                <img src="https://placehold.co/1920x1080/0A2342/C0C0C0?text=Electrical+Background" alt="Electrical background pattern" class="absolute w-full h-full object-cover opacity-20">
-            </div>
-
-            <div class="relative z-10 px-4 max-w-4xl">
-                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 animate-fade-in-up">
-                    Expert Electrical Solutions You Can Trust
-                </h1>
-                <p class="text-lg sm:text-xl mb-8 opacity-90 animate-fade-in-up delay-100">
-                    Your reliable partner for all residential and commercial electrical needs. Safety, Quality, and Service Guaranteed.
-                </p>
-                <a href="#contact" class="inline-block bg-yellow-400 text-gray-900 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-yellow-300 transform hover:scale-105 transition duration-300 ease-in-out animate-fade-in-up delay-200">
-                    Get a Free Quote
-                </a>
-                <a href="tel:+1234567890" class="inline-block mt-4 md:ml-4 text-white border-2 border-yellow-400 font-bold py-3 px-8 rounded-full hover:bg-yellow-400 hover:text-gray-900 transition duration-300 ease-in-out animate-fade-in-up delay-300">
-                    Call Us Now: (123) 456-7890
-                </a>
-            </div>
-        </section>
-
-        <!-- About Us Section -->
-        <section id="about" class="section-padding">
-            <div class="container mx-auto px-4">
-                <h2 class="text-4xl font-bold text-center mb-12 text-gray-900 relative pb-4">
-                    About Pegg Electrical Maintenance
-                    <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-blue-500 rounded-full"></span>
-                </h2>
-                <div class="flex flex-col md:flex-row items-center gap-12">
-                    <div class="md:w-1/2">
-                        <img src="https://placehold.co/600x400/3b82f6/ffffff?text=Our+Team" alt="VoltLink Electric Team" class="rounded-lg shadow-xl w-full h-auto object-cover">
-                    </div>
-                    <div class="md:w-1/2 text-lg leading-relaxed">
-                        <p class="mb-4">
-                            At <strong>Pegg Electrical Maintenance</strong>, we are a team of highly experienced and licensed electricians dedicated to providing superior electrical services for both residential and commercial clients. With over 15 years in the industry, our commitment to safety, quality craftsmanship, and unparalleled customer service is at the core of everything we do.
-                        </p>
-                        <p class="mb-4">
-                            We understand the importance of reliable and safe electrical systems. That's why we use only the highest quality materials and adhere to the strictest industry standards. From minor repairs to major installations, you can trust Pegg Electrical Maintenance to power your world with confidence.
-                        </p>
-                        <ul class="list-disc list-inside space-y-2 text-gray-700">
-                            <li>Fully Licensed & Insured Professionals</li>
-                            <li>Prompt & Reliable Service</li>
-                            <li>Transparent Pricing, No Hidden Fees</li>
-                            <li>24/7 Emergency Support</li>
-                            <li>100% Customer Satisfaction Guarantee</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Services Section -->
-        <section id="services" class="section-padding bg-blue-50">
-            <div class="container mx-auto px-4">
-                <h2 class="text-4xl font-bold text-center mb-12 text-gray-900 relative pb-4">
-                    Our Comprehensive Electrical Services
-                    <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-blue-500 rounded-full"></span>
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Service Item 1: Residential Wiring -->
-                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                        <div class="text-blue-600 mb-4 text-5xl flex justify-center">
-                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0 0l-7 7m7-7v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                        </div>
-                        <h3 class="text-2xl font-semibold text-gray-900 mb-4 text-center">Residential Wiring</h3>
-                        <p class="text-gray-700 text-center">
-                            New home wiring, rewiring existing homes, panel upgrades, circuit installations, and all residential electrical needs. We ensure your home's electrical system is safe and up to code.
-                        </p>
-                    </div>
-
-                    <!-- Service Item 2: Commercial Electrical -->
-                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                        <div class="text-blue-600 mb-4 text-5xl flex justify-center">
-                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m-1 4h1m8-10h1m-1 4h1m-1 4h1m0 0v1h1m-1-1h1v1h-1"></path></svg>
-                        </div>
-                        <h3 class="text-2xl font-semibold text-gray-900 mb-4 text-center">Commercial Electrical</h3>
-                        <p class="text-gray-700 text-center">
-                            From office buildings to retail spaces, we provide comprehensive electrical services including lighting installation, power distribution, and maintenance for businesses.
-                        </p>
-                    </div>
-
-                    <!-- Service Item 3: Electrical Repairs & Troubleshooting -->
-                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                        <div class="text-blue-600 mb-4 text-5xl flex justify-center">
-                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        </div>
-                        <h3 class="text-2xl font-semibold text-gray-900 mb-4 text-center">Repairs & Troubleshooting</h3>
-                        <p class="text-gray-700 text-center">
-                            Experiencing issues? Our experts quickly diagnose and repair faulty wiring, outlets, switches, and other electrical problems to restore safety and functionality.
-                        </p>
-                    </div>
-
-                    <!-- Service Item 4: Lighting Solutions -->
-                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                        <div class="text-blue-600 mb-4 text-5xl flex justify-center">
-                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 20v-3m-3 0V7a4 4 0 118 0v10m-8 0h8a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                        </div>
-                        <h3 class="text-2xl font-semibold text-gray-900 mb-4 text-center">Lighting Solutions</h3>
-                        <p class="text-gray-700 text-center">
-                            Indoor and outdoor lighting installation, LED conversions, smart lighting systems, and landscape lighting to enhance aesthetics and energy efficiency.
-                        </p>
-                    </div>
-
-                    <!-- Service Item 5: Electrical Panel Upgrades -->
-                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                        <div class="text-blue-600 mb-4 text-5xl flex justify-center">
-                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.001 12.001 0 002 12c0 2.757 1.5 5.242 4.721 7.424A12.003 12.003 0 0012 22c2.904 0 5.682-.703 8.019-1.936a11.955 11.955 0 01-8.618-4.016z"></path></svg>
-                        </div>
-                        <h3 class="text-2xl font-semibold text-gray-900 mb-4 text-center">Panel Upgrades</h3>
-                        <p class="text-gray-700 text-center">
-                            Ensure your electrical panel can handle modern demands. We upgrade outdated panels for increased capacity, safety, and reliability.
-                        </p>
-                    </div>
-
-                    <!-- Service Item 6: Safety Inspections & Code Compliance -->
-                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                        <div class="text-blue-600 mb-4 text-5xl flex justify-center">
-                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.001 12.001 0 002 12c0 2.757 1.5 5.242 4.721 7.424A12.003 12.003 0 0012 22c2.904 0 5.682-.703 8.019-1.936a11.955 11.955 0 01-8.618-4.016z"></path></svg>
-                        </div>
-                        <h3 class="text-2xl font-semibold text-gray-900 mb-4 text-center">Safety Inspections</h3>
-                        <p class="text-gray-700 text-center">
-                            Thorough electrical safety inspections for homes and businesses, ensuring compliance with local codes and identifying potential hazards.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Testimonials Section -->
-        <section id="testimonials" class="section-padding bg-gray-50">
-            <div class="container mx-auto px-4">
-                <h2 class="text-4xl font-bold text-center mb-12 text-gray-900 relative pb-4">
-                    What Our Clients Say
-                    <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-blue-500 rounded-full"></span>
-                </h2>
-                <div class="relative max-w-3xl mx-auto">
-                    <div id="testimonial-carousel" class="overflow-hidden">
-                        <div class="flex transition-transform duration-500 ease-in-out" id="testimonial-track">
-                            <!-- Testimonial 1 -->
-                            <div class="w-full flex-shrink-0 p-6 bg-white rounded-xl shadow-lg text-center">
-                                <p class="text-xl italic text-gray-700 mb-6">
-                                    "Pegg Electrical Maintenance transformed our outdated electrical system into a modern, safe setup. Their team was professional, efficient, and incredibly knowledgeable. Highly recommend their services for any residential project!"
-                                </p>
-                                <p class="font-semibold text-blue-600 text-lg">- Sarah J., Homeowner</p>
-                                <p class="text-gray-500 text-sm">Residential Wiring Project</p>
-                            </div>
-                            <!-- Testimonial 2 -->
-                            <div class="w-full flex-shrink-0 p-6 bg-white rounded-xl shadow-lg text-center">
-                                <p class="text-xl italic text-gray-700 mb-6">
-                                    "We had a complex commercial lighting installation, and VoltLink Electric handled it flawlessly. They completed the project on time and within budget, with minimal disruption to our operations. Outstanding work!"
-                                </p>
-                                <p class="font-semibold text-blue-600 text-lg">- Michael T., Business Owner</p>
-                                <p class="text-gray-500 text-sm">Commercial Lighting Upgrade</p>
-                            </div>
-                            <!-- Testimonial 3 -->
-                            <div class="w-full flex-shrink-0 p-6 bg-white rounded-xl shadow-lg text-center">
-                                <p class="text-xl italic text-gray-700 mb-6">
-                                    "When our power went out unexpectedly, VoltLink Electric was there in minutes. Their emergency response was quick, and they fixed the issue expertly. Truly a lifesaver!"
-                                </p>
-                                <p class="font-semibold text-blue-600 text-lg">- Emily R., Emergency Service Client</p>
-                                <p class="text-gray-500 text-sm">Emergency Electrical Repair</p>
-                            </div>
-                        </div>
-                    </div>
-                    <button id="prev-testimonial" class="absolute top-1/2 left-0 -translate-y-1/2 bg-blue-500 text-white p-2 rounded-full shadow-md hover:bg-blue-600 focus:outline-none transition-colors duration-200">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                    </button>
-                    <button id="next-testimonial" class="absolute top-1/2 right-0 -translate-y-1/2 bg-blue-500 text-white p-2 rounded-full shadow-md hover:bg-blue-600 focus:outline-none transition-colors duration-200">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                    </button>
-                </div>
-                <div id="testimonial-dots" class="flex justify-center mt-8 space-x-2"></div>
-            </div>
-        </section>
-
-        <!-- Contact Section -->
-        <section id="contact" class="section-padding bg-blue-700 text-white rounded-t-xl">
-            <div class="container mx-auto px-4">
-                <h2 class="text-4xl font-bold text-center mb-12 relative pb-4">
-                    Contact Us
-                    <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-yellow-400 rounded-full"></span>
-                </h2>
-                <div class="flex flex-col md:flex-row gap-12 items-start">
-                    <div class="md:w-1/2 bg-white p-8 rounded-xl shadow-lg text-gray-900">
-                        <h3 class="text-2xl font-semibold mb-6">Get a Free Consultation Today!</h3>
-                        <form id="contact-form" class="space-y-6">
-                            <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-                                <input type="text" id="name" name="name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" placeholder="John Doe" required>
-                            </div>
-                            <div>
-                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Your Email</label>
-                                <input type="email" id="email" name="email" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" placeholder="you@example.com" required>
-                            </div>
-                            <div>
-                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number (Optional)</label>
-                                <input type="tel" id="phone" name="phone" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" placeholder="(123) 456-7890">
-                            </div>
-                            <div>
-                                <label for="service" class="block text-sm font-medium text-gray-700 mb-1">Service Needed</label>
-                                <select id="service" name="service" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
-                                    <option value="">Select a service</option>
-                                    <option value="Residential Wiring">Residential Wiring</option>
-                                    <option value="Commercial Electrical">Commercial Electrical</option>
-                                    <option value="Repairs & Troubleshooting">Repairs & Troubleshooting</option>
-                                    <option value="Lighting Solutions">Lighting Solutions</option>
-                                    <option value="Panel Upgrades">Panel Upgrades</option>
-                                    <option value="Safety Inspections">Safety Inspections</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Your Message</label>
-                                <textarea id="message" name="message" rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" placeholder="Describe your electrical needs..." required></textarea>
-                            </div>
-                            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-300 transform hover:scale-105 shadow-md">
-                                Send Message
-                            </button>
-                        </form>
-                    </div>
-
-                    <div class="md:w-1/2 space-y-8 text-lg">
-                        <div>
-                            <h3 class="text-2xl font-semibold mb-4 text-yellow-400">Our Contact Information</h3>
-                            <p class="flex items-center mb-2">
-                                <svg class="w-6 h-6 mr-2 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path></svg>
-                                <strong>Phone:</strong> <a href="tel:+1234567890" class="hover:underline ml-2">(123) 456-7890</a>
-                            </p>
-                            <p class="flex items-center mb-2">
-                                <svg class="w-6 h-6 mr-2 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
-                                <strong>Email:</strong> <a href="mailto:info@voltlinkelectric.com" class="hover:underline ml-2">info@joepegg.com</a>
-                            </p>
-                            <p class="flex items-center">
-                                <svg class="w-6 h-6 mr-2 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
-                                <strong>Address:</strong> 123 Power Grid St, ElectriCity, EL 12345
-                            </p>
-                        </div>
-                        <!-- Google Maps Embed -->
-                        <div>
-                            <h3 class="text-2xl font-semibold mb-4 text-yellow-400">Find Us on the Map</h3>
-                            <div class="relative w-full rounded-lg overflow-hidden shadow-lg" style="padding-bottom: 75%;">
-                                <iframe
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.213271783852!2d-122.41941578468165!3d37.77492947975878!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80858064a7c0065b%3A0xfcf010530d95955f!2sGolden%20Gate%20Bridge!5e0!3m2!1sen!2sus!4v1678912345678!5m2!1sen!2sus"
-                                    width="100%" height="100%" style="border:0; position:absolute; top:0; left:0;" allowfullscreen="" loading="lazy"></iframe>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer Section -->
-    <footer class="bg-gray-900 text-white py-8">
-        <div class="container mx-auto px-4 text-center md:flex md:justify-between md:items-center">
-            <p>&copy; 2025 Pegg Electrical Maintenance. All rights reserved.</p>
-            <div class="flex justify-center md:justify-end space-x-6 mt-4 md:mt-0">
-                <a href="#" class="hover:text-yellow-400 transition-colors duration-300">Privacy Policy</a>
-                <a href="#" class="hover:text-yellow-400 transition-colors duration-300">Terms of Service</a>
-                <!-- Social Media Links (add actual links) -->
-                <a href="#" class="hover:text-yellow-400 transition-colors duration-300">Facebook</a>
-                <a href="#" class="hover:text-yellow-400 transition-colors duration-300">LinkedIn</a>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Back to Top Button -->
-    <button id="back-to-top" class="fixed bottom-6 right-6 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition-opacity duration-300 opacity-0 transform scale-0 origin-bottom-right">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-    </button>
-
-    <!-- Message Box Modal -->
-    <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[9999] hidden">
-        <div class="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full text-center">
-            <h3 id="modal-title" class="text-2xl font-bold mb-4 text-gray-900"></h3>
-            <p id="modal-message" class="text-gray-700 mb-6"></p>
-            <button id="modal-close-button" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-300">
-                Close
-            </button>
+<body data-theme="night">
+    <div id="initialEntryOverlay">
+        <div class="entry-content">
+            <h2 class="entry-title">Ancient Echoes</h2>
+            <div class="entry-runes" id="entryRunes">ᛖᚾᛏᛖᚱ</div> <p class="entry-instruction">Click to Awaken the Veil</p>
         </div>
     </div>
 
+    <div class="cosmic-dust-container"></div>
+
+    <div class="runes-container"></div>
+
+    <div class="veil-overlay" id="veilOverlay"></div> <!-- Removed 'active' class -->
+
+    <div class="celestial-body" id="celestialBody"></div> <!-- New celestial body -->
+
+    <div class="main-content-area" id="mainContentArea">
+        <header class="app-header">
+            <h1>Ancient Echoes</h1>
+            <button class="menu-button" id="menuButton" aria-expanded="false" aria-controls="overlayMenu">☰</button>
+        </header>
+
+        <div class="theme-switcher">
+            <button class="theme-button active" data-theme-name="night">Night</button>
+            <!-- Removed Dusk button -->
+            <button class="theme-button" data-theme-name="day">Day</button>
+        </div>
+
+        <div class="overlay-menu" id="overlayMenu">
+            <button class="overlay-menu-close" id="closeMenuButton">✖</button>
+            <nav>
+                <ul>
+                    <li><a href="#" data-page="home">Home</a></li>
+                    <li><a href="#" data-page="lore">Lore</a></li>
+                    <li><a href="#" data-page="wisdoms">Wisdoms & Prophecies</a></li>
+                    <li><a href="#" data-page="rune-guide">Rune Guide</a></li>
+                    <li><a href="#" data-page="contact">Contact the Keepers</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <section id="homePage" class="flex flex-col items-center w-full">
+            <p class="text-gray-300 text-center mb-6">
+                Unveiling the mysteries of the Bosnian Pyramids and the lost wisdom of the Veil of Amenti.
+                Interact with the ancient structures or seek counsel to receive whispered insights.
+            </p>
+
+            <div class="pyramids-visual-group" id="pyramidGroup">
+                <div class="pyramid-of-sun-main">
+                    <div class="pyramid-top" data-pyramid="sun-top">
+                        <span class="pyramid-rune-top-left" style="--initial-rotation: -15deg;">ᛝ</span> <span class="pyramid-rune-top-right" style="--initial-rotation: 20deg;">ᛈ</span>
+                        <div class="pyramid-beam" id="pyramidBeam"></div> <!-- The main pyramid beam element -->
+                    </div>
+                    <div class="pyramid-base" data-pyramid="sun-base">
+                        <div class="pyramid-entrance" data-pyramid="sun-entrance">
+                            <span class="entrance-runes">ᛖᚾᛏᛖᚱ</span> <div class="entrance-glow"></div>
+                        </div>
+                        <span class="pyramid-rune-base-left" style="--initial-rotation: 10deg;">ᛟ</span> <span class="pyramid-rune-base-right" style="--initial-rotation: -25deg;">ᛞ</span> </div>
+                </div>
+
+                <div id="pyramidLove" class="pyramid-small" data-pyramid="dragon">
+                    <h3 class="text-white text-sm font-bold">Pyramid of Dragon</h3> <!-- UPDATED: Name changed -->
+                    <div class="small-pyramid-beam" id="pyramidLoveBeam"></div> <!-- NEW: Beam for Love Pyramid -->
+                </div>
+                <div id="pyramidMoon" class="pyramid-small" data-pyramid="moon">
+                    <h3 class="text-white text-sm font-bold">Pyramid of Moon</h3>
+                    <div class="small-pyramid-beam" id="pyramidMoonBeam"></div> <!-- NEW: Beam for Moon Pyramid -->
+                </div>
+
+                <div id="tunnelSunLove" class="tunnel-line"></div>
+                <div id="tunnelSunMoon" class="tunnel-line"></div>
+            </div>
+
+            <div class="whisper-box" id="whisperBox" aria-live="polite" aria-atomic="true">
+                <div class="runic-text" id="runicOutput"></div>
+                <div class="english-translation" id="englishOutput"></div>
+                <button class="runic-toggle" id="toggleTranslation">ⓘ</button>
+            </div>
+
+            <div class="user-input-section">
+                <input type="text" id="userQuestionInput" placeholder="Ask the ancients a question...">
+                <button class="whisper-button" id="seekCounselButton">Seek Ancient Counsel</button>
+            </div>
+
+            </section>
+
+        <section id="lorePage" class="hidden-page">
+            <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Ancient Lore & Hidden Truths</h2>
+            <p class="text-gray-300 text-center mb-8">
+                Explore the deeper narratives woven into the fabric of these ancient structures.
+            </p>
+
+            <div class="lore-content-area w-full">
+                <div class="lore-section">
+                    <h3 class="text-2xl font-bold text-yellow-300 mb-2 cursor-pointer" data-toggle-id="lore1">The Genesis of Pyramids</h3>
+                    <div class="lore-section-content" id="lore1">
+                        <p>
+                            Whispers from deep time suggest that these pyramids are not mere mounds of earth,
+                            but intricate energy conduits built by a civilization far advanced, long before
+                            recorded history. They were designed to harmonize with Earth's resonant frequencies,
+                            channeling cosmic energies for the enlightenment and well-being of early human societies.
+                        </p>
+                        <button class="deepen-insight-button">Deepen Insight ✨</button>
+                        <div class="llm-insight-container"></div>
+                    </div>
+                </div>
+                <div class="lore-section">
+                    <h3 class="text-2xl font-bold text-yellow-300 mb-2 cursor-pointer" data-toggle-id="lore2">The Veil of Amenti</h3>
+                    <div class="lore-section-content" id="lore2">
+                        <p>
+                            The Veil of Amenti, a concept long debated in esoteric circles, is said to be a energetic
+                            barrier, a spiritual membrane separating dimensions. The Bosnian Pyramids, particularly
+                            the Pyramid of the Sun, are believed to be key points for piercing or subtly interacting
+                            with this Veil, allowing for the flow of ancient knowledge and higher consciousness into our realm.
+                            It is not a physical barrier, but a frequency-based construct that filters universal truths.
+                        </p>
+                        <button class="deepen-insight-button">Deepen Insight ✨</button>
+                        <div class="llm-insight-container"></div>
+                    </div>
+                </div>
+                <div class="lore-section">
+                    <h3 class="text-2xl font-bold text-yellow-300 mb-2 cursor-pointer" data-toggle-id="lore3">Guardians of the Echoes</h3>
+                    <div class="lore-section-content" id="lore3">
+                        <p>
+                            Through ages, certain lineages and secret societies have known of these structures. They are
+                            the 'Keepers of the Echoes', safeguarding the pyramids and the knowledge they embody.
+                            Their role is to ensure that the energies are used for benevolence and that the true
+                            purpose of these ancient marvels is not corrupted. They communicate through subtle signs
+                            and whispers carried on the wind.
+                        </p>
+                        <button class="deepen-insight-button">Deepen Insight ✨</button>
+                        <div class="llm-insight-container"></div>
+                    </div>
+                </div>
+                <div class="lore-section">
+                    <h3 class="text-2xl font-bold text-yellow-300 mb-2 cursor-pointer" data-toggle-id="lore4">The Great Awakening</h3>
+                    <div class="lore-section-content" id="lore4">
+                        <p>
+                            Prophecies speak of a Great Awakening, a time when humanity will be ready to fully
+                            reconnect with the wisdom stored within these pyramids. As the planetary
+                            consciousness rises, the Veil of Amenti thins, and the pyramids
+                            begin to hum with renewed power, guiding humanity toward a new golden age
+                            of understanding and spiritual evolution.
+                        </p>
+                        <button class="deepen-insight-button">Deepen Insight ✨</button>
+                        <div class="llm-insight-container"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="wisdomsAndProphecies" class="hidden-page">
+            <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Wisdoms & Prophecies</h2>
+            <div class="wisdom-entry">
+                <div class="runic-text-lg">ᚠᛖᚺᚢ ᚢᚾᛞ ᛟᚦᚨᛚᚨ</div>
+                <div class="english-translation-lg">
+                    **Wisdom:** True wealth lies not in accumulation, but in the spirit's free flow and the wisdom gained from ancestral roots.
+                    **Prophecy:** The old ways shall return, not as relics, but as foundational truths for a new era.
+                </div>
+            </div>
+            <div class="wisdom-entry">
+                <div class="runic-text-lg">ᚢᚱᚢᛉ ᛞᚨᚷᚨᛉ</div>
+                <div class="english-translation-lg">
+                    **Wisdom:** Strength is found in transformation, as each dawn brings new light and the chance to shed what no longer serves.
+                    **Prophecy:** A sudden, illuminating shift will unveil hidden paths for those who dare to walk them.
+                </div>
+            </div>
+            <div class="wisdom-entry">
+                <div class="runic-text-lg">ᚦᚢᚱᛁᛋᚨᛉ ᛇᚱ</div>
+                <div class="english-translation-lg">
+                    **Wisdom:** Patience in the face of chaos carves a path through the storm, revealing the ice-clear vision beyond.
+                    **Prophecy:** The severing of old ties, though painful, will free vital energy for collective healing.
+                </div>
+            </div>
+            <div class="wisdom-entry">
+                <div class="runic-text-lg">ᚨᚾᛋᚢᛉ ᛗᚨᚾᚾᚨᛉ</div>
+                <div class="english-translation-lg">
+                    **Wisdom:** The spoken word carries power; speak truth and listen to the whispers of the divine within all.
+                    **Prophecy:** Communication will transcend the mundane, leading to profound understanding between disparate souls.
+                </div>
+            </div>
+            <div class="wisdom-entry">
+                <div class="runic-text-lg">ᚱᚨᛁᛞᛟ ᛚᚨᚷᚢᛉ</div>
+                <div class="english-translation-lg">
+                    **Wisdom:** The journey itself is the destination; embrace the flow of life's currents, for they lead to destiny.
+                    **Prophecy:** Ancient waterways, once forgotten, will reveal passages to submerged knowledge.
+                </div>
+            </div>
+            <div class="wisdom-entry">
+                <div class="runic-text-lg">ᚲᚨᚾᚾᚨᛉ ᛋᛟᚢᛁᛚᛟ</div>
+                <div class="english-translation-lg">
+                    **Wisdom:** Kindle the inner flame, for it is the light that reveals hidden truths and burns away illusions.
+                    **Prophecy:** A new sun will rise from within, illuminating the collective consciousness and dispelling the shadows of ignorance.
+                </div>
+            </div>
+             <div class="wisdom-entry">
+                <div class="runic-text-lg">ᚷᛖᛒᛟ ᚹᚢᚾᛃᛟ</div>
+                <div class="english-translation-lg">
+                    **Wisdom:** Generosity of spirit brings joy, for true gifts are given freely, without expectation.
+                    **Prophecy:** A great alliance will form, built on mutual respect and shared prosperity, transcending old divisions.
+                </div>
+            </div>
+            <div class="wisdom-entry">
+                <div class="runic-text-lg">ᚺᚨᚷᚨᛚᚨᛉ ᚾᚨᚢᛞᛁᛉ</div>
+                <div class="english-translation-lg">
+                    **Wisdom:** From destruction, new patterns emerge; embrace the necessary chaos for genuine growth.
+                    **Prophecy:** A cosmic tremor will reset the frequencies, aligning human endeavor with universal harmony.
+                </div>
+            </div>
+            <div class="wisdom-entry">
+                <div class="runic-text-lg">ᛁᛋᚨ ᛃᛖᚱᚨ</div>
+                <div class="english-translation-lg">
+                    **Wisdom:** Stillness allows for reflection, revealing the cycles of time and the seeds of future harvests.
+                    **Prophecy:** The long winter of forgetfulness shall end, and the bounty of rediscovered knowledge will nourish all.
+                </div>
+            </div>
+            <div class="wisdom-entry">
+                <div class="runic-text-lg">ᛈᛖᚱᚦᚱᛟ ᛖᛁᚹᚨᛉ</div>
+                <div class="english-translation-lg">
+                    **Wisdom:** Destiny is a game of chance and choice; ride the currents of change with adaptability and grace.
+                    **Prophecy:** The Veil will thin completely, allowing direct communion with ancient consciousness and forgotten realms.
+                </div>
+            </div>
+        </section>
+
+        <section id="runeGuidePage" class="hidden-page">
+            <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Rune Guide</h2>
+            <p class="text-gray-300 text-center mb-8">
+                Explore the meanings of the ancient runic symbols that permeate this sacred space.
+            </p>
+            <div class="rune-grid">
+                <div class="rune-card">
+                    <div class="rune-symbol">ᚠ</div>
+                    <div class="rune-name">Fehu</div>
+                    <div class="rune-meaning">Wealth, abundance, new beginnings</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᚢ</div>
+                    <div class="rune-name">Uruz</div>
+                    <div class="rune-meaning">Strength, primal force, courage</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᚦ</div>
+                    <div class="rune-name">Thurisaz</div>
+                    <div class="rune-meaning">Protection, conflict, powerful change</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᚨ</div>
+                    <div class="rune-name">Ansuz</div>
+                    <div class="rune-meaning">Communication, inspiration, divine breath</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᚱ</div>
+                    <div class="rune-name">Raido</div>
+                    <div class="rune-meaning">Journey, movement, rhythm</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᚲ</div>
+                    <div class="rune-name">Kenaz</div>
+                    <div class="rune-meaning">Illumination, knowledge, creativity</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᚷ</div>
+                    <div class="rune-name">Gebo</div>
+                    <div class="rune-meaning">Gift, partnership, generosity</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᚹ</div>
+                    <div class="rune-name">Wunjo</div>
+                    <div class="rune-meaning">Joy, comfort, harmony</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᚺ</div>
+                    <div class="rune-name">Hagalaz</div>
+                    <div class="rune-meaning">Disruption, chaos, natural forces</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᚾ</div>
+                    <div class="rune-name">Naudiz</div>
+                    <div class="rune-meaning">Need, constraint, resilience</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᛁ</div>
+                    <div class="rune-name">Isa</div>
+                    <div class="rune-meaning">Stillness, ice, self-control</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᛃ</div>
+                    <div class="rune-name">Jera</div>
+                    <div class="rune-meaning">Harvest, cycles, patience</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᛇ</div>
+                    <div class="rune-name">Eihwaz</div>
+                    <div class="rune-meaning">Endurance, transformation, death/rebirth</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᛈ</div>
+                    <div class="rune-name">Perthro</div>
+                    <div class="rune-meaning">Fate, mystery, chance</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᛉ</div>
+                    <div class="rune-name">Algiz</div>
+                    <div class="rune-meaning">Protection, defense, connection to divine</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᛋ</div>
+                    <div class="rune-name">Sowilo</div>
+                    <div class="rune-meaning">Wholeness, success, solar energy</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᛏ</div>
+                    <div class="rune-name">Tiwaz</div>
+                    <div class="rune-meaning">Justice, sacrifice, victory</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᛒ</div>
+                    <div class="rune-name">Berkana</div>
+                    <div class="rune-meaning">Growth, rebirth, new beginnings</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᛖ</div>
+                    <div class="rune-name">Ehaz</div>
+                    <div class="rune-meaning">Movement, progress, trust</div>
+                </div>
+                <div class="rune-card">
+                    <div the="rune-symbol">ᛚ</div>
+                    <div class="rune-name">Laguz</div>
+                    <div class="rune-meaning">Flow, water, intuition</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᛝ</div>
+                    <div class="rune-name">Ingwaz</div>
+                    <div class="rune-meaning">Fertility, completion, inner growth</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᛟ</div>
+                    <div class="rune-name">Othala</div>
+                    <div class="rune-meaning">Inheritance, homeland, spiritual heritage</div>
+                </div>
+                <div class="rune-card">
+                    <div class="rune-symbol">ᛞ</div>
+                    <div class="rune-name">Dagaz</div>
+                    <div class="rune-meaning">Day, breakthrough, awakening</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contactPage" class="hidden-page">
+            <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Contact the Keepers</h2>
+            <p class="text-gray-300 text-center mb-8">
+                The Keepers of the Echoes communicate through subtle means.
+                Leave your message, and if the vibrations align, a response may find you.
+            </p>
+            <div class="lore-content-area w-full text-center">
+                <p>For now, meditate on the whispers. The time for direct contact is not yet upon us.</p>
+                <p class="mt-4 text-gray-400 text-sm">
+                    (This section is a placeholder for future interaction mechanisms.)
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+    <div class="discovery-log-container" id="discoveryLog">
+        <h3>Discovery Log</h3>
+        <div id="logEntries">
+            </div>
+    </div>
+    <button class="log-toggle-button" id="toggleLogButton" aria-expanded="false" aria-controls="discoveryLog">Toggle Log</button>
+    <button class="audio-toggle-button" id="audioToggleButton" aria-label="Toggle Ambient Audio">🔊</button>
+
 
     <script>
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
+        document.addEventListener('DOMContentLoaded', () => {
+            const whisperBox = document.getElementById('whisperBox');
+            const runicOutput = document.getElementById('runicOutput');
+            const englishOutput = document.getElementById('englishOutput');
+            const toggleTranslationButton = document.getElementById('toggleTranslation');
+            const userQuestionInput = document.getElementById('userQuestionInput');
+            const seekCounselButton = document.getElementById('seekCounselButton');
+            const veilOverlay = document.getElementById('veilOverlay');
+            const pyramidGroup = document.getElementById('pyramidGroup');
+            const menuButton = document.getElementById('menuButton');
+            const overlayMenu = document.getElementById('overlayMenu');
+            const closeMenuButton = document.getElementById('closeMenuButton');
+            const navLinks = document.querySelectorAll('.overlay-menu nav ul li a');
+            const homePage = document.getElementById('homePage');
+            const lorePage = document.getElementById('lorePage');
+            const wisdomsAndPropheciesPage = document.getElementById('wisdomsAndProphecies');
+            const contactPage = document.getElementById('contactPage');
+            const discoveryLog = document.getElementById('discoveryLog');
+            const logEntries = document.getElementById('logEntries');
+            const toggleLogButton = document.getElementById('toggleLogButton');
+            const themeButtons = document.querySelectorAll('.theme-button');
+            const deepenInsightButtons = document.querySelectorAll('.deepen-insight-button');
+            const loreSectionHeaders = document.querySelectorAll('.lore-section h3');
+            const pyramidBeam = document.getElementById('pyramidBeam');
+            // Select all pyramid elements with data-pyramid attribute
+            const pyramidElements = document.querySelectorAll('[data-pyramid]');
 
-                const targetId = this.getAttribute('href');
-                const targetElement = document.querySelector(targetId);
 
-                // Check if the target element exists
-                if (targetElement) {
-                    targetElement.scrollIntoView({
-                        behavior: 'smooth'
-                    });
+            // Small pyramid beam elements
+            const pyramidLoveBeam = document.getElementById('pyramidLoveBeam');
+            const pyramidMoonBeam = document.getElementById('pyramidMoonBeam');
 
-                    // Close mobile menu if open
-                    const mobileMenu = document.getElementById('mobile-menu');
-                    if (!mobileMenu.classList.contains('hidden')) {
-                        mobileMenu.classList.add('hidden');
-                    }
+            // Entry Overlay elements
+            const initialEntryOverlay = document.getElementById('initialEntryOverlay');
+            const mainContentArea = document.getElementById('mainContentArea');
+            const audioToggleButton = document.getElementById('audioToggleButton');
+
+            let translationVisible = false;
+            let isGenerating = false;
+            let isAmbientPlaying = false;
+
+            // Tone.js setup - Ensure audio context is started on user interaction
+            document.documentElement.addEventListener('mousedown', () => {
+                if (Tone.context.state !== 'running') {
+                    Tone.start();
                 }
             });
-        });
 
-        // Mobile Menu Toggle
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
+            // --- Sound Definitions ---
 
-        if (mobileMenuButton && mobileMenu) {
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-        }
+            // Shared effects for ethereal sounds
+            const longReverb = new Tone.Freeverb({
+                roomSize: 0.9,
+                dampening: 5000,
+                wet: 0.7
+            }).toDestination();
 
-        // Testimonial Carousel
-        const testimonialTrack = document.getElementById('testimonial-track');
-        const prevTestimonialBtn = document.getElementById('prev-testimonial');
-        const nextTestimonialBtn = document.getElementById('next-testimonial');
-        const testimonialDotsContainer = document.getElementById('testimonial-dots');
+            const etherealDelay = new Tone.PingPongDelay({
+                delayTime: "4n",
+                feedback: 0.7,
+                wet: 0.6
+            }).connect(longReverb);
 
-        if (testimonialTrack && prevTestimonialBtn && nextTestimonialBtn && testimonialDotsContainer) {
-            const testimonials = Array.from(testimonialTrack.children);
-            let currentIndex = 0;
+            // 1. Pyramid Touch Whisper (deep, soft piano note)
+            const pyramidWhisperSynth = new Tone.Synth({
+                oscillator: { type: "triangle" },
+                envelope: { attack: 1.0, decay: 2.0, sustain: 0.2, release: 3.0 }
+            }).connect(etherealDelay);
 
-            // Create dots
-            testimonials.forEach((_, index) => {
-                const dot = document.createElement('button');
-                dot.classList.add('w-3', 'h-3', 'bg-gray-400', 'rounded-full', 'transition-colors', 'duration-300', 'focus:outline-none');
-                if (index === 0) dot.classList.add('bg-blue-500'); // Active dot
-                dot.addEventListener('click', () => {
-                    currentIndex = index;
-                    updateCarousel();
-                });
-                testimonialDotsContainer.appendChild(dot);
-            });
+            function playPyramidWhisper() {
+                pyramidWhisperSynth.triggerAttackRelease("C1", "4s");
+            }
 
-            const dots = Array.from(testimonialDotsContainer.children);
+            // 2. Seek Counsel Whisper (airy, breathy)
+            const counselWhisperSynth = new Tone.NoiseSynth({
+                noise: { type: "pink" },
+                envelope: { attack: 0.05, decay: 1.0, sustain: 0.0, release: 1.5 }
+            }).chain(new Tone.Filter(800, "lowpass"), etherealDelay);
 
-            function updateCarousel() {
-                const offset = -currentIndex * 100; // Each testimonial takes 100% width
-                testimonialTrack.style.transform = `translateX(${offset}%)`;
+            function playCounselWhisper() {
+                counselWhisperSynth.triggerAttackRelease("1.5s");
+            }
 
-                // Update active dot
-                dots.forEach((dot, index) => {
-                    if (index === currentIndex) {
-                        dot.classList.add('bg-blue-500');
-                        dot.classList.remove('bg-gray-400');
-                    } else {
-                        dot.classList.remove('bg-blue-500');
-                        dot.classList.add('bg-gray-400');
-                    }
+            // 3. Deepen Insight Whisper (shimmering, high-frequency)
+            const insightWhisperSynth = new Tone.PluckSynth({
+                attackNoise: 0.5,
+                dampening: 4000,
+                resonance: 0.9
+            }).chain(new Tone.Chorus(2, 3.5, 0.7), etherealDelay);
+
+            function playInsightWhisper() {
+                insightWhisperSynth.triggerAttackRelease("G5", "1s");
+                insightWhisperSynth.triggerAttackRelease("C6", "1s", Tone.now() + 0.2);
+            }
+
+            // 4. Veil Interaction Whisper (very ethereal, long decay)
+            const veilWhisperSynth = new Tone.AMSynth({
+                harmonicity: 1.5,
+                oscillator: { type: "triangle" },
+                envelope: { attack: 2, decay: 3, sustain: 0.0, release: 5 },
+                modulation: { type: "sine" },
+                modulationEnvelope: { attack: 0.5, decay: 0.1, sustain: 1, release: 0.5 }
+            }).connect(longReverb);
+
+            function playVeilWhisper() {
+                veilWhisperSynth.triggerAttackRelease("A3", "4s");
+            }
+
+            // 5. Menu Toggle Sound (Soft Piano-like sound)
+            const menuToggleSynth = new Tone.Synth({
+                oscillator: { type: "triangle" },
+                envelope: { attack: 0.01, decay: 0.4, sustain: 0.0, release: 0.5 }
+            }).toDestination();
+
+            function playMenuToggleSound() {
+                menuToggleSynth.triggerAttackRelease("C5", "0.6s");
+            }
+
+            // 6. Log Toggle Sound (subtle whoosh)
+            const logToggleSynth = new Tone.NoiseSynth({
+                noise: { type: "white" },
+                envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.3 }
+            }).chain(new Tone.Filter(2000, "bandpass"), new Tone.Panner(0.5).toDestination());
+
+            function playLogToggleSound() {
+                logToggleSynth.triggerAttackRelease("0.5s");
+            }
+
+            // 7. Theme Change Sound (soft, short tone)
+            const themeChangeSynth = new Tone.Synth({
+                oscillator: { type: "sine" },
+                envelope: { attack: 0.02, decay: 0.1, sustain: 0.0, release: 0.2 }
+            }).toDestination();
+
+            function playThemeChangeSound() {
+                themeChangeSynth.triggerAttackRelease("D5", "8n");
+            }
+
+            // 8. Entry Sound (deep, soft piano note)
+            const entryChimeSynth = new Tone.Synth({
+                oscillator: { type: "sine" },
+                envelope: { attack: 0.5, decay: 1.0, sustain: 0.1, release: 2.0 }
+            }).toDestination();
+
+            function playEntryChime() {
+                entryChimeSynth.triggerAttackRelease("C3", "3s");
+            }
+
+            // 9. Beam Activation Sound (more pleasant and efficient)
+            const beamSynth = new Tone.Synth({
+                oscillator: { type: "sine" }, // Smooth sine wave
+                envelope: {
+                    attack: 0.2,    // Gentle attack
+                    decay: 0.8,     // Slower decay
+                    sustain: 0.1,   // Slight sustain
+                    release: 1.5    // Long, fading release
+                }
+            }).chain(new Tone.Filter(1000, "lowpass"), longReverb); // Lowpass filter for softness, then reverb
+
+            function playBeamSound() {
+                beamSynth.triggerAttackRelease("C5", "2s"); // Single, higher note for a clear beam sound
+            }
+
+            // 10. Small Pyramid Interaction Sound (short, higher pitched chime)
+            const smallPyramidSynth = new Tone.Synth({
+                oscillator: { type: "sine" },
+                envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.5 }
+            }).toDestination();
+
+            function playSmallPyramidSound() {
+                smallPyramidSynth.triggerAttackRelease("G4", "0.5s");
+            }
+
+            // 11. Ambient Drone (very subtle, low frequency)
+            const ambientDrone = new Tone.AMSynth({
+                harmonicity: 0.5,
+                oscillator: { type: "sine" },
+                envelope: { attack: 5, decay: 0, sustain: 1, release: 5 },
+                modulation: { type: "sine" },
+                modulationEnvelope: { attack: 5, decay: 0, sustain: 1, release: 5 }
+            }).toDestination();
+            ambientDrone.volume.value = -30; // Very low volume
+
+            function toggleAmbientAudio() {
+                if (isAmbientPlaying) {
+                    ambientDrone.triggerRelease();
+                    audioToggleButton.textContent = '🔇';
+                    audioToggleButton.classList.remove('active');
+                    logDiscovery("Ambient audio muted.");
+                } else {
+                    ambientDrone.triggerAttack("C2"); // Start a very low C note
+                    audioToggleButton.textContent = '🔊';
+                    audioToggleButton.classList.add('active');
+                    logDiscovery("Ambient audio playing.");
+                }
+                isAmbientPlaying = !isAmbientPlaying;
+            }
+
+            // --- End Sound Definitions ---
+
+
+            // Function to add cosmic dust particles
+            function createCosmicDust() {
+                const container = document.querySelector('.cosmic-dust-container');
+                for (let i = 0; i < 50; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('cosmic-dust-particle');
+                    const size = Math.random() * 3 + 1;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    const xStart = Math.random() * 100 + 'vw';
+                    const yStart = Math.random() * 100 + 'vh';
+                    const xEnd = Math.random() * 100 + 'vw';
+                    const yEnd = Math.random() * 100 + 'vh';
+                    const scaleStart = Math.random() * 0.5 + 0.5;
+                    const scaleEnd = Math.random() * 0.5 + 0.8;
+                    const duration = Math.random() * 20 + 20;
+
+                    particle.style.setProperty('--x-start', xStart);
+                    particle.style.setProperty('--y-start', yStart);
+                    particle.style.setProperty('--x-end', xEnd);
+                    particle.style.setProperty('--y-end', yEnd);
+                    particle.style.setProperty('--scale-start', scaleStart);
+                    particle.style.setProperty('--scale-end', scaleEnd);
+                    particle.style.animationDuration = `${duration}s`;
+                    particle.style.animationDelay = `-${Math.random() * duration}s`;
+                    container.appendChild(particle);
+                }
+            }
+            createCosmicDust();
+
+            // Function to generate and display a random rune background
+            function createRuneBackground() {
+                const runes = ['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᚾ', 'ᛁ', 'ᛃ', 'ᛇ', 'ᛈ', 'ᛉ', 'ᛋ', 'ᛏ', 'ᛒ', 'ᛖ', 'ᛗ', 'ᛚ', 'ᛝ', 'ᛟ', 'ᛞ'];
+                const runeChar = runes[Math.floor(Math.random() * runes.length)];
+                const runeElement = document.createElement('div');
+                runeElement.classList.add('rune');
+                runeElement.textContent = runeChar;
+
+                const size = Math.random() * 2 + 1;
+                runeElement.style.fontSize = `${size}rem`;
+
+                const x = Math.random() * 100;
+                const y = -10;
+                runeElement.style.left = `${x}vw`;
+                runeElement.style.top = `${y}vh`;
+
+                const rotationStart = Math.random() * 360;
+                const rotationEnd = rotationStart + 360 * (Math.random() > 0.5 ? 1 : -1);
+                const yOffset = 100 + Math.random() * 20;
+                const duration = Math.random() * 10 + 15;
+                runeElement.style.animationDelay = `-${Math.random() * duration}s`;
+
+                runeElement.style.setProperty('--rotation-start', `${rotationStart}deg`);
+                runeElement.style.setProperty('--rotation-end', `${rotationEnd}deg`);
+                runeElement.style.setProperty('--y-offset', `${yOffset}vh`);
+                runeElement.style.animationDuration = `${duration}s`;
+
+                document.querySelector('.runes-container').appendChild(runeElement);
+
+                runeElement.addEventListener('animationend', () => {
+                    runeElement.remove();
                 });
             }
 
-            prevTestimonialBtn.addEventListener('click', () => {
-                currentIndex = (currentIndex === 0) ? testimonials.length - 1 : currentIndex - 1;
-                updateCarousel();
-            });
+            setInterval(createRuneBackground, 6000);
 
-            nextTestimonialBtn.addEventListener('click', () => {
-                currentIndex = (currentIndex === testimonials.length - 1) ? 0 : currentIndex + 1;
-                updateCarousel();
-            });
+            function logDiscovery(message) {
+                const entry = document.createElement('div');
+                entry.classList.add('log-entry', 'text-gray-400');
+                entry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+                logEntries.prepend(entry);
+            }
 
-            // Optional: Auto-play carousel
-            // setInterval(() => {
-            //     currentIndex = (currentIndex === testimonials.length - 1) ? 0 : currentIndex + 1;
-            //     updateCarousel();
-            // }, 5000); // Change testimonial every 5 seconds
-        }
+            // Pre-defined wisdoms and prophecies for static responses
+            const staticWisdoms = [
+                {
+                    runic: "ᚠᛖᚺᚢ ᚢᚾᛞ ᛟᚦᚨᛚᚨ",
+                    english: {
+                        wisdom: "True wealth lies not in accumulation, but in the spirit's free flow and the wisdom gained from ancestral roots.",
+                        prophecy: "The old ways shall return, not as relics, but as foundational truths for a new era."
+                    }
+                },
+                {
+                    runic: "ᚢᚱᚢᛉ ᛞᚨᚷᚨᛉ",
+                    english: {
+                        wisdom: "Strength is found in transformation, as each dawn brings new light and the chance to shed what no longer serves.",
+                        prophecy: "A sudden, illuminating shift will unveil hidden paths for those who dare to walk them."
+                    }
+                },
+                {
+                    runic: "ᚦᚢᚱᛁᛋᚨᛉ ᛇᚱ",
+                    english: {
+                        wisdom: "Patience in the face of chaos carves a path through the storm, revealing the ice-clear vision beyond.",
+                        prophecy: "The severing of old ties, though painful, will free vital energy for collective healing."
+                    }
+                },
+                {
+                    runic: "ᚨᚾᛋᚢᛉ ᛗᚨᚾᚾᚨᛉ",
+                    english: {
+                        wisdom: "The spoken word carries power; speak truth and listen to the whispers of the divine within all.",
+                        prophecy: "Communication will transcend the mundane, leading to profound understanding between disparate souls."
+                    }
+                },
+                {
+                    runic: "ᚱᚨᛁᛞᛟ ᛚᚨᚷᚢᛉ",
+                    english: {
+                        wisdom: "The journey itself is the destination; embrace the flow of life's currents, for they lead to destiny.",
+                        prophecy: "Ancient waterways, once forgotten, will reveal passages to submerged knowledge."
+                    }
+                },
+                {
+                    runic: "ᚲᚨᚾᚾᚨᛉ ᛋᛟᚢᛁᛚᛟ",
+                    english: {
+                        wisdom: "Kindle the inner flame, for it is the light that reveals hidden truths and burns away illusions.",
+                        prophecy: "A new sun will rise from within, illuminating the collective consciousness and dispelling the shadows of ignorance."
+                    }
+                },
+                {
+                    runic: "ᚷᛖᛒᛟ ᚹᚢᚾᛃᛟ",
+                    english: {
+                        wisdom: "Generosity of spirit brings joy, for true gifts are given freely, without expectation.",
+                        prophecy: "A great alliance will form, built on mutual respect and shared prosperity, transcending old divisions."
+                    }
+                },
+                {
+                    runic: "ᚺᚨᚷᚨᛚᚨᛉ ᚾᚨᚢᛞᛁᛉ",
+                    english: {
+                        wisdom: "From destruction, new patterns emerge; embrace the necessary chaos for genuine growth.",
+                        prophecy: "A cosmic tremor will reset the frequencies, aligning human endeavor with universal harmony."
+                    }
+                },
+                {
+                    runic: "ᛁᛋᚨ ᛃᛖᚱᚨ",
+                    english: {
+                        wisdom: "Stillness allows for reflection, revealing the cycles of time and the seeds of future harvests.",
+                        prophecy: "The long winter of forgetfulness shall end, and the bounty of rediscovered knowledge will nourish all."
+                    }
+                },
+                {
+                    runic: "ᛈᛖᚱᚦᚱᛟ ᛖᛁᚹᚨᛉ",
+                    english: {
+                        wisdom: "Destiny is a game of chance and choice; ride the currents of change with adaptability and grace.",
+                        prophecy: "The Veil will thin completely, allowing direct communion with ancient consciousness and forgotten realms."
+                    }
+                }
+            ];
 
-        // Contact Form Submission and Message Box
-        const contactForm = document.getElementById('contact-form');
-        const messageModal = document.getElementById('message-modal');
-        const modalTitle = document.getElementById('modal-title');
-        const modalMessage = document.getElementById('modal-message');
-        const modalCloseButton = document.getElementById('modal-close-button');
+            // Function to provide a static whisper (no API key needed)
+            function getStaticWhisper(promptContext) {
+                if (isGenerating) {
+                    logDiscovery("The ancient energies are still coalescing. Please wait.");
+                    return;
+                }
 
-        function showMessageModal(title, message) {
-            modalTitle.textContent = title;
-            modalMessage.textContent = message;
-            messageModal.classList.remove('hidden');
-        }
+                isGenerating = true;
+                runicOutput.textContent = '';
+                englishOutput.innerHTML = '';
+                englishOutput.classList.remove('visible');
+                toggleTranslationButton.style.display = 'none';
+                whisperBox.classList.add('loading');
 
-        function hideMessageModal() {
-            messageModal.classList.add('hidden');
-        }
+                playCounselWhisper();
+                logDiscovery(`Seeking counsel for: "${promptContext || 'general wisdom'}"...`);
 
-        if (contactForm) {
-            contactForm.addEventListener('submit', function(e) {
-                e.preventDefault(); // Prevent default form submission
-
-                // Simulate form submission success
-                // In a real application, you would send this data to a server
-                // using fetch() or XMLHttpRequest.
+                // Simulate API delay
                 setTimeout(() => {
-                    showMessageModal('Message Sent!', 'Thank you for contacting us. We will get back to you shortly.');
-                    contactForm.reset(); // Clear the form
-                }, 500); // Simulate network delay
-            });
-        }
+                    const randomWisdom = staticWisdoms[Math.floor(Math.random() * staticWisdoms.length)];
 
-        if (modalCloseButton) {
-            modalCloseButton.addEventListener('click', hideMessageModal);
-            messageModal.addEventListener('click', (e) => {
-                if (e.target === messageModal) { // Close if clicked outside the content
-                    hideMessageModal();
+                    runicOutput.textContent = randomWisdom.runic;
+                    englishOutput.innerHTML = `<strong>Wisdom:</strong> ${randomWisdom.english.wisdom.replace(/\n/g, '<br>')}<br><strong>Prophecy:</strong> ${randomWisdom.english.prophecy.replace(/\n/g, '<br>')}`;
+                    logDiscovery(`Received new prophecy: ${randomWisdom.english.wisdom.substring(0, 30)}...`);
+
+                    whisperBox.classList.remove('loading');
+                    toggleTranslationButton.style.display = 'block';
+                    translationVisible = false;
+                    englishOutput.classList.remove('visible');
+                    isGenerating = false;
+
+                    pyramidGroup.classList.add('pyramid-energized');
+                    setTimeout(() => {
+                        pyramidGroup.classList.remove('pyramid-energized');
+                    }, 800);
+                }, 1500); // Simulate network delay
+            }
+
+            // Function to provide a static lore expansion (no API key needed)
+            function getStaticLoreExpansion(title, content, insightContainer, button) {
+                if (button.disabled) {
+                    logDiscovery("Insight already being generated or recently generated. Please wait.");
+                    return;
                 }
-            });
-        }
 
-        // Back to Top button functionality
-        const backToTopBtn = document.getElementById('back-to-top');
+                button.disabled = true;
+                insightContainer.textContent = '';
+                insightContainer.classList.remove('visible');
+                insightContainer.classList.add('loading');
+                playInsightWhisper();
+                logDiscovery(`Deepening insight for: "${title}"...`);
 
-        if (backToTopBtn) {
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 300) { // Show button after scrolling 300px
-                    backToTopBtn.classList.add('opacity-100', 'scale-100');
-                    backToTopBtn.classList.remove('opacity-0', 'scale-0');
-                } else {
-                    backToTopBtn.classList.add('opacity-0', 'scale-0');
-                    backToTopBtn.classList.remove('opacity-100', 'scale-100');
-                }
-            });
+                const staticInsights = [
+                    "The ancient texts hint at a cosmic resonance within these structures, aligning them with distant stellar bodies, not just earthly ley lines.",
+                    "The Veil is said to be a frequency filter, and certain tones or intentions can thin it, allowing glimpses of higher truths to permeate.",
+                    "The Keepers are not merely human; some are believed to be consciousnesses interwoven with the very fabric of the pyramids, timeless and vigilant.",
+                    "The Awakening is prophesied to be a collective shift, where humanity's heart-frequency aligns with the Earth's, unlocking dormant potentials within the pyramids and within ourselves."
+                ];
 
-            backToTopBtn.addEventListener('click', () => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
+                // Simulate API delay
+                setTimeout(() => {
+                    const randomInsight = staticInsights[Math.floor(Math.random() * staticInsights.length)];
+                    insightContainer.textContent = randomInsight;
+                    insightContainer.classList.add('visible');
+                    logDiscovery(`Received deeper insight for: "${title.substring(0, 20)}..."`);
+
+                    insightContainer.classList.remove('loading');
+                    setTimeout(() => {
+                        button.disabled = false;
+                    }, 3000);
+                }, 1500); // Simulate network delay
+            }
+
+
+            // Event Listeners for Pyramid interactions
+            pyramidElements.forEach(element => {
+                element.addEventListener('click', () => {
+                    const pyramidPart = element.dataset.pyramid;
+                    logDiscovery(`You touched the ${pyramidPart} of the pyramid.`);
+
+                    if (pyramidPart === 'sun-top' || pyramidPart === 'sun-base' || pyramidPart === 'sun-entrance') {
+                        playPyramidWhisper();
+                        getStaticWhisper(`a general wisdom from the ${pyramidPart} pyramid.`);
+
+                        // Activate the main beam briefly
+                        pyramidBeam.classList.add('active');
+                        playBeamSound();
+                        setTimeout(() => {
+                            pyramidBeam.classList.remove('active');
+                        }, 5000); // Beam active for 5 seconds
+                    } else if (pyramidPart === 'dragon' || pyramidPart === 'moon') {
+                        playSmallPyramidSound();
+                        // Add a subtle visual effect to the small pyramid
+                        element.style.transform = `${element.style.transform} scale(1.08) rotateY(10deg)`;
+                        setTimeout(() => {
+                            element.style.transform = element.style.transform.replace(' scale(1.08) rotateY(10deg)', '');
+                        }, 500);
+                        getStaticWhisper(`a specific insight from the ${pyramidPart} pyramid.`);
+
+                        // Activate the corresponding small pyramid beam
+                        if (pyramidPart === 'dragon') {
+                            // Set green beam for Dragon pyramid
+                            pyramidLoveBeam.style.background = 'linear-gradient(to top, rgba(0, 255, 0, 0.8), rgba(0, 255, 0, 0.0))';
+                            pyramidLoveBeam.classList.add('active');
+                            setTimeout(() => {
+                                pyramidLoveBeam.classList.remove('active');
+                                // Optionally reset background if needed, but not required if CSS handles default
+                            }, 1500); // Small beam active for 1.5 seconds
+                        } else if (pyramidPart === 'moon') {
+                            // Set red beam for Moon pyramid (explicitly, though CSS default is red)
+                            pyramidMoonBeam.style.background = 'linear-gradient(to top, rgba(255, 0, 0, 0.8), rgba(255, 0, 0, 0.0))';
+                            pyramidMoonBeam.classList.add('active');
+                            setTimeout(() => {
+                                pyramidMoonBeam.classList.remove('active');
+                                // Optionally reset background if needed, but not required if CSS handles default
+                            }, 1500); // Small beam active for 1.5 seconds
+                        }
+                    }
                 });
             });
-        }
 
-        // Ensure all JavaScript is initialized after DOM content is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            // All event listeners and initializations are fine here
+            // Event listener for the "Seek Ancient Counsel" button
+            seekCounselButton.addEventListener('click', () => {
+                const question = userQuestionInput.value.trim();
+                if (question) {
+                    playCounselWhisper();
+                    getStaticWhisper(question);
+                    userQuestionInput.value = '';
+                } else {
+                    logDiscovery("Please ask a question to seek ancient counsel.");
+                }
+            });
+
+            // Event listener for Enter key in the input field
+            userQuestionInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    seekCounselButton.click();
+                }
+            });
+
+            // Toggle translation button
+            toggleTranslationButton.addEventListener('click', () => {
+                playMenuToggleSound();
+                translationVisible = !translationVisible;
+                if (translationVisible) {
+                    englishOutput.classList.add('visible');
+                    toggleTranslationButton.textContent = 'Hide English';
+                } else {
+                    englishOutput.classList.remove('visible');
+                    toggleTranslationButton.textContent = 'Show English';
+                }
+            });
+
+            // Veil interaction
+            veilOverlay.addEventListener('click', () => {
+                veilOverlay.classList.toggle('active');
+                playVeilWhisper();
+                logDiscovery("The Veil shimmered, revealing fleeting glimpses...");
+            });
+
+            // Menu functionality
+            menuButton.addEventListener('click', () => {
+                playMenuToggleSound();
+                overlayMenu.classList.add('active');
+                menuButton.setAttribute('aria-expanded', 'true');
+            });
+
+            closeMenuButton.addEventListener('click', () => {
+                playMenuToggleSound();
+                overlayMenu.classList.remove('active');
+                menuButton.setAttribute('aria-expanded', 'false');
+            });
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    playMenuToggleSound();
+                    const page = e.target.dataset.page;
+                    showPage(page);
+                    overlayMenu.classList.remove('active');
+                    menuButton.setAttribute('aria-expanded', 'false');
+                });
+            });
+
+            function showPage(pageName) {
+                // Hide all pages
+                document.querySelectorAll('section[id$="Page"]').forEach(page => {
+                    page.classList.remove('active');
+                    page.classList.add('hidden-page');
+                });
+
+                // Show the requested page
+                const targetPage = document.getElementById(`${pageName}Page`);
+                if (targetPage) {
+                    targetPage.classList.remove('hidden-page');
+                    targetPage.classList.add('active');
+                }
+            }
+
+            // Initially hide all pages and only activate 'home' after entry
+            showPage('home');
+            homePage.classList.remove('active'); // Ensure home is not active until entry
+
+            // Log toggle button
+            toggleLogButton.addEventListener('click', () => {
+                playLogToggleSound();
+                const isLogActive = discoveryLog.classList.toggle('active');
+                toggleLogButton.textContent = isLogActive ? 'Hide Log' : 'Show Log';
+                toggleLogButton.setAttribute('aria-expanded', isLogActive);
+                logDiscovery(`Discovery Log ${isLogActive ? 'opened' : 'closed'}.`);
+            });
+
+            logDiscovery("System initialized. The ancient energies stir...");
+
+            // Theme switching logic
+            themeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    playThemeChangeSound();
+                    const themeName = button.dataset.themeName;
+                    document.body.dataset.theme = themeName;
+
+                    themeButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    logDiscovery(`Theme changed to: ${themeName}`);
+                });
+            });
+
+            // Event listeners for Deepen Insight buttons
+            deepenInsightButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const loreSection = button.closest('.lore-section');
+                    const title = loreSection.querySelector('h3').textContent;
+                    const content = loreSection.querySelector('p').textContent;
+                    const insightContainer = loreSection.querySelector('.llm-insight-container');
+                    getStaticLoreExpansion(title, content, insightContainer, button);
+                });
+            });
+
+            // Interactive Lore Sections (Expand/Collapse)
+            loreSectionHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const contentId = header.dataset.toggleId;
+                    const contentElement = document.getElementById(contentId);
+                    if (contentElement) {
+                        contentElement.classList.toggle('expanded');
+                    }
+                });
+            });
+
+            // NEW: Initial Entry Overlay Logic
+            initialEntryOverlay.addEventListener('click', () => {
+                playEntryChime();
+                initialEntryOverlay.classList.add('hidden');
+                mainContentArea.classList.add('active');
+                toggleAmbientAudio();
+                logDiscovery("You have awakened the Veil. The journey begins...");
+            });
+
+            // Audio Toggle Button Event Listener
+            audioToggleButton.addEventListener('click', toggleAmbientAudio);
         });
     </script>
 </body>
