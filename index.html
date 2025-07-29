@@ -145,7 +145,7 @@
             padding: 1rem;
             box-sizing: border-box;
             z-index: 10; /* Ensure it's above background effects */
-            /* Removed min-height: 100vh; */
+            min-height: 80vh; /* Added to ensure content area takes up space */
             padding-bottom: 5rem; /* Reduced padding for log and toggle button */
             opacity: 0; /* Initially hidden */
             transition: opacity 1.5s ease-in-out;
@@ -869,20 +869,25 @@
 
         /* Styles for the new hidden lore page */
         .hidden-page {
-            display: none; /* Hidden by default */
+            display: flex; /* Changed to flex to enable flex properties */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* NEW: Center content vertically */
             width: 95%;
             max-width: 900px;
             padding: 1rem;
             box-sizing: border-box;
-            flex-direction: column;
-            align-items: center;
             color: #e0e0e0;
-            margin-top: 1rem; /* Adjusted margin-top */
+            margin-top: 0; /* Adjusted margin-top */
+            min-height: 90vh; /* NEW: Increased minimum height for the page content */
             z-index: 10;
             opacity: 0; /* For smooth transition */
             transform: translateY(20px); /* For smooth transition */
             transition: opacity 0.7s ease-out, transform 0.7s ease-out;
             pointer-events: none; /* Prevent interaction when hidden */
+            background-color: rgba(0, 0, 0, 0.6); /* NEW: Subtle background for visual definition */
+            border-radius: 1rem; /* NEW: Rounded corners for the page container */
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2); /* NEW: Subtle shadow for depth */
         }
 
         .hidden-page.active {
@@ -897,7 +902,7 @@
             border: 1px solid rgba(74, 85, 104, 0.6);
             border-radius: 0.75rem;
             padding: clamp(1rem, 3vw, 2rem);
-            margin-top: 1.5rem;
+            margin-top: 1.5rem; /* Adjusted margin-top */
             text-align: left;
             font-size: clamp(0.95rem, 1.6vw, 1.15rem);
             line-height: 1.6;
@@ -1000,59 +1005,7 @@
 
 
         /* Wisdoms and Prophecies Section */
-        #wisdomsAndPropheciesPage { /* Corrected ID here */
-            margin-top: 3rem;
-            color: #FFD700;
-            text-align: center;
-            width: 100%;
-            max-width: 700px;
-            padding: 1rem;
-            box-sizing: border-box;
-            background-color: rgba(0, 0, 0, 0.6);
-            border-radius: 1rem;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
-            border: 1px solid rgba(255, 215, 0, 0.4);
-            animation: fadeIn 2s ease-in-out;
-        }
-
-        #wisdomsAndPropheciesPage h2 { /* Corrected ID here */
-            font-family: 'Spectral', serif;
-            font-size: clamp(1.8rem, 4vw, 3rem);
-            margin-bottom: 1.5rem;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-            color: #FFD700;
-        }
-
-        .wisdom-entry {
-            margin-bottom: 2rem;
-            padding: 1rem;
-            background-color: rgba(255, 255, 255, 0.05);
-            border-radius: 0.75rem;
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .wisdom-entry:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
-        }
-
-        .wisdom-entry .runic-text-lg {
-            font-family: 'Spectral', serif;
-            font-size: clamp(1.8rem, 3.5vw, 2.5rem);
-            color: #FFD700;
-            text-shadow: 0 0 12px rgba(255, 215, 0, 0.7);
-            margin-bottom: 0.5rem;
-            letter-spacing: 0.15em;
-        }
-
-        .wisdom-entry .english-translation-lg {
-            font-style: italic;
-            font-size: clamp(1rem, 1.8vw, 1.3rem);
-            color: #e0e0e0;
-            line-height: 1.5;
-        }
+        /* This section has been removed */
 
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -1275,16 +1228,8 @@
 
         /* Meditation Page Styles */
         #meditationPage {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            /* Changed justify-content to center for better vertical alignment */
-            justify-content: center;
-            text-align: center;
-            padding-bottom: 2rem;
-            /* Ensure min-height fills the viewport for centering */
-            min-height: calc(100vh - 80px); /* Adjusted for header/footer if any, or just 100vh */
-            margin-top: 0; /* Removed margin-top to allow centering */
+            /* Removed min-height to allow content to dictate height */
+            /* margin-top: 0; */ /* Removed margin-top to allow centering */
         }
 
         .meditation-circle {
@@ -1395,23 +1340,14 @@
 
         /* Donation Page Styles */
         #donationPage {
-            margin-top: 3rem;
             color: #FFD700;
             text-align: center;
             width: 100%;
             max-width: 700px;
             padding: 1rem;
             box-sizing: border-box;
-            background-color: rgba(0, 0, 0, 0.6);
-            border-radius: 1rem;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
-            border: 1px solid rgba(255, 215, 0, 0.4);
+            border: 1px solid rgba(255, 215, 0, 0.4); /* Kept this specific border */
             animation: fadeIn 2s ease-in-out;
-            display: flex; /* Use flex for content alignment */
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 40vh; /* Ensure some height for content */
         }
 
         #donationPage h2 {
@@ -1584,7 +1520,6 @@
                 <ul>
                     <li><a href="#" data-page="home">Home</a></li>
                     <li><a href="#" data-page="lore">Lore</a></li>
-                    <li><a href="#" data-page="wisdomsAndProphecies">Wisdoms & Prophecies</a></li>
                     <li><a href="#" data-page="meditation">Meditation</a></li>
                     <li><a href="#" data-page="donation">Donation</a></li> <!-- New Donation Link -->
                     <li><a href="#" data-page="contact">Contact the Keepers</a></li>
@@ -1704,83 +1639,7 @@
             </div>
         </section>
 
-        <section id="wisdomsAndPropheciesPage" class="hidden-page">
-            <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Wisdoms & Prophecies</h2>
-            <p class="text-gray-300 text-center mb-4">
-                Connect with the ancient energies through focused intention.
-                Allow the subtle vibrations to guide your inner journey.
-            </p>
-            <div class="wisdom-entry">
-                <div class="runic-text-lg">ᚠᛖᚺᚢ ᚢᚾᛞ ᛟᚦᚨᛚᚨ</div>
-                <div class="english-translation-lg">
-                    **Wisdom:** True wealth lies not in accumulation, but in the spirit's free flow and the wisdom gained from ancestral roots.
-                    **Prophecy:** The old ways shall return, not as relics, but as foundational truths for a new era.
-                </div>
-            </div>
-            <div class="wisdom-entry">
-                <div class="runic-text-lg">ᚢᚱᚢᛉ ᛞᚨᚷᚨᛉ</div>
-                <div class="english-translation-lg">
-                    **Wisdom:** Strength is found in transformation, as each dawn brings new light and the chance to shed what no longer serves.
-                    **Prophecy:** A sudden, illuminating shift will unveil hidden paths for those who dare to walk them.
-                </div>
-            </div>
-            <div class="wisdom-entry">
-                <div class="runic-text-lg">ᚦᚢᚱᛁᛋᚨᛉ ᛇᚱ</div>
-                <div class="english-translation-lg">
-                    **Wisdom:** Patience in the face of chaos carves a path through the storm, revealing the ice-clear vision beyond.
-                    **Prophecy:** The severing of old ties, though painful, will free vital energy for collective healing.
-                </div>
-            </div>
-            <div class="wisdom-entry">
-                <div class="runic-text-lg">ᚨᚾᛋᚢᛉ ᛗᚨᚾᚾᚨᛉ</div>
-                <div class="english-translation-lg">
-                    **Wisdom:** The spoken word carries power; speak truth and listen to the whispers of the divine within all.
-                    **Prophecy:** Communication will transcend the mundane, leading to profound understanding between disparate souls.
-                </div>
-            </div>
-            <div class="wisdom-entry">
-                <div class="runic-text-lg">ᚱᚨᛁᛞᛟ ᛚᚨᚷᚢᛉ</div>
-                <div class="english-translation-lg">
-                    **Wisdom:** The journey itself is the destination; embrace the flow of life's currents, for they lead to destiny.
-                    **Prophecy:** Ancient waterways, once forgotten, will reveal passages to submerged knowledge.
-                </div>
-            </div>
-            <div class="wisdom-entry">
-                <div class="runic-text-lg">ᚲᚨᚾᚾᚨᛉ ᛋᛟᚢᛁᛚᛟ</div>
-                <div class="english-translation-lg">
-                    **Wisdom:** Kindle the inner flame, for it is the light that reveals hidden truths and burns away illusions.
-                    **Prophecy:** A new sun will rise from within, illuminating the collective consciousness and dispelling the shadows of ignorance.
-                </div>
-            </div>
-             <div class="wisdom-entry">
-                <div class="runic-text-lg">ᚷᛖᛒᛟ ᚹᚢᚾᛃᛟ</div>
-                <div class="english-translation-lg">
-                    **Wisdom:** Generosity of spirit brings joy, for true gifts are given freely, without expectation.
-                    **Prophecy:** A great alliance will form, built on mutual respect and shared prosperity, transcending old divisions.
-                </div>
-            </div>
-            <div class="wisdom-entry">
-                <div class="runic-text-lg">ᚺᚨᚷᚨᛚᚨᛉ ᚾᚨᚢᛞᛁᛉ</div>
-                <div class="english-translation-lg">
-                    **Wisdom:** From destruction, new patterns emerge; embrace the necessary chaos for genuine growth.
-                    **Prophecy:** A cosmic tremor will reset the frequencies, aligning human endeavor with universal harmony.
-                </div>
-            </div>
-            <div class="wisdom-entry">
-                <div class="runic-text-lg">ᛁᛋᚨ ᛃᛖᚱᚨ</div>
-                <div class="english-translation-lg">
-                    **Wisdom:** Stillness allows for reflection, revealing the cycles of time and the seeds of future harvests.
-                    **Prophecy:** The long winter of forgetfulness shall end, and the bounty of rediscovered knowledge will nourish all.
-                </div>
-            </div>
-            <div class="wisdom-entry">
-                <div class="runic-text-lg">ᛈᛖᚱᚦᚱᛟ ᛖᛁᚹᚨᛉ</div>
-                <div class="english-translation-lg">
-                    **Wisdom:** Destiny is a game of chance and choice; ride the currents of change with adaptability and grace.
-                    **Prophecy:** The Veil will thin completely, allowing direct communion with ancient consciousness and forgotten realms.
-                </div>
-            </div>
-        </section>
+        <!-- The "Wisdoms & Prophecies" section has been removed as per your request. -->
 
         <section id="meditationPage" class="hidden-page">
             <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Guided Meditation</h2>
@@ -1865,7 +1724,7 @@
             const navLinks = document.querySelectorAll('.overlay-menu nav ul li a');
             const homePage = document.getElementById('homePage');
             const lorePage = document.getElementById('lorePage');
-            const wisdomsAndPropheciesPage = document.getElementById('wisdomsAndPropheciesPage');
+            const wisdomsAndPropheciesPage = document.getElementById('wisdomsAndPropheciesPage'); // This will now be null
             const contactPage = document.getElementById('contactPage'); // Reference to the contact page
             const meditationPage = document.getElementById('meditationPage');
             const donationPage = document.getElementById('donationPage'); // New Donation Page
@@ -2215,8 +2074,17 @@
                 });
             }
 
+            // Define pyramid themes for more specific counsel
+            const pyramidThemes = {
+                'sun-top': 'the pinnacle of enlightenment and cosmic energy, representing higher consciousness and universal truths',
+                'sun-base': 'the foundation of ancient wisdom and earthly connection, representing grounding and stability',
+                'sun-entrance': 'the gateway to inner knowledge and hidden truths, representing transformation and revelation',
+                'dragon': 'the primal energy of the Earth, courage, and transformation, representing strength and inner power',
+                'moon': 'the intuitive depths, cycles of change, and hidden reflections, representing intuition and emotional wisdom'
+            };
+
             // Function to provide dynamic ancient counsel using Gemini API
-            async function getAncientCounsel(promptContext) {
+            async function getAncientCounsel(promptContext, pyramidPart = null) {
                 if (isGenerating) {
                     logDiscovery("The ancient energies are still coalescing. Please wait.");
                     return;
@@ -2231,9 +2099,21 @@
                 playCounselWhisper();
                 logDiscovery(`Seeking counsel for: "${promptContext}"...`);
 
+                const now = new Date().toISOString(); // Get current timestamp for uniqueness
+                let fullPrompt = `Generate a short, mystical, ancient-sounding prophecy or wisdom in two parts: first, a few words in a runic-like, cryptic style (use Futhark runes if possible, e.g., "ᛖᚾᛏᛖᚱ ᛞᚨᚷᚨᛉ"), and second, an English translation/interpretation of that wisdom/prophecy. Ensure the runic part is very short and symbolic, and the English part is a concise, insightful explanation. Format the output as a JSON object with 'runic' and 'english' keys. This response should be unique and distinct from any previous wisdom generated. Current timestamp for uniqueness: ${now}.`;
+
+                if (pyramidPart && pyramidThemes[pyramidPart]) {
+                    fullPrompt += ` The wisdom should be specifically from the perspective of ${pyramidThemes[pyramidPart]}.`;
+                }
+
+                if (promptContext && promptContext !== "a general wisdom from the sun-top pyramid." && promptContext !== "a specific insight from the dragon pyramid." && promptContext !== "a specific insight from the moon pyramid.") {
+                    fullPrompt += ` The response should also be directly related to the user's question: "${promptContext}".`;
+                }
+
+
                 try {
                     let chatHistory = [];
-                    chatHistory.push({ role: "user", parts: [{ text: `Generate a short, mystical, ancient-sounding prophecy or wisdom in two parts: first, a few words in a runic-like, cryptic style (use Futhark runes if possible, e.g., "ᛖᚾᛏᛖᚱ ᛞᚨᚷᚨᛉ"), and second, an English translation/interpretation of that wisdom/prophecy. The response should be directly related to the user's question: "${promptContext}". Ensure the runic part is very short and symbolic, and the English part is a concise, insightful explanation. Format the output as a JSON object with 'runic' and 'english' keys.` }] });
+                    chatHistory.push({ role: "user", parts: [{ text: fullPrompt }] });
 
                     const payload = {
                         contents: chatHistory,
@@ -2326,9 +2206,10 @@
                 playCounselWhisper();
                 logDiscovery("Receiving daily wisdom...");
 
+                const now = new Date().toISOString(); // Get current timestamp for uniqueness
                 try {
                     let chatHistory = [];
-                    chatHistory.push({ role: "user", parts: [{ text: `Generate a short, unique, mystical, daily prophecy or wisdom in two parts: first, a few words in a runic-like, cryptic style (use Futhark runes if possible, e.g., "ᛖᚾᛏᛖᚱ ᛞᚨᚷᚨᛉ"), and second, an English translation/interpretation of that wisdom/prophecy. Ensure the runic part is very short and symbolic, and the English part is a concise, insightful explanation. The wisdom should be general and inspiring, suitable for a daily reflection. Format the output as a JSON object with 'runic' and 'english' keys.` }] });
+                    chatHistory.push({ role: "user", parts: [{ text: `Generate a short, unique, mystical, daily prophecy or wisdom in two parts: first, a few words in a runic-like, cryptic style (use Futhark runes if possible, e.g., "ᛖᚾᛏᛖᚱ ᛞᚨᚷᚨᛉ"), and second, an English translation/interpretation of that wisdom/prophecy. Ensure the runic part is very short and symbolic, and the English part is a concise, insightful explanation. The wisdom should be general and inspiring, suitable for a daily reflection. Format the output as a JSON object with 'runic' and 'english' keys. This response should be unique and distinct from any previous wisdom generated. Current timestamp for uniqueness: ${now}.` }] });
 
                     const payload = {
                         contents: chatHistory,
@@ -2420,9 +2301,10 @@
                 playInsightWhisper();
                 logDiscovery(`Deepening insight for: "${title}"...`);
 
+                const now = new Date().toISOString(); // Get current timestamp for uniqueness
                 try {
                     let chatHistory = [];
-                    chatHistory.push({ role: "user", parts: [{ text: `Expand on the following lore section in a mystical, ancient, and insightful tone. Focus on adding a deeper, esoteric layer to the provided text. The section title is "${title}" and the current content is: "${content}". Provide a concise paragraph of expanded insight.` }] });
+                    chatHistory.push({ role: "user", parts: [{ text: `Expand on the following lore section in a mystical, ancient, and insightful tone. Focus on adding a deeper, esoteric layer to the provided text. The section title is "${title}" and the current content is: "${content}". Provide a concise paragraph of expanded insight. This response should be unique and distinct from any previous insight generated. Current timestamp for uniqueness: ${now}.` }] });
 
                     const payload = { contents: chatHistory };
                     const apiKey = ""; // Canvas will automatically provide this
@@ -2472,10 +2354,25 @@
                     const pyramidPart = element.dataset.pyramid;
                     logDiscovery(`You touched the ${pyramidPart} of the pyramid.`);
 
+                    // Determine the specific prompt context based on the pyramid part
+                    let specificPromptContext = `a general wisdom from the ${pyramidPart} pyramid.`;
+                    if (pyramidPart === 'sun-top') {
+                        specificPromptContext = `a wisdom from the pinnacle of enlightenment and cosmic energy`;
+                    } else if (pyramidPart === 'sun-base') {
+                        specificPromptContext = `a wisdom from the foundation of ancient wisdom and earthly connection`;
+                    } else if (pyramidPart === 'sun-entrance') {
+                        specificPromptContext = `a wisdom from the gateway to inner knowledge and hidden truths`;
+                    } else if (pyramidPart === 'dragon') {
+                        specificPromptContext = `an insight from the primal energy of the Earth, courage, and transformation`;
+                    } else if (pyramidPart === 'moon') {
+                        specificPromptContext = `an insight from the intuitive depths, cycles of change, and hidden reflections`;
+                    }
+
+
                     if (pyramidPart === 'sun-top' || pyramidPart === 'sun-base' || pyramidPart === 'sun-entrance') {
                         playPyramidWhisper();
-                        // Call the dynamic counsel function
-                        getAncientCounsel(`a general wisdom from the ${pyramidPart} pyramid.`);
+                        // Call the dynamic counsel function with specific context
+                        getAncientCounsel(specificPromptContext, pyramidPart);
 
                         // Activate the main beam briefly
                         pyramidBeam.classList.add('active');
@@ -2490,8 +2387,8 @@
                         setTimeout(() => {
                             element.style.transform = element.style.transform.replace(' scale(1.08) rotateY(10deg)', '');
                         }, 500);
-                        // Call the dynamic counsel function
-                        getAncientCounsel(`a specific insight from the ${pyramidPart} pyramid.`);
+                        // Call the dynamic counsel function with specific context
+                        getAncientCounsel(specificPromptContext, pyramidPart);
 
                         // Activate the corresponding small pyramid beam
                         if (pyramidPart === 'dragon') {
@@ -2608,6 +2505,17 @@
                         targetPage.style.transform = 'translateY(0)';
                         targetPage.style.pointerEvents = 'auto'; // Enable interactions when active
                     }, 500); // Start fade-in after old page starts fading out
+                } else {
+                    // If the requested page does not exist (e.g., wisdomsAndPropheciesPage),
+                    // redirect to home page or log an error.
+                    console.warn(`Attempted to navigate to non-existent page: ${pageName}Page. Redirecting to home.`);
+                    setTimeout(() => {
+                        document.getElementById('homePage').classList.remove('hidden-page');
+                        document.getElementById('homePage').classList.add('active');
+                        document.getElementById('homePage').style.opacity = '1';
+                        document.getElementById('homePage').style.transform = 'translateY(0)';
+                        document.getElementById('homePage').style.pointerEvents = 'auto';
+                    }, 500);
                 }
 
                 // Stop meditation if navigating away from meditation page
