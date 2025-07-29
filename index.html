@@ -10,7 +10,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Expose Firebase modules globally for use in the main script block
         window.firebase = {
@@ -30,7 +30,8 @@
             collection,
             query,
             orderBy,
-            limit
+            limit,
+            serverTimestamp
         };
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
@@ -1226,7 +1227,8 @@
             color: #333;
         }
 
-       
+        /* Meditation Page Styles */
+    
 
         .meditation-circle {
             width: clamp(150px, 30vw, 250px);
@@ -1765,47 +1767,71 @@
             let auth;
             let userId;
             let isAuthReady = false; // NEW: Flag to track authentication readiness
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; // Use provided app ID or default
 
-            // Define the backend URL (assuming it runs on localhost:3000 during development)
-            const BACKEND_URL = 'http://localhost:3000'; // IMPORTANT: Change this for deployment!
+            // --- Utility for Exponential Backoff ---
+            async function fetchWithExponentialBackoff(fetchFunction, maxRetries = 5, delay = 1000) {
+                for (let i = 0; i < maxRetries; i++) {
+                    try {
+                        const response = await fetchFunction();
+                        if (response.ok) {
+                            return response;
+                        } else {
+                            // Handle specific HTTP errors if needed, otherwise retry
+                            console.warn(`Fetch failed (attempt ${i + 1}/${maxRetries}): ${response.status} ${response.statusText}`);
+                            if (response.status === 403) {
+                                // If it's a permission error, no point in retrying
+                                throw new Error(`Permission denied (403). Check Firebase rules or API key.`);
+                            }
+                        }
+                    } catch (error) {
+                        console.warn(`Fetch error (attempt ${i + 1}/${maxRetries}):`, error);
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
+                }
+                throw new Error(`Max retries (${maxRetries}) exceeded. Failed to fetch.`);
+            }
+
+            async function firestoreWithExponentialBackoff(firestoreFunction, maxRetries = 5, delay = 1000) {
+                for (let i = 0; i < maxRetries; i++) {
+                    try {
+                        const result = await firestoreFunction();
+                        return result;
+                    } catch (error) {
+                        console.warn(`Firestore operation failed (attempt ${i + 1}/${maxRetries}):`, error);
+                        if (error.code === 'permission-denied' || error.code === 'unauthenticated') {
+                            throw new Error(`Firestore permission denied or unauthenticated. Check Firebase rules or auth state.`);
+                        }
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
+                }
+                throw new Error(`Max retries (${maxRetries}) exceeded. Failed Firestore operation.`);
+            }
+            // --- End Utility for Exponential Backoff ---
+
 
             // Initialize Firebase (client-side for auth and log display)
+            let firebaseConfig = {};
             try {
                 console.log("Attempting Firebase initialization...");
-                // --- IMPORTANT: PASTE YOUR ACTUAL FIREBASE CONFIG HERE ---
-                // You MUST replace the placeholder values below with the configuration
-                // object you copied from your Firebase project settings (Project settings -> General -> Your apps -> Config).
-                // Example:
-                // const firebaseConfig = {
-                //   apiKey: "AIzaSy...",
-                //   authDomain: "your-project.firebaseapp.com",
-                //   projectId: "your-project-id",
-                //   storageBucket: "your-project.appspot.com",
-                //   messagingSenderId: "...",
-                //   appId: "...",
-                //   measurementId: "G-..." // Optional
-                // };
-                const firebaseConfig = {
-                    apiKey: "AIzaSyB_r2GiN7kmTkB2EpNtWaoO7GMW2kMfRvw",
-                    authDomain: "gen-lang-client-0528893805.firebaseapp.com",
-                    projectId: "gen-lang-client-0528893805",
-                    storageBucket: "gen-lang-client-0528893805.firebasestorage.app",
-                    messagingSenderId: "176544624561",
-                    appId: "1:176544624561:web:f13dbae7c4b35b769bd790"
-                };
-                // --- END OF FIREBASE CONFIG PASTE AREA ---
+                console.log("Raw __firebase_config:", typeof __firebase_config !== 'undefined' ? __firebase_config : "undefined");
 
-                // For local development, you might not have __initial_auth_token.
-                // If you need a custom token, you'd generate it on your backend and pass it here.
-                // For now, we'll default to anonymous sign-in if no token is provided.
-                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                console.log("Initial Auth Token:", initialAuthToken ? "Provided" : "Not Provided (using anonymous)");
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    try {
+                        firebaseConfig = JSON.parse(__firebase_config);
+                        console.log("Parsed firebaseConfig:", firebaseConfig);
+                    } catch (parseError) {
+                        console.error("Error parsing __firebase_config:", parseError);
+                        throw new Error("Invalid Firebase configuration format. '__firebase_config' is not valid JSON.");
+                    }
+                } else {
+                    console.warn("Global variable '__firebase_config' is undefined or empty. Firebase initialization will likely fail.");
+                    throw new Error("Firebase configuration not provided by environment. Please ensure '__firebase_config' is set.");
+                }
 
-
-                // Explicitly check for projectId or other essential Firebase config properties
-                if (Object.keys(firebaseConfig).length === 0 || !firebaseConfig.projectId || firebaseConfig.projectId === "YOUR_PROJECT_ID") {
-                    throw new Error("Firebase configuration (projectId) is missing or still default. Please update 'firebaseConfig' in index.html with your actual Firebase project details.");
+                // Explicitly check for projectId and apiKey
+                if (!firebaseConfig.projectId || !firebaseConfig.apiKey) {
+                    throw new Error("Firebase configuration is missing essential properties (projectId or apiKey).");
                 }
 
                 app = firebase.initializeApp(firebaseConfig);
@@ -1813,7 +1839,9 @@
                 auth = firebase.getAuth(app);
                 console.log("Firebase app, db, auth objects created.");
 
-                // Sign in anonymously or with custom token
+                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                console.log("Initial Auth Token:", initialAuthToken ? "Provided" : "Not Provided (using anonymous)");
+
                 if (initialAuthToken) {
                     console.log("Attempting signInWithCustomToken...");
                     await firebase.signInWithCustomToken(auth, initialAuthToken);
@@ -1824,37 +1852,37 @@
                     console.log("signInAnonymously attempted.");
                 }
 
-                // Listen for auth state changes to get the user ID
                 firebase.onAuthStateChanged(auth, (user) => {
                     console.log("onAuthStateChanged callback fired.");
                     if (user) {
                         userId = user.uid;
                         userIdDisplay.textContent = `User ID: ${userId}`;
                         console.log("Firebase initialized. User ID:", userId);
-                        loadDiscoveryLog(); // Load log after user is authenticated
-                        isAuthReady = true; // NEW: Set auth ready flag
-                        sendMessageButton.disabled = false; // NEW: Enable the send message button
+                        loadDiscoveryLog();
+                        isAuthReady = true;
+                        sendMessageButton.disabled = false;
                         console.log("sendMessageButton enabled. isAuthReady set to true.");
                     } else {
                         console.log("No user signed in (onAuthStateChanged).");
-                        userId = null;
-                        userIdDisplay.textContent = 'User ID: N/A';
-                        isAuthReady = true; // Still set to true, as anonymous sign-in might fail in some contexts
-                        sendMessageButton.disabled = true; // Keep disabled if no user
-                        console.log("sendMessageButton kept disabled. isAuthReady set to true (no user).");
+                        userId = crypto.randomUUID(); // Assign a random UUID for anonymous users
+                        userIdDisplay.textContent = `User ID: ${userId} (Anonymous)`;
+                        console.log("Firebase initialized. Anonymous User ID:", userId);
+                        loadDiscoveryLog(); // Load log even for anonymous user
+                        isAuthReady = true;
+                        sendMessageButton.disabled = false; // Allow anonymous users to send messages
+                        console.log("sendMessageButton enabled. isAuthReady set to true (anonymous user).");
                     }
                 });
 
             } catch (error) {
                 console.error("Error during Firebase initialization or sign-in:", error);
-                // We still display a message in UI even if Firebase init fails
                 const entry = document.createElement('div');
-                entry.classList.add('log-entry', 'text-gray-400', 'text-red-400'); // Added text-red-400 for error visibility
-                entry.textContent = `${new Date().toLocaleTimeString()}: CRITICAL ERROR: ${error.message}. Please ensure Firebase Authentication is enabled for your project and your API key is not restricted.`;
+                entry.classList.add('log-entry', 'text-gray-400', 'text-red-400');
+                entry.textContent = `${new Date().toLocaleTimeString()}: CRITICAL ERROR: ${error.message}`;
                 logEntries.prepend(entry);
-                isAuthReady = true; // Attempt to proceed even with init error, marking auth check as complete
-                sendMessageButton.disabled = true; // Keep disabled if init failed
-                messageFeedback.textContent = `CRITICAL: Connection to ancient network failed. ${error.message}. Please check your Firebase project settings.`; // Display error in UI
+                isAuthReady = true;
+                sendMessageButton.disabled = true;
+                messageFeedback.textContent = `CRITICAL: Connection to ancient network failed. ${error.message}. Please check your Firebase project settings.`;
                 messageFeedback.classList.add('visible');
                 console.log("Firebase initialization failed. sendMessageButton kept disabled. isAuthReady set to true (error).");
             }
@@ -2071,10 +2099,10 @@
 
             setInterval(createRuneBackground, 6000);
 
-            // Function to add discovery log entries (now calls backend)
+            // Function to add discovery log entries to Firestore
             async function logDiscovery(message) {
-                if (!userId || !appId) {
-                    console.warn("User ID or App ID not available. Log entry not sent to backend.");
+                if (!db || !userId) {
+                    console.warn("Firestore not initialized or user ID not available. Log entry not saved.");
                     // Still display in UI for immediate feedback
                     const entry = document.createElement('div');
                     entry.classList.add('log-entry', 'text-gray-400');
@@ -2084,27 +2112,22 @@
                 }
 
                 try {
-                    const response = await fetch(`${BACKEND_URL}/api/log-discovery`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ userId, appId, message })
-                    });
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        console.error("Backend log error:", errorData.error);
-                        throw new Error(errorData.error);
-                    }
+                    await firestoreWithExponentialBackoff(() =>
+                        firebase.addDoc(firebase.collection(db, `artifacts/${appId}/users/${userId}/discovery_log`), {
+                            message: message,
+                            timestamp: firebase.serverTimestamp()
+                        })
+                    );
                 } catch (e) {
-                    console.error("Error sending log to backend: ", e);
-                    // Fallback to displaying in UI if backend fails
+                    console.error("Error saving log to Firestore: ", e);
                     const entry = document.createElement('div');
-                    entry.classList.add('log-entry', 'text-gray-400');
-                    entry.textContent = `${new Date().toLocaleTimeString()} (Failed to save): ${message}`;
+                    entry.classList.add('log-entry', 'text-gray-400', 'text-red-400');
+                    entry.textContent = `${new Date().toLocaleTimeString()} (Failed to save): ${message} - Error: ${e.message}`;
                     logEntries.prepend(entry);
                 }
             }
 
-            // Function to load discovery log entries from Firestore (client-side)
+            // Function to load discovery log entries from Firestore
             function loadDiscoveryLog() {
                 if (!db || !userId) {
                     console.warn("Firestore not initialized or user not authenticated. Cannot load log.");
@@ -2112,6 +2135,7 @@
                 }
 
                 const logCollectionRef = firebase.collection(db, `artifacts/${appId}/users/${userId}/discovery_log`);
+                // Note: orderBy can cause index issues. If so, remove orderBy and sort in client.
                 const q = firebase.query(logCollectionRef, firebase.orderBy('timestamp', 'desc'), firebase.limit(20));
 
                 firebase.onSnapshot(q, (snapshot) => {
@@ -2139,7 +2163,7 @@
                 'moon': 'the intuitive depths, cycles of change, and hidden reflections, representing intuition and emotional wisdom'
             };
 
-            // Function to provide dynamic ancient counsel (now calls backend)
+            // Function to provide dynamic ancient counsel (now calls Gemini API directly)
             async function getAncientCounsel(promptContext, pyramidPart = null) {
                 if (isGenerating) {
                     logDiscovery("The ancient energies are still coalescing. Please wait.");
@@ -2156,31 +2180,55 @@
                 logDiscovery(`Seeking counsel for: "${promptContext}"...`);
 
                 try {
-                    const response = await fetch(`${BACKEND_URL}/api/counsel`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ promptContext, pyramidPart, type: 'counsel' })
-                    });
+                    const prompt = `Generate a short, mystical runic inscription and its English translation. The inscription should sound like an ancient prophecy or wisdom related to ${promptContext}.
+                    
+                    Format the output as follows:
+                    Runic: [Runic characters here]
+                    English: [English translation here]
+                    
+                    Example:
+                    Runic: ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ
+                    English: The path is not found.`;
 
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        console.error(`Backend API Error: ${response.status} - ${response.statusText}`, errorData);
-                        throw new Error(errorData.error || `API request failed: ${response.statusText}`);
-                    }
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; // Canvas will automatically provide this
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                    const response = await fetchWithExponentialBackoff(() =>
+                        fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        })
+                    );
 
                     const result = await response.json();
 
-                    if (result.runic && result.english) {
-                        runicOutput.textContent = result.runic;
-                        englishOutput.innerHTML = `<strong>Wisdom/Prophecy:</strong> ${result.english.replace(/\n/g, '<br>')}`;
-                        logDiscovery(`Received new counsel: ${result.english.substring(0, 30)}...`);
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        const runicMatch = text.match(/Runic: (.*)/);
+                        const englishMatch = text.match(/English: (.*)/);
+
+                        if (runicMatch && englishMatch) {
+                            runicOutput.textContent = runicMatch[1].trim();
+                            englishOutput.innerHTML = `<strong>Wisdom/Prophecy:</strong> ${englishMatch[1].trim().replace(/\n/g, '<br>')}`;
+                            logDiscovery(`Received new counsel: ${englishMatch[1].trim().substring(0, 30)}...`);
+                        } else {
+                            runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
+                            englishOutput.innerHTML = "<strong>Wisdom/Prophecy:</strong> The ancient echoes are faint. Try another question.";
+                            logDiscovery("Failed to parse counsel. Unexpected Gemini API response format.");
+                        }
                     } else {
                         runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
                         englishOutput.innerHTML = "<strong>Wisdom/Prophecy:</strong> The ancient echoes are faint. Try another question.";
-                        logDiscovery("Failed to receive counsel. Unexpected backend response structure.");
+                        logDiscovery("Failed to receive counsel. Empty or malformed Gemini API response.");
                     }
                 } catch (error) {
-                    console.error("Error fetching ancient counsel from backend:", error);
+                    console.error("Error fetching ancient counsel from Gemini API:", error);
                     runicOutput.textContent = "ᛖᚱᚱᛟᚱ ᛞᛖᛖᛈ";
                     englishOutput.innerHTML = `<strong>Wisdom/Prophecy:</strong> A disturbance in the ether prevents clear reception. Error: ${error.message}. Please try again.`;
                     logDiscovery(`Error seeking counsel: ${error.message}`);
@@ -2198,7 +2246,7 @@
                 }
             }
 
-            // Function to get daily wisdom (now calls backend)
+            // Function to get daily wisdom (now calls Gemini API directly)
             async function getDailyWisdom() {
                 if (isGenerating) {
                     logDiscovery("The ancient energies are still coalescing. Please wait.");
@@ -2215,31 +2263,54 @@
                 logDiscovery("Receiving daily wisdom...");
 
                 try {
-                    const response = await fetch(`${BACKEND_URL}/api/counsel`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ type: 'daily' })
-                    });
+                    const prompt = `Generate a short, mystical runic inscription and its English translation. The inscription should be a piece of daily wisdom or a short prophecy.
+                    
+                    Format the output as follows:
+                    Runic: [Runic characters here]
+                    English: [English translation here]
+                    
+                    Example:
+                    Runic: ᛞᚢᚱᚾ ᛚᛁᚠᛖ
+                    English: Embrace the flow of life.`;
 
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        console.error(`Backend API Error: ${response.status} - ${response.statusText}`, errorData);
-                        throw new Error(errorData.error || `API request failed: ${response.statusText}`);
-                    }
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; // Canvas will automatically provide this
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
+                    const response = await fetchWithExponentialBackoff(() =>
+                        fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        })
+                    );
                     const result = await response.json();
 
-                    if (result.runic && result.english) {
-                        runicOutput.textContent = result.runic;
-                        englishOutput.innerHTML = `<strong>Daily Wisdom:</strong> ${result.english.replace(/\n/g, '<br>')}`;
-                        logDiscovery(`Received daily wisdom: ${result.english.substring(0, 30)}...`);
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        const runicMatch = text.match(/Runic: (.*)/);
+                        const englishMatch = text.match(/English: (.*)/);
+
+                        if (runicMatch && englishMatch) {
+                            runicOutput.textContent = runicMatch[1].trim();
+                            englishOutput.innerHTML = `<strong>Daily Wisdom:</strong> ${englishMatch[1].trim().replace(/\n/g, '<br>')}`;
+                            logDiscovery(`Received daily wisdom: ${englishMatch[1].trim().substring(0, 30)}...`);
+                        } else {
+                            runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
+                            englishOutput.innerHTML = "<strong>Daily Wisdom:</strong> The ancient echoes are faint. No wisdom today.";
+                            logDiscovery("Failed to parse daily wisdom. Unexpected Gemini API response format.");
+                        }
                     } else {
                         runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
                         englishOutput.innerHTML = "<strong>Daily Wisdom:</strong> The ancient echoes are faint. No wisdom today.";
-                        logDiscovery("Failed to receive daily wisdom. Unexpected backend response structure.");
+                        logDiscovery("Failed to receive daily wisdom. Empty or malformed Gemini API response.");
                     }
                 } catch (error) {
-                    console.error("Error fetching daily wisdom from backend:", error);
+                    console.error("Error fetching daily wisdom from Gemini API:", error);
                     runicOutput.textContent = "ᛖᚱᚱᛟᚱ ᛞᛖᛖᛈ";
                     englishOutput.innerHTML = `<strong>Daily Wisdom:</strong> A disturbance in the ether prevents clear reception. Error: ${error.message}. Please try again.`;
                     logDiscovery(`Error seeking daily wisdom: ${error.message}`);
@@ -2257,7 +2328,7 @@
                 }
             }
 
-            // Function to provide dynamic lore expansion (now calls backend)
+            // Function to provide dynamic lore expansion (now calls Gemini API directly)
             async function getDynamicLoreExpansion(title, content, insightContainer, button) {
                 if (button.disabled) {
                     logDiscovery("Insight already being generated or recently generated. Please wait.");
@@ -2272,37 +2343,48 @@
                 logDiscovery(`Deepening insight for: "${title}"...`);
 
                 try {
-                    const response = await fetch(`${BACKEND_URL}/api/lore-insight`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title, content })
-                    });
+                    const prompt = `Expand on the following lore passage, providing a deeper, mystical insight. Focus on connecting it to ancient mysteries, cosmic energies, or spiritual implications.
+                    
+                    Title: ${title}
+                    Passage: ${content}
+                    
+                    Provide a concise, compelling insight (2-4 sentences).`;
 
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        console.error(`Backend API Error: ${response.status} - ${response.statusText}`, errorData);
-                        throw new Error(errorData.error || `API request failed: ${response.statusText}`);
-                    }
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; // Canvas will automatically provide this
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
+                    const response = await fetchWithExponentialBackoff(() =>
+                        fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        })
+                    );
                     const result = await response.json();
 
-                    if (result.insight) {
-                        insightContainer.textContent = result.insight;
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const insightText = result.candidates[0].content.parts[0].text;
+                        insightContainer.textContent = insightText;
                         insightContainer.classList.add('visible');
                         logDiscovery(`Received deeper insight for: "${title.substring(0, 20)}..."`);
                     } else {
                         insightContainer.textContent = "The ancient scrolls are unreadable at this moment. Try again.";
-                        logDiscovery("Failed to retrieve deeper insight. Unexpected backend response structure.");
+                        logDiscovery("Failed to retrieve deeper insight. Empty or malformed Gemini API response.");
                     }
                 } catch (error) {
-                    console.error("Error fetching lore expansion from backend:", error);
+                    console.error("Error fetching lore expansion from Gemini API:", error);
                     insightContainer.textContent = `A shimmer in the Veil prevents this insight from forming. Error: ${error.message}. Please try again.`;
                     logDiscovery(`Error deepening insight: ${error.message}`);
                 } finally {
                     insightContainer.classList.remove('loading');
                     setTimeout(() => {
                         button.disabled = false;
-                    }, 3000);
+                    }, 3000); // Re-enable button after a delay
                 }
             }
 
@@ -2315,15 +2397,15 @@
 
                     let specificPromptContext = `a general wisdom from the ${pyramidPart} pyramid.`;
                     if (pyramidPart === 'sun-top') {
-                        specificPromptContext = `a wisdom from the pinnacle of enlightenment and cosmic energy`;
+                        specificPromptContext = `the pinnacle of enlightenment and cosmic energy`;
                     } else if (pyramidPart === 'sun-base') {
-                        specificPromptContext = `a wisdom from the foundation of ancient wisdom and earthly connection`;
+                        specificPromptContext = `the foundation of ancient wisdom and earthly connection`;
                     } else if (pyramidPart === 'sun-entrance') {
-                        specificPromptContext = `a wisdom from the gateway to inner knowledge and hidden truths`;
+                        specificPromptContext = `the gateway to inner knowledge and hidden truths`;
                     } else if (pyramidPart === 'dragon') {
-                        specificPromptContext = `an insight from the primal energy of the Earth, courage, and transformation`;
+                        specificPromptContext = `the primal energy of the Earth, courage, and transformation`;
                     } else if (pyramidPart === 'moon') {
-                        specificPromptContext = `an insight from the intuitive depths, cycles of change, and hidden reflections`;
+                        specificPromptContext = `the intuitive depths, cycles of change, and hidden reflections`;
                     }
 
                     if (pyramidPart === 'sun-top' || pyramidPart === 'sun-base' || pyramidPart === 'sun-entrance') {
@@ -2565,7 +2647,7 @@
             startMeditationButton.addEventListener('click', startMeditationAudio);
             stopMeditationButton.addEventListener('click', stopMeditationAudio);
 
-            // Contact Form Submission Logic (now calls backend)
+            // Contact Form Submission Logic (now uses Firestore directly)
             contactForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
@@ -2579,20 +2661,11 @@
                     return;
                 }
 
-                // NEW: Check if authentication is ready before proceeding
-                if (!isAuthReady) {
+                if (!isAuthReady || !db || !userId) {
                     messageFeedback.textContent = "Establishing connection to the ancient network... Please wait a moment and try again.";
                     messageFeedback.classList.add('visible');
                     setTimeout(() => messageFeedback.classList.remove('visible'), 5000);
-                    console.warn("Authentication not ready. Cannot send message yet.");
-                    return;
-                }
-
-                if (!userId || !appId) {
-                    messageFeedback.textContent = "User authentication not established. Cannot send message.";
-                    messageFeedback.classList.add('visible');
-                    setTimeout(() => messageFeedback.classList.remove('visible'), 5000);
-                    console.error("User ID or App ID not available. Cannot send message.");
+                    console.warn("Authentication not ready or Firestore/User ID not available. Cannot send message yet.");
                     return;
                 }
 
@@ -2603,23 +2676,18 @@
                 playCounselWhisper();
 
                 try {
-                    const response = await fetch(`${BACKEND_URL}/api/contact-message`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ userId, appId, message })
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        console.error("Backend message send error:", errorData.error);
-                        throw new Error(errorData.error);
-                    }
-
+                    await firestoreWithExponentialBackoff(() =>
+                        firebase.addDoc(firebase.collection(db, `artifacts/${appId}/users/${userId}/contact_messages`), {
+                            message: message,
+                            timestamp: firebase.serverTimestamp(),
+                            userId: userId // Store userId with the message
+                        })
+                    );
                     messageFeedback.textContent = "Your message has been received by the Keepers. Await their subtle signs.";
                     keeperMessageTextarea.value = '';
                     logDiscovery(`Message sent to Keepers: "${message.substring(0, 50)}..."`);
                 } catch (error) {
-                    console.error("Error sending message to Keepers via backend:", error);
+                    console.error("Error sending message to Keepers via Firestore:", error);
                     messageFeedback.textContent = `A disturbance prevented your message from reaching the Keepers. Error: ${error.message}.`;
                     logDiscovery(`Failed to send message to Keepers: ${error.message}`);
                 } finally {
