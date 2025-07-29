@@ -872,14 +872,14 @@
             display: flex; /* Changed to flex to enable flex properties */
             flex-direction: column;
             align-items: center;
-            justify-content: center; /* NEW: Center content vertically */
+            justify-content: flex-start; /* Changed to flex-start to align content to top */
             width: 95%;
             max-width: 900px;
             padding: 1rem;
             box-sizing: border-box;
             color: #e0e0e0;
             margin-top: 0; /* Adjusted margin-top */
-            min-height: 90vh; /* NEW: Increased minimum height for the page content */
+            min-height: auto; /* Changed to auto to allow content to dictate height */
             z-index: 10;
             opacity: 0; /* For smooth transition */
             transform: translateY(20px); /* For smooth transition */
@@ -1226,7 +1226,10 @@
             color: #333;
         }
 
-      
+                    /* Removed min-height to allow content to dictate height */
+            /* margin-top: 0; */ /* Removed margin-top to allow centering */
+        
+
         .meditation-circle {
             width: clamp(150px, 30vw, 250px);
             height: clamp(150px, 30vw, 250px);
@@ -1339,25 +1342,26 @@
             text-align: center;
             width: 100%;
             max-width: 700px;
-            padding: 1rem;
+            padding: 0.5rem; /* Reduced padding */
             box-sizing: border-box;
-            border: 1px solid rgba(255, 215, 0, 0.4); /* Kept this specific border */
+            border: 1px solid rgba(255, 215, 0, 0.4);
             animation: fadeIn 2s ease-in-out;
+            margin-top: 2rem; /* Added margin-top to separate from header */
         }
 
         #donationPage h2 {
             font-family: 'Spectral', serif;
             font-size: clamp(1.8rem, 4vw, 3rem);
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.5rem; /* Reduced margin */
             text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
             color: #FFD700;
         }
 
         #donationPage .donation-message {
-            font-size: clamp(1rem, 1.8vw, 1.3rem);
+            font-size: clamp(0.9rem, 1.6vw, 1.2rem); /* Slightly smaller font */
             color: #e0e0e0;
-            line-height: 1.5;
-            margin-bottom: 2rem;
+            line-height: 1.4; /* Slightly tighter line height */
+            margin-bottom: 1rem; /* Reduced margin */
         }
 
         .donate-button {
@@ -1661,10 +1665,7 @@
         <section id="donationPage" class="hidden-page">
             <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Support the Echoes</h2>
             <p class="donation-message text-center">
-                The ancient wisdom we seek to unveil requires stewardship and dedication.
-                Your generous contributions help us maintain this portal,
-                expand our research into the Bosnian Pyramids, and share these profound insights with all.
-                Every offering, no matter how small, helps to illuminate the path forward.
+                Your contributions help maintain this portal and share ancient insights.
             </p>
             <!-- INSERT YOUR ACTUAL DONATION LINK HERE -->
             <a href="https://buy.stripe.com/6oU5kC1LraJKan8f1UeEo09" target="_blank" rel="noopener noreferrer" class="donate-button">
