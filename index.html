@@ -1227,7 +1227,11 @@
         }
 
         /* Meditation Page Styles */
-    
+        #meditationPage {
+            /* Removed min-height to allow content to dictate height */
+            /* margin-top: 0; */ /* Removed margin-top to allow centering */
+        }
+
         .meditation-circle {
             width: clamp(150px, 30vw, 250px);
             height: clamp(150px, 30vw, 250px);
@@ -1684,7 +1688,7 @@
                 <form id="contactForm" class="contact-form">
                     <label for="keeperMessage" class="sr-only">Your Message to the Keepers</label>
                     <textarea id="keeperMessage" placeholder="Type your message here..."></textarea>
-                    <button type="submit" class="submit-button" id="sendMessageButton">Send Message to the Keepers</button>
+                    <button type="submit" class="submit-button" id="sendMessageButton" disabled>Send Message to the Keepers</button>
                     <p id="messageFeedback" class="message-feedback"></p>
                 </form>
             </div>
@@ -1703,13 +1707,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
+            // Frontend elements (no changes needed here)
             const whisperBox = document.getElementById('whisperBox');
             const runicOutput = document.getElementById('runicOutput');
             const englishOutput = document.getElementById('englishOutput');
             const toggleTranslationButton = document.getElementById('toggleTranslation');
             const userQuestionInput = document.getElementById('userQuestionInput');
             const seekCounselButton = document.getElementById('seekCounselButton');
-            const dailyWisdomButton = document.getElementById('dailyWisdomButton'); // New Daily Wisdom button
+            const dailyWisdomButton = document.getElementById('dailyWisdomButton');
             const veilOverlay = document.getElementById('veilOverlay');
             const pyramidGroup = document.getElementById('pyramidGroup');
             const menuButton = document.getElementById('menuButton');
@@ -1718,10 +1723,9 @@
             const navLinks = document.querySelectorAll('.overlay-menu nav ul li a');
             const homePage = document.getElementById('homePage');
             const lorePage = document.getElementById('lorePage');
-            const wisdomsAndPropheciesPage = document.getElementById('wisdomsAndPropheciesPage'); // This will now be null
-            const contactPage = document.getElementById('contactPage'); // Reference to the contact page
+            const contactPage = document.getElementById('contactPage');
             const meditationPage = document.getElementById('meditationPage');
-            const donationPage = document.getElementById('donationPage'); // New Donation Page
+            const donationPage = document.getElementById('donationPage');
             const discoveryLog = document.getElementById('discoveryLog');
             const logEntries = document.getElementById('logEntries');
             const toggleLogButton = document.getElementById('toggleLogButton');
@@ -1738,12 +1742,11 @@
             const userIdDisplay = document.getElementById('userIdDisplay');
             const mistEffect = document.querySelector('.mist-effect');
 
-            // NEW: Contact Form Elements
+            // Contact Form Elements
             const contactForm = document.getElementById('contactForm');
             const keeperMessageTextarea = document.getElementById('keeperMessage');
             const sendMessageButton = document.getElementById('sendMessageButton');
             const messageFeedback = document.getElementById('messageFeedback');
-
 
             // Meditation specific elements
             const startMeditationButton = document.getElementById('startMeditation');
@@ -1751,53 +1754,89 @@
             const meditationCircle = document.getElementById('meditationCircle');
             const meditationStatus = document.getElementById('meditationStatus');
             const meditationRune = document.getElementById('meditationRune');
-            const meditationThemeSelector = document.getElementById('meditationThemeSelector'); // New theme selector
+            const meditationThemeSelector = document.getElementById('meditationThemeSelector');
 
             let translationVisible = false;
             let isGenerating = false;
             let isAmbientPlaying = false;
             let isMeditationPlaying = false;
             let currentMeditationRuneIndex = 0;
-            let meditationRuneInterval; // To store the interval ID for clearing
+            let meditationRuneInterval;
 
-            // Firebase variables
+            // Firebase variables (for client-side log display and auth)
             let app;
             let db;
             let auth;
             let userId;
+            let isAuthReady = false; // NEW: Flag to track authentication readiness
             const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-            // Initialize Firebase
+            // Define the backend URL (assuming it runs on localhost:3000 during development)
+            const BACKEND_URL = 'http://localhost:3000'; // IMPORTANT: Change this for deployment!
+
+            // Initialize Firebase (client-side for auth and log display)
             try {
-                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+                console.log("Attempting Firebase initialization...");
+                console.log("__firebase_config:", typeof __firebase_config !== 'undefined' ? __firebase_config : 'undefined');
+                console.log("__initial_auth_token:", typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : 'undefined');
+
+                const firebaseConfigString = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
+                const firebaseConfig = JSON.parse(firebaseConfigString);
+
+                // Explicitly check for projectId or other essential Firebase config properties
+                if (Object.keys(firebaseConfig).length === 0 || !firebaseConfig.projectId) {
+                    throw new Error("Firebase configuration (projectId) is missing. Please ensure __firebase_config is set in your environment.");
+                }
+
                 app = firebase.initializeApp(firebaseConfig);
                 db = firebase.getFirestore(app);
                 auth = firebase.getAuth(app);
+                console.log("Firebase app, db, auth objects created.");
 
                 // Sign in anonymously or with custom token
                 if (typeof __initial_auth_token !== 'undefined') {
+                    console.log("Attempting signInWithCustomToken...");
                     await firebase.signInWithCustomToken(auth, __initial_auth_token);
+                    console.log("signInWithCustomToken attempted.");
                 } else {
+                    console.log("Attempting signInAnonymously...");
                     await firebase.signInAnonymously(auth);
+                    console.log("signInAnonymously attempted.");
                 }
 
                 // Listen for auth state changes to get the user ID
                 firebase.onAuthStateChanged(auth, (user) => {
+                    console.log("onAuthStateChanged callback fired.");
                     if (user) {
                         userId = user.uid;
                         userIdDisplay.textContent = `User ID: ${userId}`;
                         console.log("Firebase initialized. User ID:", userId);
                         loadDiscoveryLog(); // Load log after user is authenticated
+                        isAuthReady = true; // NEW: Set auth ready flag
+                        sendMessageButton.disabled = false; // NEW: Enable the send message button
+                        console.log("sendMessageButton enabled. isAuthReady set to true.");
                     } else {
-                        console.log("No user signed in.");
+                        console.log("No user signed in (onAuthStateChanged).");
                         userId = null;
                         userIdDisplay.textContent = 'User ID: N/A';
+                        isAuthReady = true; // Still set to true, as anonymous sign-in might fail in some contexts
+                        sendMessageButton.disabled = true; // Keep disabled if no user
+                        console.log("sendMessageButton kept disabled. isAuthReady set to true (no user).");
                     }
                 });
 
             } catch (error) {
-                console.error("Error initializing Firebase:", error);
-                logDiscovery("Error initializing ancient connection. Log may not persist.");
+                console.error("Error during Firebase initialization or sign-in:", error);
+                // We still display a message in UI even if Firebase init fails
+                const entry = document.createElement('div');
+                entry.classList.add('log-entry', 'text-gray-400', 'text-red-400'); // Added text-red-400 for error visibility
+                entry.textContent = `${new Date().toLocaleTimeString()}: CRITICAL ERROR: ${error.message}`;
+                logEntries.prepend(entry);
+                isAuthReady = true; // Attempt to proceed even with init error, marking auth check as complete
+                sendMessageButton.disabled = true; // Keep disabled if init failed
+                messageFeedback.textContent = `CRITICAL: Connection to ancient network failed. ${error.message}`; // Display error in UI
+                messageFeedback.classList.add('visible');
+                console.log("Firebase initialization failed. sendMessageButton kept disabled. isAuthReady set to true (error).");
             }
 
 
@@ -1808,7 +1847,7 @@
                 }
             });
 
-            // --- Sound Definitions ---
+            // --- Sound Definitions (No changes) ---
             const longReverb = new Tone.Freeverb({ roomSize: 0.9, dampening: 5000, wet: 0.7 }).toDestination();
             const etherealDelay = new Tone.PingPongDelay({ delayTime: "4n", feedback: 0.7, wet: 0.6 }).connect(longReverb);
 
@@ -1848,19 +1887,18 @@
             function toggleAmbientAudio() {
                 if (isAmbientPlaying) {
                     ambientDrone.triggerRelease();
-                    audioToggleButton.textContent = '🔇';
+                    audioToggleButton.textContent = '�';
                     audioToggleButton.classList.remove('active');
                     logDiscovery("Ambient audio muted.");
                 } else {
                     ambientDrone.triggerAttack("C2");
-                    audioToggleButton.textContent = '🔊'; // Corrected emoji
+                    audioToggleButton.textContent = '🔊';
                     audioToggleButton.classList.add('active');
                     logDiscovery("Ambient audio playing.");
                 }
                 isAmbientPlaying = !isAmbientPlaying;
             }
 
-            // New: Meditation Drone
             const meditationDrone = new Tone.FMSynth({
                 harmonicity: 3.1,
                 oscillator: { type: "sine" },
@@ -1868,7 +1906,7 @@
                 modulation: { type: "square" },
                 modulationEnvelope: { attack: 2, decay: 0, sustain: 1, release: 2 }
             }).toDestination();
-            meditationDrone.volume.value = -20; // Start quieter
+            meditationDrone.volume.value = -20;
 
             const meditationThemes = {
                 general: {
@@ -1911,20 +1949,19 @@
                     const themeData = meditationThemes[selectedTheme];
 
                     meditationDrone.triggerAttack("A1");
-                    meditationDrone.triggerAttack("E2", Tone.now() + 0.5); // Add a fifth for richness
+                    meditationDrone.triggerAttack("E2", Tone.now() + 0.5);
                     isMeditationPlaying = true;
                     meditationCircle.classList.add('pulsing');
                     meditationStatus.textContent = themeData.guidance;
                     logDiscovery(`Meditation started: ${selectedTheme} theme.`);
 
-                    currentMeditationRuneIndex = 0; // Reset rune index for new theme
+                    currentMeditationRuneIndex = 0;
                     meditationRune.textContent = themeData.runes[currentMeditationRuneIndex].symbol;
 
-                    // Clear any existing interval before setting a new one
                     if (meditationRuneInterval) {
                         clearInterval(meditationRuneInterval);
                     }
-                    meditationRuneInterval = setInterval(() => cycleMeditationRune(selectedTheme), 10000); // Change rune every 10 seconds
+                    meditationRuneInterval = setInterval(() => cycleMeditationRune(selectedTheme), 10000);
                 }
             }
 
@@ -2014,10 +2051,10 @@
 
             setInterval(createRuneBackground, 6000);
 
-            // Function to add discovery log entries to Firestore and display them
+            // Function to add discovery log entries (now calls backend)
             async function logDiscovery(message) {
-                if (!db || !userId) {
-                    console.warn("Firestore not initialized or user not authenticated. Log entry not saved.");
+                if (!userId || !appId) {
+                    console.warn("User ID or App ID not available. Log entry not sent to backend.");
                     // Still display in UI for immediate feedback
                     const entry = document.createElement('div');
                     entry.classList.add('log-entry', 'text-gray-400');
@@ -2027,14 +2064,19 @@
                 }
 
                 try {
-                    const logCollectionRef = firebase.collection(db, `artifacts/${appId}/users/${userId}/discovery_log`);
-                    await firebase.addDoc(logCollectionRef, {
-                        message: message,
-                        timestamp: new Date()
+                    const response = await fetch(`${BACKEND_URL}/api/log-discovery`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId, appId, message })
                     });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        console.error("Backend log error:", errorData.error);
+                        throw new Error(errorData.error);
+                    }
                 } catch (e) {
-                    console.error("Error adding document to Firestore: ", e);
-                    // Fallback to displaying in UI if Firestore fails
+                    console.error("Error sending log to backend: ", e);
+                    // Fallback to displaying in UI if backend fails
                     const entry = document.createElement('div');
                     entry.classList.add('log-entry', 'text-gray-400');
                     entry.textContent = `${new Date().toLocaleTimeString()} (Failed to save): ${message}`;
@@ -2042,7 +2084,7 @@
                 }
             }
 
-            // Function to load discovery log entries from Firestore
+            // Function to load discovery log entries from Firestore (client-side)
             function loadDiscoveryLog() {
                 if (!db || !userId) {
                     console.warn("Firestore not initialized or user not authenticated. Cannot load log.");
@@ -2050,25 +2092,25 @@
                 }
 
                 const logCollectionRef = firebase.collection(db, `artifacts/${appId}/users/${userId}/discovery_log`);
-                const q = firebase.query(logCollectionRef, firebase.orderBy('timestamp', 'desc'), firebase.limit(20)); // Limit to last 20 entries
+                const q = firebase.query(logCollectionRef, firebase.orderBy('timestamp', 'desc'), firebase.limit(20));
 
                 firebase.onSnapshot(q, (snapshot) => {
-                    logEntries.innerHTML = ''; // Clear current entries
+                    logEntries.innerHTML = '';
                     snapshot.forEach((doc) => {
                         const data = doc.data();
                         const entry = document.createElement('div');
                         entry.classList.add('log-entry', 'text-gray-400');
                         const date = data.timestamp ? data.timestamp.toDate().toLocaleTimeString() : 'N/A';
                         entry.textContent = `${date}: ${data.message}`;
-                        logEntries.appendChild(entry); // Append to keep chronological order in display
+                        logEntries.appendChild(entry);
                     });
                 }, (error) => {
                     console.error("Error fetching discovery log: ", error);
-                    logDiscovery("Failed to load past discoveries.");
+                    logDiscovery("Failed to load past discoveries from Firestore.");
                 });
             }
 
-            // Define pyramid themes for more specific counsel
+            // Define pyramid themes for more specific counsel (still needed for frontend logic)
             const pyramidThemes = {
                 'sun-top': 'the pinnacle of enlightenment and cosmic energy, representing higher consciousness and universal truths',
                 'sun-base': 'the foundation of ancient wisdom and earthly connection, representing grounding and stability',
@@ -2077,7 +2119,7 @@
                 'moon': 'the intuitive depths, cycles of change, and hidden reflections, representing intuition and emotional wisdom'
             };
 
-            // Function to provide dynamic ancient counsel using Gemini API
+            // Function to provide dynamic ancient counsel (now calls backend)
             async function getAncientCounsel(promptContext, pyramidPart = null) {
                 if (isGenerating) {
                     logDiscovery("The ancient energies are still coalescing. Please wait.");
@@ -2093,86 +2135,38 @@
                 playCounselWhisper();
                 logDiscovery(`Seeking counsel for: "${promptContext}"...`);
 
-                const now = new Date().toISOString(); // Get current timestamp for uniqueness
-                let fullPrompt = `Generate a short, mystical, ancient-sounding prophecy or wisdom in two parts: first, a few words in a runic-like, cryptic style (use Futhark runes if possible, e.g., "ᛖᚾᛏᛖᚱ ᛞᚨᚷᚨᛉ"), and second, an English translation/interpretation of that wisdom/prophecy. Ensure the runic part is very short and symbolic, and the English part is a concise, insightful explanation. Format the output as a JSON object with 'runic' and 'english' keys. This response should be unique and distinct from any previous wisdom generated. Current timestamp for uniqueness: ${now}.`;
-
-                if (pyramidPart && pyramidThemes[pyramidPart]) {
-                    fullPrompt += ` The wisdom should be specifically from the perspective of ${pyramidThemes[pyramidPart]}.`;
-                }
-
-                if (promptContext && promptContext !== "a general wisdom from the sun-top pyramid." && promptContext !== "a specific insight from the dragon pyramid." && promptContext !== "a specific insight from the moon pyramid.") {
-                    fullPrompt += ` The response should also be directly related to the user's question: "${promptContext}".`;
-                }
-
-
                 try {
-                    let chatHistory = [];
-                    chatHistory.push({ role: "user", parts: [{ text: fullPrompt }] });
-
-                    const payload = {
-                        contents: chatHistory,
-                        generationConfig: {
-                            responseMimeType: "application/json",
-                            responseSchema: {
-                                type: "OBJECT",
-                                properties: {
-                                    "runic": { "type": "STRING" },
-                                    "english": { "type": "STRING" }
-                                },
-                                "propertyOrdering": ["runic", "english"]
-                            }
-                        }
-                    };
-
-                    const apiKey = "AIzaSyCKTG8DytHzbQ7TKf4HCgDLnZMxVvpfqpM"; // User's API key installed here
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                    const response = await fetch(apiUrl, {
+                    const response = await fetch(`${BACKEND_URL}/api/counsel`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify({ promptContext, pyramidPart, type: 'counsel' })
                     });
 
                     if (!response.ok) {
-                        const errorBody = await response.text();
-                        console.error(`API Error: ${response.status} - ${response.statusText}`, errorBody);
-                        throw new Error(`API request failed: ${response.statusText}`);
+                        const errorData = await response.json();
+                        console.error(`Backend API Error: ${response.status} - ${response.statusText}`, errorData);
+                        throw new Error(errorData.error || `API request failed: ${response.statusText}`);
                     }
 
                     const result = await response.json();
 
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const rawText = result.candidates[0].content.parts[0].text;
-                        let parsedJson;
-                        try {
-                            parsedJson = JSON.parse(rawText);
-                        } catch (parseError) {
-                            console.error("Error parsing JSON from API response:", parseError, "Raw text:", rawText);
-                            runicOutput.textContent = "ᛟᚱᚾ ᛗᚨᛚᚠᚢᚾᚲᛏᛁᛟᚾ"; // Rune for "Word malfunction"
-                            englishOutput.innerHTML = "<strong>Wisdom/Prophecy:</strong> The ancient echoes are garbled. Please try again.";
-                            logDiscovery("Failed to parse counsel. Invalid JSON response.");
-                            return; // Exit early if parsing fails
-                        }
-
-                        runicOutput.textContent = parsedJson.runic;
-                        englishOutput.innerHTML = `<strong>Wisdom/Prophecy:</strong> ${parsedJson.english.replace(/\n/g, '<br>')}`;
-                        logDiscovery(`Received new counsel: ${parsedJson.english.substring(0, 30)}...`);
-
+                    if (result.runic && result.english) {
+                        runicOutput.textContent = result.runic;
+                        englishOutput.innerHTML = `<strong>Wisdom/Prophecy:</strong> ${result.english.replace(/\n/g, '<br>')}`;
+                        logDiscovery(`Received new counsel: ${result.english.substring(0, 30)}...`);
                     } else {
-                        runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ"; // Rune for "Word not found"
+                        runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
                         englishOutput.innerHTML = "<strong>Wisdom/Prophecy:</strong> The ancient echoes are faint. Try another question.";
-                        logDiscovery("Failed to receive counsel. Unexpected API response structure.");
+                        logDiscovery("Failed to receive counsel. Unexpected backend response structure.");
                     }
                 } catch (error) {
-                    console.error("Error fetching ancient counsel:", error);
-                    runicOutput.textContent = "ᛖᚱᚱᛟᚱ ᛞᛖᛖᛈ"; // Rune for "Error deep"
+                    console.error("Error fetching ancient counsel from backend:", error);
+                    runicOutput.textContent = "ᛖᚱᚱᛟᚱ ᛞᛖᛖᛈ";
                     englishOutput.innerHTML = `<strong>Wisdom/Prophecy:</strong> A disturbance in the ether prevents clear reception. Error: ${error.message}. Please try again.`;
                     logDiscovery(`Error seeking counsel: ${error.message}`);
                 } finally {
                     whisperBox.classList.remove('loading');
-                    toggleTranslationButton.style.display = 'block'; // Ensure button is always visible
+                    toggleTranslationButton.style.display = 'block';
                     translationVisible = false;
                     englishOutput.classList.remove('visible');
                     isGenerating = false;
@@ -2184,7 +2178,7 @@
                 }
             }
 
-            // NEW: Function to get daily wisdom
+            // Function to get daily wisdom (now calls backend)
             async function getDailyWisdom() {
                 if (isGenerating) {
                     logDiscovery("The ancient energies are still coalescing. Please wait.");
@@ -2200,75 +2194,38 @@
                 playCounselWhisper();
                 logDiscovery("Receiving daily wisdom...");
 
-                const now = new Date().toISOString(); // Get current timestamp for uniqueness
                 try {
-                    let chatHistory = [];
-                    chatHistory.push({ role: "user", parts: [{ text: `Generate a short, unique, mystical, daily prophecy or wisdom in two parts: first, a few words in a runic-like, cryptic style (use Futhark runes if possible, e.g., "ᛖᚾᛏᛖᚱ ᛞᚨᚷᚨᛉ"), and second, an English translation/interpretation of that wisdom/prophecy. Ensure the runic part is very short and symbolic, and the English part is a concise, insightful explanation. The wisdom should be general and inspiring, suitable for a daily reflection. Format the output as a JSON object with 'runic' and 'english' keys. This response should be unique and distinct from any previous wisdom generated. Current timestamp for uniqueness: ${now}.` }] });
-
-                    const payload = {
-                        contents: chatHistory,
-                        generationConfig: {
-                            responseMimeType: "application/json",
-                            responseSchema: {
-                                type: "OBJECT",
-                                properties: {
-                                    "runic": { "type": "STRING" },
-                                    "english": { "type": "STRING" }
-                                },
-                                "propertyOrdering": ["runic", "english"]
-                            }
-                        }
-                    };
-
-                    const apiKey = "AIzaSyCKTG8DytHzbQ7TKf4HCgDLnZMxVvpfqpM"; // User's API key installed here
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                    const response = await fetch(apiUrl, {
+                    const response = await fetch(`${BACKEND_URL}/api/counsel`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify({ type: 'daily' })
                     });
 
                     if (!response.ok) {
-                        const errorBody = await response.text();
-                        console.error(`API Error: ${response.status} - ${response.statusText}`, errorBody);
-                        throw new Error(`API request failed: ${response.statusText}`);
+                        const errorData = await response.json();
+                        console.error(`Backend API Error: ${response.status} - ${response.statusText}`, errorData);
+                        throw new Error(errorData.error || `API request failed: ${response.statusText}`);
                     }
 
                     const result = await response.json();
 
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const rawText = result.candidates[0].content.parts[0].text;
-                        let parsedJson;
-                        try {
-                            parsedJson = JSON.parse(rawText);
-                        } catch (parseError) {
-                            console.error("Error parsing JSON from API response:", parseError, "Raw text:", rawText);
-                            runicOutput.textContent = "ᛟᚱᚾ ᛗᚨᛚᚠᚢᚾᚲᛏᛁᛟᚾ"; // Rune for "Word malfunction"
-                            englishOutput.innerHTML = "<strong>Daily Wisdom:</strong> The ancient echoes are garbled. Please try again.";
-                            logDiscovery("Failed to parse daily wisdom. Invalid JSON response.");
-                            return; // Exit early if parsing fails
-                        }
-
-                        runicOutput.textContent = parsedJson.runic;
-                        englishOutput.innerHTML = `<strong>Daily Wisdom:</strong> ${parsedJson.english.replace(/\n/g, '<br>')}`;
-                        logDiscovery(`Received daily wisdom: ${parsedJson.english.substring(0, 30)}...`);
-
+                    if (result.runic && result.english) {
+                        runicOutput.textContent = result.runic;
+                        englishOutput.innerHTML = `<strong>Daily Wisdom:</strong> ${result.english.replace(/\n/g, '<br>')}`;
+                        logDiscovery(`Received daily wisdom: ${result.english.substring(0, 30)}...`);
                     } else {
-                        runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ"; // Rune for "Word not found"
+                        runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
                         englishOutput.innerHTML = "<strong>Daily Wisdom:</strong> The ancient echoes are faint. No wisdom today.";
-                        logDiscovery("Failed to receive daily wisdom. Unexpected API response structure.");
+                        logDiscovery("Failed to receive daily wisdom. Unexpected backend response structure.");
                     }
                 } catch (error) {
-                    console.error("Error fetching daily wisdom:", error);
-                    runicOutput.textContent = "ᛖᚱᚱᛟᚱ ᛞᛖᛖᛈ"; // Rune for "Error deep"
+                    console.error("Error fetching daily wisdom from backend:", error);
+                    runicOutput.textContent = "ᛖᚱᚱᛟᚱ ᛞᛖᛖᛈ";
                     englishOutput.innerHTML = `<strong>Daily Wisdom:</strong> A disturbance in the ether prevents clear reception. Error: ${error.message}. Please try again.`;
                     logDiscovery(`Error seeking daily wisdom: ${error.message}`);
                 } finally {
                     whisperBox.classList.remove('loading');
-                    toggleTranslationButton.style.display = 'block'; // Ensure button is always visible
+                    toggleTranslationButton.style.display = 'block';
                     translationVisible = false;
                     englishOutput.classList.remove('visible');
                     isGenerating = false;
@@ -2280,8 +2237,7 @@
                 }
             }
 
-
-            // Function to provide dynamic lore expansion using Gemini API
+            // Function to provide dynamic lore expansion (now calls backend)
             async function getDynamicLoreExpansion(title, content, insightContainer, button) {
                 if (button.disabled) {
                     logDiscovery("Insight already being generated or recently generated. Please wait.");
@@ -2295,60 +2251,48 @@
                 playInsightWhisper();
                 logDiscovery(`Deepening insight for: "${title}"...`);
 
-                const now = new Date().toISOString(); // Get current timestamp for uniqueness
                 try {
-                    let chatHistory = [];
-                    chatHistory.push({ role: "user", parts: [{ text: `Expand on the following lore section in a mystical, ancient, and insightful tone. Focus on adding a deeper, esoteric layer to the provided text. The section title is "${title}" and the current content is: "${content}". Provide a concise paragraph of expanded insight. This response should be unique and distinct from any previous insight generated. Current timestamp for uniqueness: ${now}.` }] });
-
-                    const payload = { contents: chatHistory };
-                    const apiKey = "AIzaSyCKTG8DytHzbQ7TKf4HCgDLnZMxVvpfqpM"; // User's API key installed here
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                    const response = await fetch(apiUrl, {
+                    const response = await fetch(`${BACKEND_URL}/api/lore-insight`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify({ title, content })
                     });
 
                     if (!response.ok) {
-                        const errorBody = await response.text();
-                        console.error(`API Error: ${response.status} - ${response.statusText}`, errorBody);
-                        throw new Error(`API request failed: ${response.statusText}`);
+                        const errorData = await response.json();
+                        console.error(`Backend API Error: ${response.status} - ${response.statusText}`, errorData);
+                        throw new Error(errorData.error || `API request failed: ${response.statusText}`);
                     }
 
                     const result = await response.json();
 
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const text = result.candidates[0].content.parts[0].text;
-                        insightContainer.textContent = text;
+                    if (result.insight) {
+                        insightContainer.textContent = result.insight;
                         insightContainer.classList.add('visible');
                         logDiscovery(`Received deeper insight for: "${title.substring(0, 20)}..."`);
                     } else {
                         insightContainer.textContent = "The ancient scrolls are unreadable at this moment. Try again.";
-                        logDiscovery("Failed to retrieve deeper insight. Unexpected API response structure.");
+                        logDiscovery("Failed to retrieve deeper insight. Unexpected backend response structure.");
                     }
                 } catch (error) {
-                    console.error("Error fetching lore expansion:", error);
+                    console.error("Error fetching lore expansion from backend:", error);
                     insightContainer.textContent = `A shimmer in the Veil prevents this insight from forming. Error: ${error.message}. Please try again.`;
                     logDiscovery(`Error deepening insight: ${error.message}`);
                 } finally {
                     insightContainer.classList.remove('loading');
                     setTimeout(() => {
                         button.disabled = false;
-                    }, 3000); // Re-enable button after 3 seconds
+                    }, 3000);
                 }
             }
 
 
-            // Event Listeners for Pyramid interactions
+            // Event Listeners for Pyramid interactions (no changes to this logic, just the underlying getAncientCounsel call)
             pyramidElements.forEach(element => {
                 element.addEventListener('click', () => {
                     const pyramidPart = element.dataset.pyramid;
                     logDiscovery(`You touched the ${pyramidPart} of the pyramid.`);
 
-                    // Determine the specific prompt context based on the pyramid part
                     let specificPromptContext = `a general wisdom from the ${pyramidPart} pyramid.`;
                     if (pyramidPart === 'sun-top') {
                         specificPromptContext = `a wisdom from the pinnacle of enlightenment and cosmic energy`;
@@ -2362,45 +2306,35 @@
                         specificPromptContext = `an insight from the intuitive depths, cycles of change, and hidden reflections`;
                     }
 
-
                     if (pyramidPart === 'sun-top' || pyramidPart === 'sun-base' || pyramidPart === 'sun-entrance') {
                         playPyramidWhisper();
-                        // Call the dynamic counsel function with specific context
                         getAncientCounsel(specificPromptContext, pyramidPart);
 
-                        // Activate the main beam briefly
                         pyramidBeam.classList.add('active');
                         playBeamSound();
                         setTimeout(() => {
                             pyramidBeam.classList.remove('active');
-                        }, 8000); // Beam active for 8 seconds (increased duration)
+                        }, 8000);
                     } else if (pyramidPart === 'dragon' || pyramidPart === 'moon') {
                         playSmallPyramidSound();
-                        // Add a subtle visual effect to the small pyramid
                         element.style.transform = `${element.style.transform} scale(1.08) rotateY(10deg)`;
                         setTimeout(() => {
                             element.style.transform = element.style.transform.replace(' scale(1.08) rotateY(10deg)', '');
                         }, 500);
-                        // Call the dynamic counsel function with specific context
                         getAncientCounsel(specificPromptContext, pyramidPart);
 
-                        // Activate the corresponding small pyramid beam
                         if (pyramidPart === 'dragon') {
-                            // Set green beam for Dragon pyramid
                             pyramidLoveBeam.style.background = 'linear-gradient(to top, rgba(0, 255, 0, 0.8), rgba(0, 255, 0, 0.0))';
                             pyramidLoveBeam.classList.add('active');
                             setTimeout(() => {
                                 pyramidLoveBeam.classList.remove('active');
-                                // Optionally reset background if needed, but not required if CSS handles default
-                            }, 3000); // Small beam active for 3 seconds (increased duration)
+                            }, 3000);
                         } else if (pyramidPart === 'moon') {
-                            // Set red beam for Moon pyramid (explicitly, though CSS default is red)
                             pyramidMoonBeam.style.background = 'linear-gradient(to top, rgba(255, 0, 0, 0.8), rgba(255, 0, 0, 0.0))';
                             pyramidMoonBeam.classList.add('active');
                             setTimeout(() => {
                                 pyramidMoonBeam.classList.remove('active');
-                                // Optionally reset background if needed, but not required if CSS handles default
-                            }, 3000); // Small beam active for 3 seconds (increased duration)
+                            }, 3000);
                         }
                     }
                 });
@@ -2410,16 +2344,15 @@
             seekCounselButton.addEventListener('click', () => {
                 const question = userQuestionInput.value.trim();
                 if (question) {
-                    getAncientCounsel(question); // Call the dynamic counsel function
+                    getAncientCounsel(question);
                     userQuestionInput.value = '';
                 } else {
                     logDiscovery("Please ask a question to seek ancient counsel.");
                 }
             });
 
-            // NEW: Event listener for the "Receive Daily Wisdom" button
+            // Event listener for the "Receive Daily Wisdom" button
             dailyWisdomButton.addEventListener('click', getDailyWisdom);
-
 
             // Event listener for Enter key in the input field
             userQuestionInput.addEventListener('keypress', (e) => {
@@ -2473,23 +2406,20 @@
             });
 
             function showPage(pageName) {
-                // Get all pages
                 const allPages = document.querySelectorAll('section[id$="Page"]');
 
-                // Apply fade-out and hide old pages
                 allPages.forEach(page => {
                     if (page.classList.contains('active')) {
                         page.style.opacity = '0';
                         page.style.transform = 'translateY(20px)';
-                        page.style.pointerEvents = 'none'; // Disable interactions during fade-out
+                        page.style.pointerEvents = 'none';
                         setTimeout(() => {
                             page.classList.remove('active');
                             page.classList.add('hidden-page');
-                        }, 700); // Match CSS transition duration
+                        }, 700);
                     }
                 });
 
-                // Show the requested page after a slight delay for transition
                 const targetPage = document.getElementById(`${pageName}Page`);
                 if (targetPage) {
                     setTimeout(() => {
@@ -2497,11 +2427,9 @@
                         targetPage.classList.add('active');
                         targetPage.style.opacity = '1';
                         targetPage.style.transform = 'translateY(0)';
-                        targetPage.style.pointerEvents = 'auto'; // Enable interactions when active
-                    }, 500); // Start fade-in after old page starts fading out
+                        targetPage.style.pointerEvents = 'auto';
+                    }, 500);
                 } else {
-                    // If the requested page does not exist (e.g., wisdomsAndPropheciesPage),
-                    // redirect to home page or log an error.
                     console.warn(`Attempted to navigate to non-existent page: ${pageName}Page. Redirecting to home.`);
                     setTimeout(() => {
                         document.getElementById('homePage').classList.remove('hidden-page');
@@ -2512,18 +2440,15 @@
                     }, 500);
                 }
 
-                // Stop meditation if navigating away from meditation page
                 if (pageName !== 'meditation' && isMeditationPlaying) {
                     stopMeditationAudio();
                 }
 
-                // Log page visit
                 logDiscovery(`Navigated to: ${pageName.charAt(0).toUpperCase() + pageName.slice(1)} Page.`);
             }
 
-            // Initially hide all pages and only activate 'home' after entry
             showPage('home');
-            homePage.classList.remove('active'); // Ensure home is not active until entry
+            homePage.classList.remove('active');
 
             // Log toggle button
             toggleLogButton.addEventListener('click', () => {
@@ -2561,7 +2486,7 @@
                 });
             });
 
-            // Function to get SVG icon based on data-icon attribute
+            // Function to get SVG icon based on data-icon attribute (no changes)
             function getLoreIconSVG(iconName) {
                 switch (iconName) {
                     case 'pyramid':
@@ -2577,14 +2502,13 @@
                 }
             }
 
-            // Interactive Lore Sections (Expand/Collapse)
+            // Interactive Lore Sections (Expand/Collapse) (no changes)
             loreSectionHeaders.forEach(header => {
                 header.addEventListener('click', () => {
                     const contentId = header.dataset.toggleId;
                     const contentElement = document.getElementById(contentId);
                     if (contentElement) {
                         contentElement.classList.toggle('expanded');
-                        // Add/remove icon based on expansion
                         let icon = contentElement.querySelector('.lore-section-icon');
                         if (contentElement.classList.contains('expanded')) {
                             if (!icon) {
@@ -2605,7 +2529,7 @@
                 });
             });
 
-            // NEW: Initial Entry Overlay Logic
+            // Initial Entry Overlay Logic (no changes)
             initialEntryOverlay.addEventListener('click', () => {
                 playEntryChime();
                 initialEntryOverlay.classList.add('hidden');
@@ -2614,16 +2538,16 @@
                 logDiscovery("You have awakened the Veil. The journey begins...");
             });
 
-            // Audio Toggle Button Event Listener
+            // Audio Toggle Button Event Listener (no changes)
             audioToggleButton.addEventListener('click', toggleAmbientAudio);
 
-            // Meditation Button Event Listeners
+            // Meditation Button Event Listeners (no changes)
             startMeditationButton.addEventListener('click', startMeditationAudio);
             stopMeditationButton.addEventListener('click', stopMeditationAudio);
 
-            // NEW: Contact Form Submission Logic
+            // Contact Form Submission Logic (now calls backend)
             contactForm.addEventListener('submit', async (e) => {
-                e.preventDefault(); // Prevent default form submission
+                e.preventDefault();
 
                 const message = keeperMessageTextarea.value.trim();
 
@@ -2635,11 +2559,20 @@
                     return;
                 }
 
-                if (!db || !userId) {
-                    messageFeedback.textContent = "Connection to the ancient network not established. Try again later.";
+                // NEW: Check if authentication is ready before proceeding
+                if (!isAuthReady) {
+                    messageFeedback.textContent = "Establishing connection to the ancient network... Please wait a moment and try again.";
                     messageFeedback.classList.add('visible');
                     setTimeout(() => messageFeedback.classList.remove('visible'), 5000);
-                    console.error("Firestore not initialized or user not authenticated. Cannot send message.");
+                    console.warn("Authentication not ready. Cannot send message yet.");
+                    return;
+                }
+
+                if (!userId || !appId) {
+                    messageFeedback.textContent = "User authentication not established. Cannot send message.";
+                    messageFeedback.classList.add('visible');
+                    setTimeout(() => messageFeedback.classList.remove('visible'), 5000);
+                    console.error("User ID or App ID not available. Cannot send message.");
                     return;
                 }
 
@@ -2647,47 +2580,51 @@
                 sendMessageButton.textContent = "Sending...";
                 messageFeedback.textContent = "Your message is traveling through the ether...";
                 messageFeedback.classList.add('visible');
-                playCounselWhisper(); // Play a sound for sending
+                playCounselWhisper();
 
                 try {
-                    // Corrected collection path to include 'data' segment
-                    const messagesCollectionRef = firebase.collection(db, `artifacts/${appId}/public/data/messages_to_keepers`);
-                    await firebase.addDoc(messagesCollectionRef, {
-                        userId: userId,
-                        message: message,
-                        timestamp: new Date()
+                    const response = await fetch(`${BACKEND_URL}/api/contact-message`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId, appId, message })
                     });
 
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        console.error("Backend message send error:", errorData.error);
+                        throw new Error(errorData.error);
+                    }
+
                     messageFeedback.textContent = "Your message has been received by the Keepers. Await their subtle signs.";
-                    keeperMessageTextarea.value = ''; // Clear the textarea
+                    keeperMessageTextarea.value = '';
                     logDiscovery(`Message sent to Keepers: "${message.substring(0, 50)}..."`);
                 } catch (error) {
-                    console.error("Error sending message to Keepers:", error);
+                    console.error("Error sending message to Keepers via backend:", error);
                     messageFeedback.textContent = `A disturbance prevented your message from reaching the Keepers. Error: ${error.message}.`;
                     logDiscovery(`Failed to send message to Keepers: ${error.message}`);
                 } finally {
                     sendMessageButton.disabled = false;
                     sendMessageButton.textContent = "Send Message to the Keepers";
-                    setTimeout(() => messageFeedback.classList.remove('visible'), 7000); // Keep message visible longer for feedback
+                    setTimeout(() => messageFeedback.classList.remove('visible'), 7000);
                 }
             });
 
 
-            // Parallax effect for main content based on mouse position
+            // Parallax effect for main content based on mouse position (no changes)
             mainContentArea.addEventListener('mousemove', (e) => {
-                const x = (e.clientX / window.innerWidth - 0.5) * 2; // -1 to 1
-                const y = (e.clientY / window.innerHeight - 0.5) * 2; // -1 to 1
+                const x = (e.clientX / window.innerWidth - 0.5) * 2;
+                const y = (e.clientY / window.innerHeight - 0.5) * 2;
 
-                // Apply subtle transforms to background elements
                 document.body.style.backgroundPositionX = `${-x * 5}px`;
                 document.body.style.backgroundPositionY = `${-y * 5}px`;
-                document.body.style.setProperty('--x-offset', `${-x * 10}px`); // For cosmic dust
-                document.body.style.setProperty('--y-offset', `${-y * 10}px`); // For cosmic dust
+                document.body.style.setProperty('--x-offset', `${-x * 10}px`);
+                document.body.style.setProperty('--y-offset', `${-y * 10}px`);
                 document.querySelector('.runes-container').style.transform = `translate(${x * 15}px, ${y * 15}px)`;
                 document.querySelector('.celestial-body').style.transform = `translate(${-x * 20}px, ${-y * 20}px)`;
-                mistEffect.style.transform = `translateX(${-x * 8}px)`; // Apply to mist
+                mistEffect.style.transform = `translateX(${-x * 8}px)`;
             });
         });
     </script>
 </body>
 </html>
+�
