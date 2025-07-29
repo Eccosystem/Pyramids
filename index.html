@@ -312,7 +312,7 @@
         .pyramid-top {
             width: 0;
             height: 0;
-            /* Dimensions are now based on CSS variables, scaling with --pyramid-base-width */
+            /* Dimensions are now based on CSS variables, scaling with viewport width, clamped between min/max */
             border-left: calc(var(--pyramid-base-width) / 2) solid transparent;
             border-right: calc(var(--pyramid-base-width) / 2) solid transparent;
             /* Enhanced border-bottom for lighting effect */
@@ -821,7 +821,7 @@
         }
 
         /* Specific tunnel positioning - these will need fine-tuning based on responsive layout */
-        /* Adjusted tunnel positions to connect to new pyramid locations */
+        /* These values are illustrative and might need further adjustment for perfect alignment */
         #tunnelSunLove {
             top: 50%; /* Adjusted to connect from main pyramid's lower side */
             left: 35%;
@@ -1165,9 +1165,9 @@
             left: 50%;
             transform: translateX(-50%);
             width: clamp(15px, 3vw, 30px); /* Responsive width - made narrower */
-            height: 4%; /* Initial height, can be animated */
+            height: 200px; /* Changed from 4% to fixed px for better visibility */
             background: linear-gradient(to top, rgba(255, 215, 0, 0.8), rgba(255, 215, 0, 0.0));
-            filter: blur(1px); /* Reduced blur for a straighter look */
+            filter: blur(0.8px); /* Reduced blur slightly */
             opacity: 0; /* Hidden by default */
             z-index: 9; /* Below the pyramid top, but above base */
             pointer-events: none; /* Ensure it's not clickable */
@@ -1175,7 +1175,7 @@
         }
 
         .pyramid-beam.active {
-            animation: beam-pulse 5s infinite alternate ease-in-out; /* Changed duration to 5s */
+            animation: beam-pulse 8s infinite alternate ease-in-out; /* Changed duration to 8s */
             opacity: 1; /* Fully visible when active */
         }
 
@@ -1206,7 +1206,7 @@
             width: clamp(8px, 2vw, 15px); /* Increased width for better visibility */
             height: 200px; /* Straight up height - Matches main pyramid beam */
             background: linear-gradient(to top, rgba(255, 0, 0, 0.8), rgba(255, 0, 0, 0.0)); /* Default: Red color for Moon */
-            filter: blur(0.5px); /* Reduced blur for a straighter look */
+            filter: blur(0.3px); /* Reduced blur slightly */
             opacity: 0; /* Hidden by default */
             z-index: 9; /* Below the pyramid text, but above pyramid base */
             pointer-events: none;
@@ -1472,6 +1472,79 @@
 
         .donate-button:hover::before {
             left: 125%;
+        }
+
+        /* Contact Page Styles */
+        #contactPage .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 1.5rem;
+        }
+
+        #contactPage textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(74, 85, 104, 0.6);
+            background-color: rgba(0, 0, 0, 0.4);
+            color: #e0e0e0;
+            font-size: 1rem;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            resize: vertical; /* Allow vertical resizing */
+        }
+
+        #contactPage textarea:focus {
+            outline: none;
+            border-color: #ffcc00;
+            box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.3), 0 0 10px rgba(255, 215, 0, 0.2);
+        }
+
+        #contactPage .submit-button {
+            background: linear-gradient(to bottom right, #5a6578, #3d4758);
+            color: #ffcc00;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            border: none;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        #contactPage .submit-button:hover {
+            background: linear-gradient(to bottom right, #6a7588, #4d5768);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        #contactPage .submit-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        #contactPage .submit-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #contactPage .message-feedback {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #90CDF4; /* Light blue for feedback */
+            font-style: italic;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        #contactPage .message-feedback.visible {
+            opacity: 1;
         }
 
     </style>
@@ -1751,14 +1824,16 @@
         <section id="contactPage" class="hidden-page">
             <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Contact the Keepers</h2>
             <p class="text-gray-300 text-center mb-4">
-                The Keepers of the Echoes communicate through subtle means.
-                Leave your message, and if the vibrations align, a response may find you.
+                If your heart is pure and your intentions aligned, your message may reach the Keepers.
+                Speak your truth into the ether, and await the subtle signs.
             </p>
             <div class="lore-content-area w-full text-center">
-                <p>For now, meditate on the whispers. The time for direct contact is not yet upon us.</p>
-                <p class="mt-4 text-gray-400 text-sm">
-                    (This section is a placeholder for future interaction mechanisms.)
-                </p>
+                <form id="contactForm" class="contact-form">
+                    <label for="keeperMessage" class="sr-only">Your Message to the Keepers</label>
+                    <textarea id="keeperMessage" placeholder="Type your message here..."></textarea>
+                    <button type="submit" class="submit-button" id="sendMessageButton">Send Message to the Keepers</button>
+                    <p id="messageFeedback" class="message-feedback"></p>
+                </form>
             </div>
         </section>
 
@@ -1791,7 +1866,7 @@
             const homePage = document.getElementById('homePage');
             const lorePage = document.getElementById('lorePage');
             const wisdomsAndPropheciesPage = document.getElementById('wisdomsAndPropheciesPage');
-            const contactPage = document.getElementById('contactPage');
+            const contactPage = document.getElementById('contactPage'); // Reference to the contact page
             const meditationPage = document.getElementById('meditationPage');
             const donationPage = document.getElementById('donationPage'); // New Donation Page
             const discoveryLog = document.getElementById('discoveryLog');
@@ -1809,6 +1884,13 @@
             const audioToggleButton = document.getElementById('audioToggleButton');
             const userIdDisplay = document.getElementById('userIdDisplay');
             const mistEffect = document.querySelector('.mist-effect');
+
+            // NEW: Contact Form Elements
+            const contactForm = document.getElementById('contactForm');
+            const keeperMessageTextarea = document.getElementById('keeperMessage');
+            const sendMessageButton = document.getElementById('sendMessageButton');
+            const messageFeedback = document.getElementById('messageFeedback');
+
 
             // Meditation specific elements
             const startMeditationButton = document.getElementById('startMeditation');
@@ -1918,7 +2000,7 @@
                     logDiscovery("Ambient audio muted.");
                 } else {
                     ambientDrone.triggerAttack("C2");
-                    audioToggleButton.textContent = '�';
+                    audioToggleButton.textContent = '🔊'; // Corrected emoji
                     audioToggleButton.classList.add('active');
                     logDiscovery("Ambient audio playing.");
                 }
@@ -2400,7 +2482,7 @@
                         playBeamSound();
                         setTimeout(() => {
                             pyramidBeam.classList.remove('active');
-                        }, 5000); // Beam active for 5 seconds
+                        }, 8000); // Beam active for 8 seconds (increased duration)
                     } else if (pyramidPart === 'dragon' || pyramidPart === 'moon') {
                         playSmallPyramidSound();
                         // Add a subtle visual effect to the small pyramid
@@ -2419,7 +2501,7 @@
                             setTimeout(() => {
                                 pyramidLoveBeam.classList.remove('active');
                                 // Optionally reset background if needed, but not required if CSS handles default
-                            }, 1500); // Small beam active for 1.5 seconds
+                            }, 3000); // Small beam active for 3 seconds (increased duration)
                         } else if (pyramidPart === 'moon') {
                             // Set red beam for Moon pyramid (explicitly, though CSS default is red)
                             pyramidMoonBeam.style.background = 'linear-gradient(to top, rgba(255, 0, 0, 0.8), rgba(255, 0, 0, 0.0))';
@@ -2427,7 +2509,7 @@
                             setTimeout(() => {
                                 pyramidMoonBeam.classList.remove('active');
                                 // Optionally reset background if needed, but not required if CSS handles default
-                            }, 1500); // Small beam active for 1.5 seconds
+                            }, 3000); // Small beam active for 3 seconds (increased duration)
                         }
                     }
                 });
@@ -2637,6 +2719,58 @@
             startMeditationButton.addEventListener('click', startMeditationAudio);
             stopMeditationButton.addEventListener('click', stopMeditationAudio);
 
+            // NEW: Contact Form Submission Logic
+            contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault(); // Prevent default form submission
+
+                const message = keeperMessageTextarea.value.trim();
+
+                if (!message) {
+                    messageFeedback.textContent = "Please type a message before sending.";
+                    messageFeedback.classList.add('visible');
+                    setTimeout(() => messageFeedback.classList.remove('visible'), 3000);
+                    logDiscovery("Attempted to send empty message to Keepers.");
+                    return;
+                }
+
+                if (!db || !userId) {
+                    messageFeedback.textContent = "Connection to the ancient network not established. Try again later.";
+                    messageFeedback.classList.add('visible');
+                    setTimeout(() => messageFeedback.classList.remove('visible'), 5000);
+                    console.error("Firestore not initialized or user not authenticated. Cannot send message.");
+                    return;
+                }
+
+                sendMessageButton.disabled = true;
+                sendMessageButton.textContent = "Sending...";
+                messageFeedback.textContent = "Your message is traveling through the ether...";
+                messageFeedback.classList.add('visible');
+                playCounselWhisper(); // Play a sound for sending
+
+                try {
+                    // Corrected collection path to include 'data' segment
+                    const messagesCollectionRef = firebase.collection(db, `artifacts/${appId}/public/data/messages_to_keepers`);
+                    await firebase.addDoc(messagesCollectionRef, {
+                        userId: userId,
+                        message: message,
+                        timestamp: new Date()
+                    });
+
+                    messageFeedback.textContent = "Your message has been received by the Keepers. Await their subtle signs.";
+                    keeperMessageTextarea.value = ''; // Clear the textarea
+                    logDiscovery(`Message sent to Keepers: "${message.substring(0, 50)}..."`);
+                } catch (error) {
+                    console.error("Error sending message to Keepers:", error);
+                    messageFeedback.textContent = `A disturbance prevented your message from reaching the Keepers. Error: ${error.message}.`;
+                    logDiscovery(`Failed to send message to Keepers: ${error.message}`);
+                } finally {
+                    sendMessageButton.disabled = false;
+                    sendMessageButton.textContent = "Send Message to the Keepers";
+                    setTimeout(() => messageFeedback.classList.remove('visible'), 7000); // Keep message visible longer for feedback
+                }
+            });
+
+
             // Parallax effect for main content based on mouse position
             mainContentArea.addEventListener('mousemove', (e) => {
                 const x = (e.clientX / window.innerWidth - 0.5) * 2; // -1 to 1
@@ -2655,4 +2789,3 @@
     </script>
 </body>
 </html>
-�
