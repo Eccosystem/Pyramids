@@ -1226,10 +1226,8 @@
             color: #333;
         }
 
-                    /* Removed min-height to allow content to dictate height */
-            /* margin-top: 0; */ /* Removed margin-top to allow centering */
-        
-
+        /* Meditation Page Styles */
+    
         .meditation-circle {
             width: clamp(150px, 30vw, 250px);
             height: clamp(150px, 30vw, 250px);
@@ -2126,7 +2124,7 @@
                         }
                     };
 
-                    const apiKey = ""; // Canvas will automatically provide this
+                    const apiKey = "AIzaSyCKTG8DytHzbQ7TKf4HCgDLnZMxVvpfqpM"; // User's API key installed here
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                     const response = await fetch(apiUrl, {
@@ -2222,7 +2220,7 @@
                         }
                     };
 
-                    const apiKey = ""; // Canvas will automatically provide this
+                    const apiKey = "AIzaSyCKTG8DytHzbQ7TKf4HCgDLnZMxVvpfqpM"; // User's API key installed here
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                     const response = await fetch(apiUrl, {
@@ -2303,7 +2301,7 @@
                     chatHistory.push({ role: "user", parts: [{ text: `Expand on the following lore section in a mystical, ancient, and insightful tone. Focus on adding a deeper, esoteric layer to the provided text. The section title is "${title}" and the current content is: "${content}". Provide a concise paragraph of expanded insight. This response should be unique and distinct from any previous insight generated. Current timestamp for uniqueness: ${now}.` }] });
 
                     const payload = { contents: chatHistory };
-                    const apiKey = ""; // Canvas will automatically provide this
+                    const apiKey = "AIzaSyCKTG8DytHzbQ7TKf4HCgDLnZMxVvpfqpM"; // User's API key installed here
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                     const response = await fetch(apiUrl, {
