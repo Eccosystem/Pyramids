@@ -1393,6 +1393,87 @@
             100% { transform: translateX(5%); }
         }
 
+        /* Donation Page Styles */
+        #donationPage {
+            margin-top: 3rem;
+            color: #FFD700;
+            text-align: center;
+            width: 100%;
+            max-width: 700px;
+            padding: 1rem;
+            box-sizing: border-box;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 1rem;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            animation: fadeIn 2s ease-in-out;
+            display: flex; /* Use flex for content alignment */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 40vh; /* Ensure some height for content */
+        }
+
+        #donationPage h2 {
+            font-family: 'Spectral', serif;
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            color: #FFD700;
+        }
+
+        #donationPage .donation-message {
+            font-size: clamp(1rem, 1.8vw, 1.3rem);
+            color: #e0e0e0;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+        }
+
+        .donate-button {
+            background: linear-gradient(to bottom right, #DAA520, #B8860B); /* Gold gradient */
+            color: #333;
+            padding: 0.8rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            border: none;
+            outline: none;
+            font-size: 1.1rem;
+            text-decoration: none; /* For anchor tag */
+            display: inline-block; /* For anchor tag */
+            position: relative;
+            overflow: hidden;
+        }
+
+        .donate-button:hover {
+            background: linear-gradient(to bottom right, #FFD700, #DAA520);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .donate-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .donate-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -75%;
+            width: 50%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: skewX(-20deg);
+            transition: all 0.5s ease;
+        }
+
+        .donate-button:hover::before {
+            left: 125%;
+        }
+
     </style>
 </head>
 <body data-theme="night">
@@ -1432,6 +1513,7 @@
                     <li><a href="#" data-page="lore">Lore</a></li>
                     <li><a href="#" data-page="wisdomsAndProphecies">Wisdoms & Prophecies</a></li>
                     <li><a href="#" data-page="meditation">Meditation</a></li>
+                    <li><a href="#" data-page="donation">Donation</a></li> <!-- New Donation Link -->
                     <li><a href="#" data-page="contact">Contact the Keepers</a></li>
                 </ul>
             </nav>
@@ -1642,10 +1724,27 @@
             <select id="meditationThemeSelector" class="meditation-theme-selector">
                 <option value="general">General Guidance</option>
                 <option value="clarity">Seek Clarity</option>
+                <option value="clarity">Seek Clarity</option>
                 <option value="peace">Find Inner Peace</option>
                 <option value="connection">Connect with Ancestors</option>
             </select>
             <p id="meditationStatus" class="text-gray-400 mt-4"></p>
+        </section>
+
+        <section id="donationPage" class="hidden-page">
+            <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Support the Echoes</h2>
+            <p class="donation-message text-center">
+                The ancient wisdom we seek to unveil requires stewardship and dedication.
+                Your generous contributions help us maintain this portal,
+                expand our research into the Bosnian Pyramids, and share these profound insights with all.
+                Every offering, no matter how small, helps to illuminate the path forward.
+            </p>
+            <a href="https://buy.stripe.com/6oU5kC1LraJKan8f1UeEo09" target="_blank" rel="noopener noreferrer" class="donate-button">
+                Donate Now ✨
+            </a>
+            <p class="text-gray-400 text-sm mt-4">
+                (This is a placeholder link. Please replace with your actual donation link.)
+            </p>
         </section>
 
         <section id="contactPage" class="hidden-page">
@@ -1693,6 +1792,7 @@
             const wisdomsAndPropheciesPage = document.getElementById('wisdomsAndPropheciesPage');
             const contactPage = document.getElementById('contactPage');
             const meditationPage = document.getElementById('meditationPage');
+            const donationPage = document.getElementById('donationPage'); // New Donation Page
             const discoveryLog = document.getElementById('discoveryLog');
             const logEntries = document.getElementById('logEntries');
             const toggleLogButton = document.getElementById('toggleLogButton');
@@ -2431,6 +2531,9 @@
                 if (pageName !== 'meditation' && isMeditationPlaying) {
                     stopMeditationAudio();
                 }
+
+                // Log page visit
+                logDiscovery(`Navigated to: ${pageName.charAt(0).toUpperCase() + pageName.slice(1)} Page.`);
             }
 
             // Initially hide all pages and only activate 'home' after entry
