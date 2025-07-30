@@ -1228,10 +1228,7 @@
         }
 
         /* Meditation Page Styles */
-        #meditationPage {
-            /* Removed min-height to allow content to dictate height */
-            /* margin-top: 0; */ /* Removed margin-top to allow centering */
-        }
+       
 
         .meditation-circle {
             width: clamp(150px, 30vw, 250px);
@@ -1485,6 +1482,37 @@
             opacity: 1;
         }
 
+        /* Styles for the new rune reading page */
+        #runeReadingPage .rune-reading-container {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(74, 85, 104, 0.6);
+            border-radius: 0.75rem;
+            padding: clamp(1rem, 3vw, 2rem);
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+            line-height: 1.6;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        #runeReadingPage .rune-display {
+            font-family: 'Spectral', serif;
+            font-size: clamp(3rem, 6vw, 5rem);
+            color: #FFD700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
+            margin-bottom: 1rem;
+            min-height: 1.5em;
+        }
+
+        #runeReadingPage .rune-interpretation {
+            font-style: italic;
+            color: #e0e0e0;
+            margin-top: 1rem;
+            min-height: 1.5em;
+        }
+
     </style>
 </head>
 <body data-theme="night">
@@ -1523,7 +1551,8 @@
                     <li><a href="#" data-page="home">Home</a></li>
                     <li><a href="#" data-page="lore">Lore</a></li>
                     <li><a href="#" data-page="meditation">Meditation</a></li>
-                    <li><a href="#" data-page="donation">Donation</a></li> <!-- New Donation Link -->
+                    <li><a href="#" data-page="runeReading">Rune Reading</a></li> <!-- New Rune Reading Link -->
+                    <li><a href="#" data-page="donation">Donation</a></li>
                     <li><a href="#" data-page="contact">Contact the Keepers</a></li>
                 </ul>
             </nav>
@@ -1665,6 +1694,19 @@
             <p id="meditationStatus" class="text-gray-400 mt-4"></p>
         </section>
 
+        <section id="runeReadingPage" class="hidden-page">
+            <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Personalized Rune Reading</h2>
+            <p class="text-gray-300 text-center mb-4">
+                Pose a question to the ancient runes, and receive guidance from the cosmic energies.
+            </p>
+            <div class="rune-reading-container">
+                <input type="text" id="runeQuestionInput" placeholder="Ask the runes a question..." class="w-full p-3 rounded-lg border border-gray-600 bg-gray-800 text-gray-200 text-center mb-4 focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400">
+                <button class="whisper-button" id="drawRunesButton">Draw Runes for Insight ✨</button>
+                <div class="rune-display mt-6" id="runeDisplay"></div>
+                <div class="rune-interpretation" id="runeInterpretation"></div>
+            </div>
+        </section>
+
         <section id="donationPage" class="hidden-page">
             <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Support the Echoes</h2>
             <p class="donation-message text-center">
@@ -1726,6 +1768,7 @@
             const lorePage = document.getElementById('lorePage');
             const contactPage = document.getElementById('contactPage');
             const meditationPage = document.getElementById('meditationPage');
+            const runeReadingPage = document.getElementById('runeReadingPage'); // New: Rune Reading Page
             const donationPage = document.getElementById('donationPage');
             const discoveryLog = document.getElementById('discoveryLog');
             const logEntries = document.getElementById('logEntries');
@@ -1756,6 +1799,13 @@
             const meditationStatus = document.getElementById('meditationStatus');
             const meditationRune = document.getElementById('meditationRune');
             const meditationThemeSelector = document.getElementById('meditationThemeSelector');
+
+            // Rune Reading elements
+            const runeQuestionInput = document.getElementById('runeQuestionInput');
+            const drawRunesButton = document.getElementById('drawRunesButton');
+            const runeDisplay = document.getElementById('runeDisplay');
+            const runeInterpretation = document.getElementById('runeInterpretation');
+
 
             let translationVisible = false;
             let isGenerating = false;
@@ -1841,8 +1891,14 @@
 
                 // Use __initial_auth_token if available (Canvas environment), otherwise sign in anonymously (local/dev)
                 if (typeof __initial_auth_token !== 'undefined') {
-                    await firebase.signInWithCustomToken(auth, __initial_auth_token);
-                    console.log("signInWithCustomToken attempted for Canvas environment.");
+                    try {
+                        await firebase.signInWithCustomToken(auth, __initial_auth_token);
+                        console.log("signInWithCustomToken attempted and succeeded for Canvas environment.");
+                    } catch (tokenError) {
+                        console.warn("signInWithCustomToken failed, falling back to signInAnonymously:", tokenError);
+                        await firebase.signInAnonymously(auth);
+                        console.log("signInAnonymously attempted as fallback.");
+                    }
                 } else {
                     await firebase.signInAnonymously(auth);
                     console.log("signInAnonymously attempted for local execution.");
@@ -1937,7 +1993,7 @@
                     logDiscovery("Ambient audio muted.");
                 } else {
                     ambientDrone.triggerAttack("C2");
-                    audioToggleButton.textContent = '�';
+                    audioToggleButton.textContent = '🔊';
                     audioToggleButton.classList.add('active');
                     logDiscovery("Ambient audio playing.");
                 }
@@ -2385,6 +2441,85 @@
                 }
             }
 
+            // Function to get personalized rune reading
+            async function getPersonalizedRuneReading(question) {
+                if (isGenerating) {
+                    logDiscovery("The ancient energies are still coalescing. Please wait.");
+                    return;
+                }
+
+                isGenerating = true;
+                runeDisplay.textContent = '';
+                runeInterpretation.textContent = '';
+                runeReadingPage.classList.add('loading'); // Use the page itself for loading indicator
+                playInsightWhisper(); // Use insight whisper for rune reading
+                logDiscovery(`Drawing runes for question: "${question}"...`);
+
+                try {
+                    const prompt = `Generate a three-rune reading and its interpretation for the question: "${question}".
+                    The runes should be selected from the Elder Futhark set. Provide the runes as Unicode characters.
+                    The interpretation should be mystical and insightful, connecting the runes to the question.
+
+                    Format the output as follows:
+                    Runes: [Rune1] [Rune2] [Rune3]
+                    Interpretation: [Your mystical interpretation here, 3-5 sentences]
+
+                    Example:
+                    Runes: ᚠ ᚢ ᚦ
+                    Interpretation: The Fates whisper of new beginnings, a test of will, and the unfolding of destiny. Embrace the unknown, for clarity shall emerge from the shadows.`;
+
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; // Canvas will automatically provide this
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                    const response = await fetchWithExponentialBackoff(() =>
+                        fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        })
+                    );
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        const runesMatch = text.match(/Runes: (.*)/);
+                        const interpretationMatch = text.match(/Interpretation: (.*)/s); // /s for multiline match
+
+                        if (runesMatch && interpretationMatch) {
+                            runeDisplay.textContent = runesMatch[1].trim();
+                            runeInterpretation.textContent = interpretationMatch[1].trim();
+                            logDiscovery(`Received rune reading for "${question.substring(0, 30)}...": ${runesMatch[1].trim()}`);
+                        } else {
+                            runeDisplay.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
+                            runeInterpretation.textContent = "The runes are veiled. Try focusing your intent more clearly.";
+                            logDiscovery("Failed to parse rune reading. Unexpected Gemini API response format.");
+                        }
+                    } else {
+                        runeDisplay.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
+                        runeInterpretation.textContent = "The runes are veiled. Try focusing your intent more clearly.";
+                        logDiscovery("Failed to receive rune reading. Empty or malformed Gemini API response.");
+                    }
+                } catch (error) {
+                    console.error("Error fetching rune reading from Gemini API:", error);
+                    runeDisplay.textContent = "ᛖᚱᚱᛟᚱ ᛞᛖᛖᛈ";
+                    runeInterpretation.textContent = `A disturbance in the ether prevents the runes from forming. Error: ${error.message}. Please try again.`;
+                    logDiscovery(`Error drawing runes: ${error.message}`);
+                } finally {
+                    runeReadingPage.classList.remove('loading');
+                    isGenerating = false;
+
+                    pyramidGroup.classList.add('pyramid-energized');
+                    setTimeout(() => {
+                        pyramidGroup.classList.remove('pyramid-energized');
+                    }, 800);
+                }
+            }
+
 
             // Event Listeners for Pyramid interactions (no changes to this logic, just the underlying getAncientCounsel call)
             pyramidElements.forEach(element => {
@@ -2582,6 +2717,12 @@
                     const content = loreSection.querySelector('p').textContent;
                     const insightContainer = loreSection.querySelector('.llm-insight-container');
                     getDynamicLoreExpansion(title, content, insightContainer, button);
+
+                    // Trigger pyramid energy surge when lore section is expanded
+                    pyramidGroup.classList.add('pyramid-energized');
+                    setTimeout(() => {
+                        pyramidGroup.classList.remove('pyramid-energized');
+                    }, 800);
                 });
             });
 
@@ -2593,7 +2734,7 @@
                     case 'veil':
                         return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cloud"><path d="M17.5 14.5a.75.75 0 000 1.5h.5a.75.75 0 000-1.5z"/><path d="M10 20a5 5 0 01-4.75-5.25A4.5 4.5 0 017 7h.5A4.5 4.5 0 0115 7.5a4.5 4.5 0 011-.5h.5A3.5 3.5 0 0120 10c0 1.5-.5 2.5-1.25 3.25A4.5 4.5 0 0117.5 18H10z"/></svg>`;
                     case 'guardian':
-                        return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
+                        return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg手間><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
                     case 'awakening':
                         return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun"><circle cx="12" cy="12" r="8"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M4.93 19.07l1.41-1.41"/><path d="M17.66 6.34l1.41-1.41"/></svg>`;
                     default:
@@ -2619,6 +2760,11 @@
                                     contentElement.appendChild(icon);
                                 }
                             }
+                            // Trigger pyramid energy surge when lore section is expanded
+                            pyramidGroup.classList.add('pyramid-energized');
+                            setTimeout(() => {
+                                pyramidGroup.classList.remove('pyramid-energized');
+                            }, 800);
                         } else {
                             if (icon) {
                                 icon.remove();
@@ -2694,6 +2840,17 @@
                 }
             });
 
+            // Rune Reading Button Event Listener
+            drawRunesButton.addEventListener('click', () => {
+                const question = runeQuestionInput.value.trim();
+                if (question) {
+                    getPersonalizedRuneReading(question);
+                    runeQuestionInput.value = '';
+                } else {
+                    logDiscovery("Please ask a question for the rune reading.");
+                    runeInterpretation.textContent = "Please ask a question to receive a rune reading.";
+                }
+            });
 
             // Parallax effect for main content based on mouse position (no changes)
             mainContentArea.addEventListener('mousemove', (e) => {
