@@ -1134,21 +1134,21 @@
         }
 
         @keyframes beam-pulse {
-            0% { 
-                transform: translateX(-50%) scaleY(1); 
-                opacity: 0.4; 
+            0% {
+                transform: translateX(-50%) scaleY(1);
+                opacity: 0.4;
                 background: linear-gradient(to top, rgba(255, 215, 0, 0.8), rgba(255, 215, 0, 0.0)); /* Golden */
-            } 
-            50% { 
-                transform: translateX(-50%) scaleY(1.1); 
-                opacity: 1; 
+            }
+            50% {
+                transform: translateX(-50%) scaleY(1.1);
+                opacity: 1;
                 background: linear-gradient(to top, rgba(255, 0, 0, 0.8), rgba(255, 0, 0, 0.0)); /* Red */
             }
-            100% { 
-                transform: translateX(-50%) scaleY(1); 
-                opacity: 0.4; 
+            100% {
+                transform: translateX(-50%) scaleY(1);
+                opacity: 0.4;
                 background: linear-gradient(to top, rgba(255, 215, 0, 0.8), rgba(255, 215, 0, 0.0)); /* Golden */
-            } 
+            }
         }
 
         /* NEW: Small Pyramid Beam */
@@ -1228,7 +1228,10 @@
         }
 
         /* Meditation Page Styles */
-    
+        #meditationPage {
+            /* Removed min-height to allow content to dictate height */
+            /* margin-top: 0; */ /* Removed margin-top to allow centering */
+        }
 
         .meditation-circle {
             width: clamp(150px, 30vw, 250px);
@@ -1761,13 +1764,26 @@
             let currentMeditationRuneIndex = 0;
             let meditationRuneInterval;
 
-            // Firebase variables (for client-side log display and auth)
+            // Firebase variables
             let app;
             let db;
             let auth;
             let userId;
-            let isAuthReady = false; // NEW: Flag to track authentication readiness
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; // Use provided app ID or default
+            let isAuthReady = false;
+
+            // --- IMPORTANT: For local execution, replace these placeholder values with your ACTUAL Firebase project configuration. ---
+            // Go to your Firebase Console -> Project settings -> General -> Your apps -> Web app.
+            // Copy the 'firebaseConfig' object from there and paste it below.
+            const firebaseConfig = {
+                apiKey: "AIzaSyB4CxJorgdTIkFtm-mEGJ4T6XD_L-mSwpE",
+                authDomain: "pyramids-deedb.firebaseapp.com",
+                projectId: "pyramids-deedb",
+                storageBucket: "pyramids-deedb.firebasestorage.app",
+                messagingSenderId: "388561790248",
+                appId: "1:388561790248:web:4935efec547f14f15d1c1d"
+            };
+            // The appId for Firestore paths will be taken directly from your firebaseConfig.
+            const appId = firebaseConfig.appId;
 
             // --- Utility for Exponential Backoff ---
             async function fetchWithExponentialBackoff(fetchFunction, maxRetries = 5, delay = 1000) {
@@ -1810,28 +1826,12 @@
             // --- End Utility for Exponential Backoff ---
 
 
-            // Initialize Firebase (client-side for auth and log display)
-            let firebaseConfig = {};
+            // Initialize Firebase
             try {
                 console.log("Attempting Firebase initialization...");
-                console.log("Raw __firebase_config:", typeof __firebase_config !== 'undefined' ? __firebase_config : "undefined");
-
-                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    try {
-                        firebaseConfig = JSON.parse(__firebase_config);
-                        console.log("Parsed firebaseConfig:", firebaseConfig);
-                    } catch (parseError) {
-                        console.error("Error parsing __firebase_config:", parseError);
-                        throw new Error("Invalid Firebase configuration format. '__firebase_config' is not valid JSON.");
-                    }
-                } else {
-                    console.warn("Global variable '__firebase_config' is undefined or empty. Firebase initialization will likely fail.");
-                    throw new Error("Firebase configuration not provided by environment. Please ensure '__firebase_config' is set.");
-                }
-
-                // Explicitly check for projectId and apiKey
-                if (!firebaseConfig.projectId || !firebaseConfig.apiKey) {
-                    throw new Error("Firebase configuration is missing essential properties (projectId or apiKey).");
+                // Check if firebaseConfig is properly set up by the user
+                if (!firebaseConfig.projectId || !firebaseConfig.apiKey || !firebaseConfig.appId || firebaseConfig.apiKey === "YOUR_ACTUAL_API_KEY") {
+                    throw new Error("Firebase configuration is missing essential properties (projectId, apiKey, or appId) or the API key is still the placeholder. Please update `firebaseConfig` in the HTML with your actual Firebase project details.");
                 }
 
                 app = firebase.initializeApp(firebaseConfig);
@@ -1839,17 +1839,13 @@
                 auth = firebase.getAuth(app);
                 console.log("Firebase app, db, auth objects created.");
 
-                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                console.log("Initial Auth Token:", initialAuthToken ? "Provided" : "Not Provided (using anonymous)");
-
-                if (initialAuthToken) {
-                    console.log("Attempting signInWithCustomToken...");
-                    await firebase.signInWithCustomToken(auth, initialAuthToken);
-                    console.log("signInWithCustomToken attempted.");
+                // Use __initial_auth_token if available (Canvas environment), otherwise sign in anonymously (local/dev)
+                if (typeof __initial_auth_token !== 'undefined') {
+                    await firebase.signInWithCustomToken(auth, __initial_auth_token);
+                    console.log("signInWithCustomToken attempted for Canvas environment.");
                 } else {
-                    console.log("Attempting signInAnonymously...");
                     await firebase.signInAnonymously(auth);
-                    console.log("signInAnonymously attempted.");
+                    console.log("signInAnonymously attempted for local execution.");
                 }
 
                 firebase.onAuthStateChanged(auth, (user) => {
@@ -1860,13 +1856,14 @@
                         console.log("Firebase initialized. User ID:", userId);
                         loadDiscoveryLog();
                         isAuthReady = true;
-                        sendMessageButton.disabled = false;
+                        sendMessageButton.disabled = false; // Enable contact form for authenticated users
                         console.log("sendMessageButton enabled. isAuthReady set to true.");
                     } else {
-                        console.log("No user signed in (onAuthStateChanged).");
-                        userId = crypto.randomUUID(); // Assign a random UUID for anonymous users
+                        // This branch should ideally not be hit if signInAnonymously succeeds,
+                        // but provides a fallback if no user is found for any reason.
+                        userId = crypto.randomUUID(); // Assign a random UUID for truly anonymous/unauthenticated state
                         userIdDisplay.textContent = `User ID: ${userId} (Anonymous)`;
-                        console.log("Firebase initialized. Anonymous User ID:", userId);
+                        console.log("Firebase initialized. Anonymous User ID (fallback):", userId);
                         loadDiscoveryLog(); // Load log even for anonymous user
                         isAuthReady = true;
                         sendMessageButton.disabled = false; // Allow anonymous users to send messages
@@ -1881,8 +1878,8 @@
                 entry.textContent = `${new Date().toLocaleTimeString()}: CRITICAL ERROR: ${error.message}`;
                 logEntries.prepend(entry);
                 isAuthReady = true;
-                sendMessageButton.disabled = true;
-                messageFeedback.textContent = `CRITICAL: Connection to ancient network failed. ${error.message}. Please check your Firebase project settings.`;
+                sendMessageButton.disabled = true; // Disable if Firebase init fails
+                messageFeedback.textContent = `CRITICAL: Connection to ancient network failed. ${error.message}. Please check your Firebase project settings and ensure Anonymous Authentication is enabled.`;
                 messageFeedback.classList.add('visible');
                 console.log("Firebase initialization failed. sendMessageButton kept disabled. isAuthReady set to true (error).");
             }
@@ -1940,7 +1937,7 @@
                     logDiscovery("Ambient audio muted.");
                 } else {
                     ambientDrone.triggerAttack("C2");
-                    audioToggleButton.textContent = '🔊';
+                    audioToggleButton.textContent = '�';
                     audioToggleButton.classList.add('active');
                     logDiscovery("Ambient audio playing.");
                 }
@@ -2181,11 +2178,11 @@
 
                 try {
                     const prompt = `Generate a short, mystical runic inscription and its English translation. The inscription should sound like an ancient prophecy or wisdom related to ${promptContext}.
-                    
+
                     Format the output as follows:
                     Runic: [Runic characters here]
                     English: [English translation here]
-                    
+
                     Example:
                     Runic: ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ
                     English: The path is not found.`;
@@ -2264,11 +2261,11 @@
 
                 try {
                     const prompt = `Generate a short, mystical runic inscription and its English translation. The inscription should be a piece of daily wisdom or a short prophecy.
-                    
+
                     Format the output as follows:
                     Runic: [Runic characters here]
                     English: [English translation here]
-                    
+
                     Example:
                     Runic: ᛞᚢᚱᚾ ᛚᛁᚠᛖ
                     English: Embrace the flow of life.`;
@@ -2344,10 +2341,10 @@
 
                 try {
                     const prompt = `Expand on the following lore passage, providing a deeper, mystical insight. Focus on connecting it to ancient mysteries, cosmic energies, or spiritual implications.
-                    
+
                     Title: ${title}
                     Passage: ${content}
-                    
+
                     Provide a concise, compelling insight (2-4 sentences).`;
 
                     let chatHistory = [];
