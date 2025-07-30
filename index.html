@@ -1228,11 +1228,7 @@
         }
 
         /* Meditation Page Styles */
-        #meditationPage {
-            /* Removed min-height to allow content to dictate height */
-            /* margin-top: 0; */ /* Removed margin-top to allow centering */
-        }
-
+    
         .meditation-circle {
             width: clamp(150px, 30vw, 250px);
             height: clamp(150px, 30vw, 250px);
@@ -1516,9 +1512,27 @@
             min-height: 1.5em;
         }
 
+        /* NEW: Styles for critical error display */
+        #criticalErrorDisplay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #ff4d4d; /* Bright red */
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            z-index: 9999; /* On top of everything */
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
     </style>
 </head>
 <body data-theme="night">
+    <div id="criticalErrorDisplay"></div>
+
     <div id="initialEntryOverlay">
         <div class="entry-content">
             <h2 class="entry-title">Ancient Echoes</h2>
@@ -1788,6 +1802,7 @@
             const audioToggleButton = document.getElementById('audioToggleButton');
             const userIdDisplay = document.getElementById('userIdDisplay');
             const mistEffect = document.querySelector('.mist-effect');
+            const criticalErrorDisplay = document.getElementById('criticalErrorDisplay'); // NEW: Error display element
 
             // Contact Form Elements
             const contactForm = document.getElementById('contactForm');
@@ -1823,6 +1838,7 @@
             let auth;
             let userId;
             let isAuthReady = false;
+            let firebaseConnectionFailed = false; // NEW: Flag for connection status
 
             // --- IMPORTANT: For local execution, replace these placeholder values with your ACTUAL Firebase project configuration. ---
             // Go to your Firebase Console -> Project settings -> General -> Your apps -> Web app.
@@ -1934,15 +1950,12 @@
 
             } catch (error) {
                 console.error("Error during Firebase initialization or sign-in:", error);
-                const entry = document.createElement('div');
-                entry.classList.add('log-entry', 'text-gray-400', 'text-red-400');
-                entry.textContent = `${new Date().toLocaleTimeString()}: CRITICAL ERROR: ${error.message}`;
-                logEntries.prepend(entry);
-                isAuthReady = true;
+                firebaseConnectionFailed = true; // NEW: Set failure flag
+                criticalErrorDisplay.style.display = 'block'; // NEW: Show the error banner
+                criticalErrorDisplay.innerHTML = `<strong>Connection Error:</strong> The application could not connect to its backend services (Firebase). Features like logging and sending messages will be unavailable. <br><strong>Details:</strong> ${error.message}`;
+                
+                isAuthReady = true; // Still set to true to unblock UI, but with failure flag
                 sendMessageButton.disabled = true; // Disable if Firebase init fails
-                messageFeedback.textContent = `CRITICAL: Connection to ancient network failed. ${error.message}. Please check your Firebase project settings and ensure Anonymous Authentication is enabled. If in Canvas, ensure the Firebase API key in the code is an empty string.`;
-                messageFeedback.classList.add('visible');
-                console.log("Firebase initialization failed. sendMessageButton kept disabled. isAuthReady set to true (error).");
             }
 
 
@@ -1998,7 +2011,7 @@
                     logDiscovery("Ambient audio muted.");
                 } else {
                     ambientDrone.triggerAttack("C2");
-                    audioToggleButton.textContent = '🔊';
+                    audioToggleButton.textContent = '�';
                     audioToggleButton.classList.add('active');
                     logDiscovery("Ambient audio playing.");
                 }
@@ -2159,8 +2172,8 @@
 
             // Function to add discovery log entries to Firestore
             async function logDiscovery(message) {
-                if (!db || !userId) {
-                    console.warn("Firestore not initialized or user ID not available. Log entry not saved.");
+                if (firebaseConnectionFailed || !db || !userId) {
+                    console.warn("Firestore not available. Log entry not saved to backend.");
                     // Still display in UI for immediate feedback
                     const entry = document.createElement('div');
                     entry.classList.add('log-entry', 'text-gray-400');
@@ -2187,8 +2200,8 @@
 
             // Function to load discovery log entries from Firestore
             function loadDiscoveryLog() {
-                if (!db || !userId) {
-                    console.warn("Firestore not initialized or user not authenticated. Cannot load log.");
+                if (firebaseConnectionFailed || !db || !userId) {
+                    console.warn("Firestore not available. Cannot load log from backend.");
                     return;
                 }
 
@@ -2223,6 +2236,13 @@
 
             // Function to provide dynamic ancient counsel (now calls Gemini API directly)
             async function getAncientCounsel(promptContext, pyramidPart = null) {
+                if (firebaseConnectionFailed) {
+                    runicOutput.textContent = "ᛖᚱᚱᛟᚱ ᛞᛖᛖᛈ";
+                    englishOutput.innerHTML = `<strong>Connection Error:</strong> Cannot seek counsel without a connection to the ancient network. Please check the error message at the top of the page.`;
+                    englishOutput.classList.add('visible');
+                    toggleTranslationButton.style.display = 'block';
+                    return;
+                }
                 if (isGenerating) {
                     logDiscovery("The ancient energies are still coalescing. Please wait.");
                     return;
@@ -2263,26 +2283,53 @@
                     );
 
                     const result = await response.json();
-
+                    
                     if (result.candidates && result.candidates.length > 0 &&
                         result.candidates[0].content && result.candidates[0].content.parts &&
                         result.candidates[0].content.parts.length > 0) {
                         const text = result.candidates[0].content.parts[0].text;
-                        const runicMatch = text.match(/Runic: (.*)/);
-                        const englishMatch = text.match(/English: (.*)/);
+                        console.log("Gemini API Response (Ancient Counsel):", text); // Log for debugging
 
-                        if (runicMatch && englishMatch) {
-                            runicOutput.textContent = runicMatch[1].trim();
-                            englishOutput.innerHTML = `<strong>Wisdom/Prophecy:</strong> ${englishMatch[1].trim().replace(/\n/g, '<br>')}`;
-                            logDiscovery(`Received new counsel: ${englishMatch[1].trim().substring(0, 30)}...`);
+                        let runicText = null;
+                        let englishText = null;
+
+                        // Use regex to find "Runic:" and "English:" labels, case-insensitive
+                        const runicMatch = text.match(/Runic:\s*(.*)/i);
+                        const englishMatch = text.match(/English:\s*(.*)/i);
+
+                        if (runicMatch && runicMatch[1]) {
+                            runicText = runicMatch[1].trim();
+                        }
+                        if (englishMatch && englishMatch[1]) {
+                            englishText = englishMatch[1].trim();
+                        }
+
+                        // Fallback: If labels are not found, try to split by newline
+                        if (!runicText && !englishText) {
+                            const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+                            if (lines.length >= 2) {
+                                const hasRunicChars = (str) => /[ᚠ-ᛞ]/.test(str);
+                                if (hasRunicChars(lines[0])) {
+                                    runicText = lines[0];
+                                    englishText = lines.slice(1).join('\n');
+                                }
+                            }
+                        }
+
+                        if (runicText && englishText) {
+                            runicOutput.textContent = runicText;
+                            englishOutput.innerHTML = `<strong>Wisdom/Prophecy:</strong> ${englishText.replace(/\n/g, '<br>')}`;
+                            logDiscovery(`Received new counsel: ${englishText.substring(0, 30)}...`);
                         } else {
+                            console.error("Failed to parse Gemini response for counsel. Raw text:", text);
                             runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
-                            englishOutput.innerHTML = "<strong>Wisdom/Prophecy:</strong> The ancient echoes are faint. Try another question.";
+                            englishOutput.innerHTML = `<strong>Wisdom/Prophecy:</strong> The ancient echoes are faint. The format of the message was unclear. Please try again.`;
                             logDiscovery("Failed to parse counsel. Unexpected Gemini API response format.");
                         }
                     } else {
+                        console.error("Gemini API response was empty or malformed.", result);
                         runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
-                        englishOutput.innerHTML = "<strong>Wisdom/Prophecy:</strong> The ancient echoes are faint. Try another question.";
+                        englishOutput.innerHTML = "<strong>Wisdom/Prophecy:</strong> The ancient echoes are faint. No counsel today.";
                         logDiscovery("Failed to receive counsel. Empty or malformed Gemini API response.");
                     }
                 } catch (error) {
@@ -2306,6 +2353,13 @@
 
             // Function to get daily wisdom (now calls Gemini API directly)
             async function getDailyWisdom() {
+                 if (firebaseConnectionFailed) {
+                    runicOutput.textContent = "ᛖᚱᚱᛟᚱ ᛞᛖᛖᛈ";
+                    englishOutput.innerHTML = `<strong>Connection Error:</strong> Cannot receive daily wisdom without a connection to the ancient network. Please check the error message at the top of the page.`;
+                    englishOutput.classList.add('visible');
+                    toggleTranslationButton.style.display = 'block';
+                    return;
+                }
                 if (isGenerating) {
                     logDiscovery("The ancient energies are still coalescing. Please wait.");
                     return;
@@ -2345,24 +2399,51 @@
                         })
                     );
                     const result = await response.json();
-
+                    
                     if (result.candidates && result.candidates.length > 0 &&
                         result.candidates[0].content && result.candidates[0].content.parts &&
                         result.candidates[0].content.parts.length > 0) {
                         const text = result.candidates[0].content.parts[0].text;
-                        const runicMatch = text.match(/Runic: (.*)/);
-                        const englishMatch = text.match(/English: (.*)/);
+                        console.log("Gemini API Response (Daily Wisdom):", text); // Log for debugging
 
-                        if (runicMatch && englishMatch) {
-                            runicOutput.textContent = runicMatch[1].trim();
-                            englishOutput.innerHTML = `<strong>Daily Wisdom:</strong> ${englishMatch[1].trim().replace(/\n/g, '<br>')}`;
-                            logDiscovery(`Received daily wisdom: ${englishMatch[1].trim().substring(0, 30)}...`);
+                        let runicText = null;
+                        let englishText = null;
+
+                        // Use regex to find "Runic:" and "English:" labels, case-insensitive
+                        const runicMatch = text.match(/Runic:\s*(.*)/i);
+                        const englishMatch = text.match(/English:\s*(.*)/i);
+
+                        if (runicMatch && runicMatch[1]) {
+                            runicText = runicMatch[1].trim();
+                        }
+                        if (englishMatch && englishMatch[1]) {
+                            englishText = englishMatch[1].trim();
+                        }
+
+                        // Fallback: If labels are not found, try to split by newline
+                        if (!runicText && !englishText) {
+                            const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+                            if (lines.length >= 2) {
+                                const hasRunicChars = (str) => /[ᚠ-ᛞ]/.test(str);
+                                if (hasRunicChars(lines[0])) {
+                                    runicText = lines[0];
+                                    englishText = lines.slice(1).join('\n');
+                                }
+                            }
+                        }
+
+                        if (runicText && englishText) {
+                            runicOutput.textContent = runicText;
+                            englishOutput.innerHTML = `<strong>Daily Wisdom:</strong> ${englishText.replace(/\n/g, '<br>')}`;
+                            logDiscovery(`Received daily wisdom: ${englishText.substring(0, 30)}...`);
                         } else {
+                            console.error("Failed to parse Gemini response for daily wisdom. Raw text:", text);
                             runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
-                            englishOutput.innerHTML = "<strong>Daily Wisdom:</strong> The ancient echoes are faint. No wisdom today.";
+                            englishOutput.innerHTML = "<strong>Daily Wisdom:</strong> The ancient echoes are faint. Unexpected format. No wisdom today.";
                             logDiscovery("Failed to parse daily wisdom. Unexpected Gemini API response format.");
                         }
                     } else {
+                        console.error("Gemini API response was empty or malformed for daily wisdom.", result);
                         runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
                         englishOutput.innerHTML = "<strong>Daily Wisdom:</strong> The ancient echoes are faint. No wisdom today.";
                         logDiscovery("Failed to receive daily wisdom. Empty or malformed Gemini API response.");
@@ -2388,6 +2469,11 @@
 
             // Function to provide dynamic lore expansion (now calls Gemini API directly)
             async function getDynamicLoreExpansion(title, content, insightContainer, button) {
+                if (firebaseConnectionFailed) {
+                    insightContainer.textContent = "Connection to the ancient network has been lost. Cannot deepen insight.";
+                    insightContainer.classList.add('visible');
+                    return;
+                }
                 if (button.disabled) {
                     logDiscovery("Insight already being generated or recently generated. Please wait.");
                     return;
@@ -2422,7 +2508,7 @@
                         })
                     );
                     const result = await response.json();
-
+                    
                     if (result.candidates && result.candidates.length > 0 &&
                         result.candidates[0].content && result.candidates[0].content.parts &&
                         result.candidates[0].content.parts.length > 0) {
@@ -2448,6 +2534,10 @@
 
             // Function to get personalized rune reading
             async function getPersonalizedRuneReading(question) {
+                if (firebaseConnectionFailed) {
+                    runeInterpretation.textContent = "Connection to the ancient network has been lost. Cannot draw runes.";
+                    return;
+                }
                 if (isGenerating) {
                     logDiscovery("The ancient energies are still coalescing. Please wait.");
                     return;
@@ -2487,24 +2577,51 @@
                         })
                     );
                     const result = await response.json();
-
+                    
                     if (result.candidates && result.candidates.length > 0 &&
                         result.candidates[0].content && result.candidates[0].content.parts &&
                         result.candidates[0].content.parts.length > 0) {
                         const text = result.candidates[0].content.parts[0].text;
-                        const runesMatch = text.match(/Runes: (.*)/);
-                        const interpretationMatch = text.match(/Interpretation: (.*)/s); // /s for multiline match
+                        console.log("Gemini API Response (Rune Reading):", text); // Log for debugging
 
-                        if (runesMatch && interpretationMatch) {
-                            runeDisplay.textContent = runesMatch[1].trim();
-                            runeInterpretation.textContent = interpretationMatch[1].trim();
-                            logDiscovery(`Received rune reading for "${question.substring(0, 30)}...": ${runesMatch[1].trim()}`);
+                        let runesText = null;
+                        let interpretationText = null;
+
+                        // Use regex to find "Runes:" and "Interpretation:" labels, case-insensitive
+                        const runesMatch = text.match(/Runes:\s*(.*)/i);
+                        const interpretationMatch = text.match(/Interpretation:\s*(.*)/i);
+
+                        if (runesMatch && runesMatch[1]) {
+                            runesText = runesMatch[1].trim();
+                        }
+                        if (interpretationMatch && interpretationMatch[1]) {
+                            interpretationText = interpretationMatch[1].trim();
+                        }
+
+                        // Fallback logic
+                        if (!runesText && !interpretationText) {
+                            const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+                            if (lines.length >= 2) {
+                                const hasRunicChars = (str) => /[ᚠ-ᛞ]/.test(str);
+                                if (hasRunicChars(lines[0])) {
+                                    runesText = lines[0];
+                                    interpretationText = lines.slice(1).join('\n');
+                                }
+                            }
+                        }
+
+                        if (runesText && interpretationText) {
+                            runeDisplay.textContent = runesText;
+                            runeInterpretation.textContent = interpretationText;
+                            logDiscovery(`Received rune reading for "${question.substring(0, 30)}...": ${runesText}`);
                         } else {
+                            console.error("Failed to parse Gemini response for rune reading. Raw text:", text);
                             runeDisplay.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
-                            runeInterpretation.textContent = "The runes are veiled. Try focusing your intent more clearly.";
+                            runeInterpretation.textContent = "The runes are veiled. The format of the message was unclear. Please try again.";
                             logDiscovery("Failed to parse rune reading. Unexpected Gemini API response format.");
                         }
                     } else {
+                        console.error("Gemini API response was empty or malformed for rune reading.", result);
                         runeDisplay.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
                         runeInterpretation.textContent = "The runes are veiled. Try focusing your intent more clearly.";
                         logDiscovery("Failed to receive rune reading. Empty or malformed Gemini API response.");
@@ -2739,7 +2856,7 @@
                     case 'veil':
                         return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cloud"><path d="M17.5 14.5a.75.75 0 000 1.5h.5a.75.75 0 000-1.5z"/><path d="M10 20a5 5 0 01-4.75-5.25A4.5 4.5 0 017 7h.5A4.5 4.5 0 0115 7.5a4.5 4.5 0 011-.5h.5A3.5 3.5 0 0120 10c0 1.5-.5 2.5-1.25 3.25A4.5 4.5 0 0117.5 18H10z"/></svg>`;
                     case 'guardian':
-                        return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg手間><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
+                        return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
                     case 'awakening':
                         return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun"><circle cx="12" cy="12" r="8"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M4.93 19.07l1.41-1.41"/><path d="M17.66 6.34l1.41-1.41"/></svg>`;
                     default:
