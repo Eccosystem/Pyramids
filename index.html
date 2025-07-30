@@ -1228,7 +1228,10 @@
         }
 
         /* Meditation Page Styles */
-       
+        #meditationPage {
+            /* Removed min-height to allow content to dictate height */
+            /* margin-top: 0; */ /* Removed margin-top to allow centering */
+        }
 
         .meditation-circle {
             width: clamp(150px, 30vw, 250px);
@@ -1824,16 +1827,21 @@
             // --- IMPORTANT: For local execution, replace these placeholder values with your ACTUAL Firebase project configuration. ---
             // Go to your Firebase Console -> Project settings -> General -> Your apps -> Web app.
             // Copy the 'firebaseConfig' object from there and paste it below.
-            const firebaseConfig = {
-                apiKey: "AIzaSyB4CxJorgdTIkFtm-mEGJ4T6XD_L-mSwpE",
+            const defaultFirebaseConfig = {
+                apiKey: "", // Changed to empty string for Canvas auto-injection
                 authDomain: "pyramids-deedb.firebaseapp.com",
                 projectId: "pyramids-deedb",
                 storageBucket: "pyramids-deedb.firebasestorage.app",
                 messagingSenderId: "388561790248",
                 appId: "1:388561790248:web:4935efec547f14f15d1c1d"
             };
+
+            // Use __firebase_config if available (Canvas environment), otherwise use defaultFirebaseConfig
+            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : defaultFirebaseConfig;
+
             // The appId for Firestore paths will be taken directly from your firebaseConfig.
-            const appId = firebaseConfig.appId;
+            const appId = typeof __app_id !== 'undefined' ? __app_id : firebaseConfig.appId;
+
 
             // --- Utility for Exponential Backoff ---
             async function fetchWithExponentialBackoff(fetchFunction, maxRetries = 5, delay = 1000) {
@@ -1879,11 +1887,8 @@
             // Initialize Firebase
             try {
                 console.log("Attempting Firebase initialization...");
-                // Check if firebaseConfig is properly set up by the user
-                if (!firebaseConfig.projectId || !firebaseConfig.apiKey || !firebaseConfig.appId || firebaseConfig.apiKey === "YOUR_ACTUAL_API_KEY") {
-                    throw new Error("Firebase configuration is missing essential properties (projectId, apiKey, or appId) or the API key is still the placeholder. Please update `firebaseConfig` in the HTML with your actual Firebase project details.");
-                }
 
+                // Initialize Firebase app with the determined config
                 app = firebase.initializeApp(firebaseConfig);
                 db = firebase.getFirestore(app);
                 auth = firebase.getAuth(app);
@@ -1935,7 +1940,7 @@
                 logEntries.prepend(entry);
                 isAuthReady = true;
                 sendMessageButton.disabled = true; // Disable if Firebase init fails
-                messageFeedback.textContent = `CRITICAL: Connection to ancient network failed. ${error.message}. Please check your Firebase project settings and ensure Anonymous Authentication is enabled.`;
+                messageFeedback.textContent = `CRITICAL: Connection to ancient network failed. ${error.message}. Please check your Firebase project settings and ensure Anonymous Authentication is enabled. If in Canvas, ensure the Firebase API key in the code is an empty string.`;
                 messageFeedback.classList.add('visible');
                 console.log("Firebase initialization failed. sendMessageButton kept disabled. isAuthReady set to true (error).");
             }
