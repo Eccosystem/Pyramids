@@ -3,2991 +3,833 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bosnian Pyramids & The Veil of Amenti</title>
+    <title>Ancient Echoes - Bosnian Pyramids</title>
+    <meta name="description" content="Explore the ancient mysteries of the Bosnian Pyramids and the Veil of Amenti. Receive mystical insights and daily wisdom.">
+    <meta name="keywords" content="Bosnian Pyramids, Veil of Amenti, ancient wisdom, mystical, prophecy, meditation, spiritual, energy, runes, AI">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Spectral:wght@300;400;700&display=swap" rel="stylesheet">
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Expose Firebase modules globally for use in the main script block
-        window.firebase = {
-            initializeApp,
-            getAuth,
-            signInAnonymously,
-            signInWithCustomToken,
-            onAuthStateChanged,
-            getFirestore,
-            doc,
-            getDoc,
-            addDoc,
-            setDoc,
-            updateDoc,
-            deleteDoc,
-            onSnapshot,
-            collection,
-            query,
-            orderBy,
-            limit,
-            serverTimestamp
-        };
-    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
     <style>
-        :root {
-            /* Define base sizes for the pyramid that scale with viewport width, clamped between min/max */
-            --pyramid-base-width: clamp(200px, 40vw, 400px);
-            --pyramid-height: calc(var(--pyramid-base-width) / 2); /* For 45-degree angle sides */
-            --entrance-width: calc(var(--pyramid-base-width) * 0.25);
-            --entrance-height: calc(var(--pyramid-base-width) * 0.35);
-
-            /* New: Sizes for smaller pyramids */
-            --small-pyramid-base-width: clamp(80px, 15vw, 150px);
-            --small-pyramid-height: calc(var(--small-pyramid-base-width) / 2);
+        html {
+            scroll-behavior: smooth;
         }
-
         body {
             font-family: 'Inter', sans-serif;
-            /* Default: Night theme */
             background: radial-gradient(circle at center, #10141c 0%, #000000 100%);
-            display: flex;
-            flex-direction: column; /* Allow content to stack vertically */
-            justify-content: flex-start; /* Align content to the top for scrolling */
-            align-items: center;
-            /* Removed min-height: 100vh; to allow content to define height */
-            margin: 0;
-            overflow-y: auto; /* Allow vertical scrolling */
-            overflow-x: hidden; /* Hide horizontal scrollbar */
-            position: relative;
+            display: flex; flex-direction: column; justify-content: flex-start;
+            align-items: center; margin: 0; overflow-x: hidden; position: relative;
             animation: background-pulse 20s ease-in-out infinite alternate;
-            transition: background 2s ease-in-out; /* Smooth transition for theme changes */
+            transition: background 2s ease-in-out;
         }
-
-        /* Theme-specific backgrounds */
-        body[data-theme="day"] {
-            background: radial-gradient(circle at center, #87CEEB 0%, #4682B4 100%); /* Sky blue */
+        body[data-theme="day"] { 
+            background: linear-gradient(to bottom, #87CEEB 0%, #c1e1f2 70%, #f0f8ff 100%);
+            animation: none;
         }
-
-        body[data-theme="night"] {
-            background: radial-gradient(circle at center, #10141c 0%, #000000 100%); /* Dark, cosmic night */
+        body[data-theme="night"] { 
+            background: radial-gradient(circle at center, #10141c 0%, #000000 100%); 
         }
-
         @keyframes background-pulse {
             0% { background-color: #10141c; }
             100% { background-color: #151a25; }
         }
-
-        /* Enhanced subtle dust/star effect in background */
-        body::before {
-            content: '';
-            position: fixed; /* Keep background fixed while scrolling */
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+        body::before, body::after {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            transition: opacity 2s ease-in-out;
+            background-attachment: fixed;
+            z-index: -1;
+        }
+        body[data-theme="night"]::before {
             background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-            background-size: 4px 4px; /* Slightly larger particles */
-            opacity: 0.4; /* More visible */
-            animation: drift 80s linear infinite; /* Slower, more subtle drift */
-            transition: opacity 2s ease-in-out; /* Smooth transition for dust opacity */
-            background-attachment: fixed; /* Parallax effect */
+            background-size: 4px 4px; 
+            opacity: 0.4; 
+            animation: drift 80s linear infinite;
         }
-
         body[data-theme="day"]::before {
-            opacity: 0; /* Hide dust/stars during day/dusk */
+            opacity: 0;
         }
-
+        body[data-theme="day"]::after {
+            background-image: 
+                url('https://www.transparenttextures.com/patterns/clouds.png'),
+                url('https://www.transparenttextures.com/patterns/soft-wallpaper.png');
+            background-repeat: repeat;
+            opacity: 0.1;
+            animation: drift-slow 180s linear infinite;
+        }
+        body[data-theme="night"]::after {
+            opacity: 0;
+        }
         @keyframes drift {
             from { background-position: 0 0; }
-            to { background-position: 200% 200%; } /* Longer drift path */
+            to { background-position: 200% 200%; }
         }
-
-        /* New: Cosmic Dust Container */
-        .cosmic-dust-container {
-            position: fixed; /* Keep cosmic dust fixed while scrolling */
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 0; /* Behind everything */
-            transition: opacity 2s ease-in-out; /* Smooth transition for dust container opacity */
-            background-attachment: fixed; /* Parallax effect */
+        @keyframes drift-slow {
+            from { background-position: 0 0; }
+            to { background-position: 400px 0; }
         }
-
-        body[data-theme="day"] .cosmic-dust-container {
-            opacity: 0; /* Hide cosmic dust during day/dusk */
-        }
-
-        .cosmic-dust-particle {
-            position: absolute;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: dust-float 30s linear infinite;
-        }
-
-        @keyframes dust-float {
-            0% { transform: translate(var(--x-start), var(--y-start)) scale(var(--scale-start)); opacity: 0; }
-            20% { opacity: 0.5; }
-            80% { opacity: 0.5; }
-            100% { transform: translate(var(--x-end), var(--y-end)) scale(var(--scale-end)); opacity: 0; }
-        }
-
-        /* New main wrapper for all content */
         .main-content-area {
-            width: 95%; /* Use a percentage to be fluid */
-            max-width: 900px; /* Max width for desktop */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 1rem;
-            box-sizing: border-box;
-            z-index: 10; /* Ensure it's above background effects */
-            min-height: 80vh; /* Added to ensure content area takes up space */
-            padding-bottom: 5rem; /* Reduced padding for log and toggle button */
-            opacity: 0; /* Initially hidden */
-            transition: opacity 1.5s ease-in-out;
+            width: 95%; max-width: 900px; display: flex; flex-direction: column;
+            align-items: center; padding: 1rem; box-sizing: border-box; z-index: 10;
+            opacity: 0; transition: opacity 1.5s ease-in-out;
         }
-
-        .main-content-area.active {
-            opacity: 1; /* Visible after entry */
-        }
-
-        /* Header for the menu */
+        .main-content-area.active { opacity: 1; }
         .app-header {
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 1rem 0;
-            margin-bottom: 1rem;
-            color: #FFD700;
-            z-index: 20; /* Above other content */
-        }
-
-        .app-header h1 {
-            font-size: clamp(1.5rem, 3vw, 2.5rem);
-            margin: 0;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            animation: none; /* Disable color shift for header title */
-        }
-
-        .menu-button {
-            background: none;
-            border: none;
-            color: #FFD700;
-            font-size: clamp(1.5rem, 3vw, 2.5rem);
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-
-        .menu-button:hover {
-            background-color: rgba(255, 215, 0, 0.1);
-            transform: scale(1.1);
-        }
-
-        /* Overlay Menu */
-        .overlay-menu {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.95);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        .overlay-menu.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .overlay-menu-close {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
-            background: none;
-            border: none;
-            color: #FFD700;
-            font-size: 3rem;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .overlay-menu-close:hover {
-            transform: rotate(90deg);
-        }
-
-        .overlay-menu nav ul {
-            list-style: none;
-            padding: 0;
-            text-align: center;
-        }
-
-        .overlay-menu nav ul li {
-            margin-bottom: 1.5rem;
-        }
-
-        .overlay-menu nav ul li a {
-            color: #e0e0e0;
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
-            text-decoration: none;
-            transition: color 0.3s ease, text-shadow 0.3s ease;
-        }
-
-        .overlay-menu nav ul li a:hover {
-            color: #FFD700;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-        }
-
-
-        /* Container for the visual pyramid models and tunnels */
-        .pyramids-visual-group {
-            position: relative; /* All pyramids and tunnels will be positioned relative to this */
-            width: 100%; /* Take full width of its parent */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            /* This group will now hold the glow, not the individual pyramid-container */
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.3), 0 0 100px rgba(255, 215, 0, 0.1);
-            animation: pyramid-glow 5s infinite alternate ease-in-out;
-            border-radius: 2rem;
-            transition: box-shadow 0.5s ease-in-out; /* For energy surge */
-            padding-bottom: calc(var(--small-pyramid-height) + 2rem); /* Ensure space for small pyramids below */
-            margin-top: 2rem; /* Space between intro text and pyramid group */
-        }
-
-        @keyframes pyramid-glow {
-            from { box-shadow: 0 0 50px rgba(255, 215, 0, 0.3), 0 0 100px rgba(255, 215, 0, 0.1); }
-            to { box-shadow: 0 0 60px rgba(255, 215, 0, 0.5), 0 0 120px rgba(255, 215, 0, 0.2); }
-        }
-
-        /* New: Pyramid Energized effect */
-        .pyramid-energized {
-            animation: pyramid-energy-surge 0.8s ease-out; /* Short, intense burst */
-            box-shadow: 0 0 80px rgba(255, 215, 0, 0.8), 0 0 150px rgba(255, 215, 0, 0.5);
-        }
-
-        @keyframes pyramid-energy-surge {
-            0% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.3), 0 0 100px rgba(255, 215, 0, 0.1); }
-            50% { box-shadow: 0 0 100px rgba(255, 215, 0, 1), 0 0 200px rgba(255, 215, 0, 0.8); }
-            100% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.3), 0 0 100px rgba(255, 215, 0, 0.1); }
-        }
-
-        /* Main Pyramid of Sun */
-        .pyramid-of-sun-main {
-            position: relative;
-            width: var(--pyramid-base-width); /* Still uses the main pyramid size */
-            height: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: clamp(1.5rem, 5vw, 3rem); /* Padding around the pyramid elements */
-            border-radius: 2rem; /* Keep rounded corners */
-        }
-
-
-        .pyramid-top, .pyramid-base, .pyramid-entrance {
-            cursor: pointer; /* Indicate interactivity */
-            transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
-        }
-
-        .pyramid-top:hover, .pyramid-base:hover, .pyramid-entrance:hover {
-            transform: translateY(-5px) scale(1.02);
-            filter: brightness(1.1);
-        }
-
-
-        .pyramid-top {
-            width: 0;
-            height: 0;
-            /* Dimensions are now based on CSS variables, scaling with viewport width, clamped between min/max */
-            border-left: calc(var(--pyramid-base-width) / 2) solid transparent;
-            border-right: calc(var(--pyramid-base-width) / 2) solid transparent;
-            /* Enhanced border-bottom for lighting effect */
-            border-bottom: var(--pyramid-height) solid #DAA520; /* Lighter gold for top surface */
-            margin-bottom: calc(-1 * var(--pyramid-height) / 2); /* Adjusted overlap */
-            position: relative;
-            z-index: 10;
-            border-radius: 1rem 1rem 0 0;
-            /* Enhanced box-shadow for depth and lighting */
-            box-shadow: inset 0 -25px 50px rgba(0, 0, 0, 0.7),
-                        0 5px 15px rgba(255, 215, 0, 0.2),
-                        0 10px 30px rgba(0, 0, 0, 0.5);
-            filter: brightness(0.95); /* Slightly brighter */
-            /* New: Subtle gradient for more depth */
-            background: linear-gradient(to top, #DAA520, #FFD700);
-        }
-
-        .pyramid-base {
-            width: var(--pyramid-base-width); /* Scales with --pyramid-base-width */
-            height: var(--pyramid-height); /* Scales with --pyramid-height */
-            /* Changed to linear gradient for more visual interest */
-            background: linear-gradient(to bottom, #D4AF37, #B8860B); /* Gold gradient */
-            position: relative;
-            z-index: 5;
-            border-radius: 0 0 2rem 2rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding-bottom: calc(var(--pyramid-base-width) * 0.075); /* Responsive padding */
-            /* Enhanced box-shadow for depth */
-            box-shadow: inset 0 25px 50px rgba(0, 0, 0, 0.7),
-                        0 5px 15px rgba(255, 215, 0, 0.2),
-                        0 10px 30px rgba(0, 0, 0, 0.5);
-            filter: brightness(0.9);
-            /* New: Pulse animation for the base */
-            animation: base-pulse 4s infinite alternate ease-in-out;
-        }
-
-        @keyframes base-pulse {
-            0% { transform: scale(1); box-shadow: inset 0 25px 50px rgba(0, 0, 0, 0.7), 0 5px 15px rgba(255, 215, 0, 0.2), 0 10px 30px rgba(0, 0, 0, 0.5); }
-            100% { transform: scale(1.005); box-shadow: inset 0 25px 60px rgba(0, 0, 0, 0.8), 0 8px 20px rgba(255, 215, 0, 0.3), 0 15px 40px rgba(0, 0, 0, 0.6); }
-        }
-
-        .pyramid-entrance {
-            width: var(--entrance-width); /* Scales with --entrance-width */
-            height: var(--entrance-height); /* Scales with --entrance-height */
-            background-color: #1e1f14;
-            border-radius: 0.75rem;
-            position: relative;
-            overflow: hidden;
-            /* Enhanced box-shadow for deeper tunnel effect */
-            box-shadow: inset 0 0 60px rgb(121, 120, 120),
-                        0 0 15px rgba(0, 0, 0, 0.8); /* Outer shadow for depth */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding-bottom: calc(var(--entrance-width) * 0.1); /* Responsive padding */
-            /* New: Inner glow for the entrance */
-            box-shadow: inset 0 0 80px rgba(255, 215, 0, 0.2), inset 0 0 100px rgba(255, 215, 0, 0.1), 0 0 20px rgba(0, 0, 0, 0.8);
-        }
-
-        .entrance-glow {
-            width: calc(var(--entrance-width) * 0.8); /* Scales relative to entrance */
-            height: calc(var(--entrance-height) * 0.4); /* Scales relative to entrance */
-            background: radial-gradient(circle, rgba(255, 180, 0, 0.15) 0%, transparent 80%);
-            position: absolute;
-            bottom: 0px;
-            border-radius: 50%;
-            filter: blur(25px);
-            opacity: 0.6;
-            animation: pulse-glow 3s infinite alternate, flicker 0.5s infinite alternate;
-        }
-
-        @keyframes pulse-glow {
-            from {
-                transform: scale(0.9);
-                opacity: 0.6;
-            }
-            to {
-                transform: scale(1.1);
-                opacity: 0.8;
-            }
-        }
-
-        @keyframes flicker {
-            0% { opacity: 0.6; }
-            50% { opacity: 0.55; }
-            100% { opacity: 0.6; }
-        }
-
-        /* Runic letters styling (background) */
-        .runes-container {
-            position: fixed; /* Keep runes fixed while scrolling */
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 1;
-            background-attachment: fixed; /* Parallax effect */
-        }
-
-        .rune {
-            position: absolute;
-            font-size: clamp(2rem, 4vw, 4rem); /* Responsive font size */
-            color: #B8860B; /* Dark gold color */
-            opacity: 0;
-            /* New: More complex animation for runes */
-            animation: fade-in-out 18s ease-in-out infinite, rune-drift 18s linear infinite;
-            text-shadow: 0 0 12px #f3be36, 0 0 20px rgba(243, 175, 3, 0.5);
-            transform: rotate(var(--rotation, 0deg));
-        }
-
-        @keyframes fade-in-out {
-            0% { opacity: 0; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { opacity: 0; }
-        }
-
-        @keyframes rune-drift {
-            0% { transform: translateY(0) rotate(var(--rotation-start, 0deg)); }
-            100% { transform: translateY(var(--y-offset, 100vh)) rotate(var(--rotation-end, 360deg)); }
-        }
-
-        /* Styling for the new whisper box */
-        .whisper-box {
-            background-color: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(74, 85, 104, 0.6);
-            border-radius: 0.75rem;
-            padding: clamp(0.8rem, 2vw, 1.2rem); /* Responsive padding */
-            margin-top: clamp(1rem, 4vw, 2rem); /* Responsive margin */
-            min-height: clamp(50px, 10vw, 70px); /* Responsive min-height */
-            display: flex;
-            flex-direction: column; /* Changed to column to stack rune and text */
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: #e0e0e0;
-            font-style: italic;
-            font-size: clamp(0.9rem, 1.5vw, 1.1rem); /* Responsive font size */
-            max-width: 90%;
-            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6);
-            /* New: LLM output animation */
-            animation: fade-in-text 1s ease-out forwards;
-            position: relative; /* For positioning the toggle button */
-        }
-
-        @keyframes fade-in-text {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* New: Loading animation for whisper box */
-        .whisper-box.loading::after {
-            content: '...';
-            animation: blinking-dots 1s infinite;
-        }
-
-        @keyframes blinking-dots {
-            0% { opacity: 0; }
-            50% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        /* Runic text inside whisper box */
-        .runic-text {
-            font-family: 'Spectral', serif; /* Use a mystical serif font */
-            font-size: clamp(1.5rem, 3vw, 2.2rem); /* Larger for impact */
-            margin-bottom: 0.5rem;
-            letter-spacing: 0.1em;
-            color: #FFD700; /* Gold for runes */
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
-            min-height: 1.5em; /* Ensure space even when empty */
-        }
-
-        /* English translation text */
-        .english-translation {
-            font-style: italic;
-            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
-            color: #e0e0e0;
-            opacity: 0;
-            max-height: 0;
-            overflow: hidden;
-            transition: opacity 0.5s ease-in-out, max-height 0.5s ease-in-out;
-        }
-
-        .english-translation.visible {
-            opacity: 1;
-            max-height: 500px; /* Increased max-height for more content */
-            margin-top: 0.5rem;
-        }
-
-        /* Runic toggle button */
-        .runic-toggle {
-            background: none;
-            border: none;
-            color: #FFD700;
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 0.3rem;
-            border-radius: 50%;
-            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
-            position: absolute; /* Position relative to whisper-box */
-            top: 0.5rem;
-            right: 0.5rem;
-            opacity: 0.7;
-            display: none; /* Hidden by default, shown when content is loaded */
-        }
-
-        .runic-toggle:hover {
-            background-color: rgba(255, 215, 0, 0.1);
-            color: #e0e0e0;
-            transform: scale(1.1);
-            opacity: 1;
-        }
-
-        /* Styling for the whisper button */
-        .whisper-button {
-            background: linear-gradient(to bottom right, #5a6578, #3d4758);
-            color: #ffcc00;
-            padding: 0.6rem 1.2rem; /* Reduced padding */
-            border-radius: 0.8rem; /* Slightly less rounded */
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-            border: none;
-            outline: none;
-            margin-top: 1rem; /* Reduced margin */
-            font-size: 0.85rem; /* Reduced font size */
-            position: relative; /* For glow effect */
-            overflow: hidden; /* For shine effect */
-        }
-
-        .whisper-button:hover {
-            background: linear-gradient(to bottom right, #6a7588, #4d5768);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-            transform: translateY(-2px);
-        }
-
-        .whisper-button:active {
-            transform: translateY(0);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-        }
-
-        /* New: Button shine effect on hover */
-        .whisper-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -75%;
-            width: 50%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: skewX(-20deg);
-            transition: all 0.5s ease;
-        }
-
-        .whisper-button:hover::before {
-            left: 125%;
-        }
-
-
-        /* Runic inscriptions on pyramid surface */
-        .pyramid-rune-top-left, .pyramid-rune-top-right, .pyramid-rune-base-left, .pyramid-rune-base-right {
-            position: absolute;
-            font-size: clamp(1.8rem, 3vw, 3rem); /* Responsive font size */
-            color: #FFD700;
-            text-shadow: 0 0 25px #FFD700, 0 0 35px rgba(255, 215, 0, 0.7);
-            opacity: 0;
-            animation: surface-rune-reveal 7s ease-in-out infinite alternate;
-            pointer-events: none;
-            z-index: 11;
-        }
-
-        .pyramid-rune-top-left {
-            top: calc(var(--pyramid-height) * 0.25); /* Responsive position */
-            left: calc(var(--pyramid-base-width) * 0.15); /* Responsive position */
-            transform: rotate(-15deg);
-            animation-delay: 1s;
-        }
-
-        .pyramid-rune-top-right {
-            top: calc(var(--pyramid-height) * 0.35); /* Responsive position */
-            right: calc(var(--pyramid-base-width) * 0.15); /* Responsive position */
-            transform: rotate(20deg);
-            animation-delay: 3s;
-        }
-
-        .pyramid-rune-base-left {
-            bottom: calc(var(--pyramid-height) * 0.45); /* Responsive position */
-            left: calc(var(--pyramid-base-width) * 0.2); /* Responsive position */
-            transform: rotate(10deg);
-            animation-delay: 5s;
-        }
-
-        .pyramid-rune-base-right {
-            bottom: calc(var(--pyramid-height) * 0.35); /* Responsive position */
-            right: calc(var(--pyramid-base-width) * 0.2); /* Responsive position */
-            transform: rotate(-25deg);
-            animation-delay: 7s;
-        }
-
-        @keyframes surface-rune-reveal {
-            0% { opacity: 0; transform: scale(0.8) rotate(var(--initial-rotation, 0deg)); }
-            20% { opacity: 0.95; transform: scale(1.05) rotate(var(--initial-rotation, 0deg)); }
-            80% { opacity: 0.95; transform: scale(1.05) rotate(var(--initial-rotation, 0deg)); }
-            100% { opacity: 0; transform: scale(0.8) rotate(var(--initial-rotation, 0deg)); }
-        }
-
-        /* New styling for "ENTER" runes at the entrance */
-        .entrance-runes {
-            position: relative;
-            font-size: clamp(2.2rem, 3.5vw, 3.5rem); /* Responsive font size */
-            color: #FFD700; /* Ensured gold color */
-            text-shadow: 0 0 40px #FFD700, 0 0 60px rgba(255, 215, 0, 0.9), 0 0 90px rgba(255, 215, 0, 0.7);
-            letter-spacing: 0.25em;
-            animation: entrance-rune-pulse 1s infinite alternate;
-            z-index: 12;
-            margin-bottom: clamp(0.5rem, 1.5vw, 15px); /* Responsive margin */
-            opacity: 1; /* Ensure it's always visible */
-        }
-
-        @keyframes entrance-rune-pulse {
-            from { opacity: 1; transform: scale(1); }
-            to { opacity: 1; transform: scale(1.2); }
-        }
-
-        /* Responsive adjustments for overall text and button sizes */
-        h1 {
-            font-size: clamp(2.5rem, 5vw, 4rem); /* Responsive H1 */
-            /* Animation for color change */
-            animation: color-shift 10s infinite alternate ease-in-out;
-        }
-
-        @keyframes color-shift {
-            0% { color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); } /* Gold */
-            25% { color: #DAA520; text-shadow: 0 0 12px rgba(218, 165, 32, 0.8); } /* Goldenrod */
-            50% { color: #B8860B; text-shadow: 0 0 15px rgba(184, 134, 11, 0.8); } /* DarkGoldenrod */
-            75% { color: #DAA520; text-shadow: 0 0 12px rgba(218, 165, 32, 0.8); } /* Goldenrod */
-            100% { color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); } /* Gold */
-        }
-
-        p {
-            font-size: clamp(0.9rem, 1.8vw, 1.2rem); /* Responsive paragraph */
-        }
-
-        /* New: Veil effect */
-        .veil-overlay {
-            position: fixed; /* Keep veil fixed while scrolling */
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
-            pointer-events: auto; /* Allow clicks */
-            z-index: 2;
-            animation: veil-shimmer 25s ease-in-out infinite alternate;
-            transition: opacity 0.5s ease-in-out, background 0.5s ease-in-out;
-        }
-
-        @keyframes veil-shimmer {
-            0% { opacity: 0.1; transform: scale(1); }
-            50% { opacity: 0.05; transform: scale(1.05); }
-            100% { opacity: 0.1; transform: scale(1); }
-        }
-
-        .veil-overlay.active {
-            opacity: 0.0; /* Temporarily less opaque */
-            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.0) 0%, transparent 70%);
-        }
-
-        /* New: Discovery Log styles */
-        .discovery-log-container {
-            position: fixed; /* Keep log fixed while scrolling */
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            max-height: 20vh; /* Limit height */
-            background-color: rgba(0, 0, 0, 0.7);
-            color: #ccc;
-            padding: 1rem;
-            border-top: 1px solid rgba(74, 85, 104, 0.6);
-            overflow-y: auto; /* Enable scrolling */
-            font-size: 0.8rem;
-            z-index: 999;
-            display: none; /* Hidden by default */
-            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .discovery-log-container.active {
-            display: block; /* Show when active */
-        }
-
-        .log-entry {
-            margin-bottom: 0.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px dashed rgba(74, 85, 104, 0.3);
-        }
-
-        .log-entry:last-child {
-            border-bottom: none;
-        }
-
-        .log-toggle-button {
-            position: fixed; /* Keep toggle button fixed while scrolling */
-            bottom: 20vh; /* Position above the log */
-            left: 1rem; /* Moved to the left */
-            transform: translateX(0); /* Removed horizontal centering */
-            background: linear-gradient(to bottom right, #5a6578, #3d4758);
-            color: #ffcc00;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-            transition: all 0.3s ease;
-        }
-
-        .log-toggle-button:hover {
-            background: linear-gradient(to bottom right, #6a7588, #4d5768);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-        }
-
-        /* New: Styles for the smaller pyramids */
-        .pyramid-small {
-            position: absolute;
-            width: var(--small-pyramid-base-width); /* Changed to actual width for containing beam */
-            height: var(--small-pyramid-height); /* Changed to actual height for containing beam */
-            /* Removed border-left/right/bottom for a solid base, will use background for shape */
-            background: linear-gradient(to top, #DAA520, #FFD700); /* Gradient for small pyramids */
-            z-index: 8;
-            border-radius: 0.5rem 0.5rem 0 0;
-            box-shadow: inset 0 -15px 30px rgba(0, 0, 0, 0.7),
-                        0 2px 8px rgba(255, 215, 0, 0.2),
-                        0 5px 15px rgba(0, 0, 0, 0.5);
-            filter: brightness(0.95); /* Slightly brighter */
-            cursor: pointer;
-            transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
-            display: flex; /* To center text */
-            flex-direction: column; /* Allow text and beam to stack */
-            justify-content: flex-end; /* Align content to the bottom */
-            align-items: center;
-            padding-bottom: 1rem; /* Added padding to ensure text fits */
-            animation: small-pyramid-glow 3s infinite alternate ease-in-out; /* Subtle glow for smaller pyramids */
-            /* Add clip-path for triangle shape */
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-        }
-
-        @keyframes small-pyramid-glow {
-            from { box-shadow: inset 0 -15px 30px rgba(0, 0, 0, 0.7), 0 0 10px rgba(255, 215, 0, 0.2); }
-            to { box-shadow: inset 0 -15px 30px rgba(0, 0, 0, 0.7), 0 0 15px rgba(255, 215, 0, 0.4); }
-        }
-
-        .pyramid-small h3 {
-            position: relative;
-            margin-top: 0; /* Removed margin-top */
-            width: 100%;
-            text-align: center;
-            z-index: 1; /* Ensure text is above beam if needed */
-        }
-
-        .pyramid-small:hover {
-            transform: translateY(-3px) scale(1.05);
-            filter: brightness(1.0);
-        }
-
-        /* Adjusted positioning for smaller pyramids */
-        #pyramidLove {
-            top: 55%; /* Moved higher */
-            left: 20%;
-            transform: translateX(-50%) rotate(-10deg);
-        }
-
-        #pyramidMoon {
-            top: 58%; /* Moved higher, slightly offset from love pyramid */
-            right: 20%;
-            transform: translateX(50%) rotate(15deg);
-        }
-
-        /* New: Tunnel connection lines (simplified) */
-        .tunnel-line {
-            position: absolute;
-            background: linear-gradient(to right, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.8), rgba(255, 215, 0, 0.2));
-            height: 2px;
-            z-index: 6;
-            filter: blur(1px);
-            animation: tunnel-pulse 3s infinite alternate, energy-flow 1s linear infinite; /* Added energy-flow */
-            background-size: 200% 100%; /* For energy flow animation */
-        }
-
-        @keyframes tunnel-pulse {
-            from { opacity: 0.4; }
-            to { opacity: 0.8; }
-        }
-
-        @keyframes energy-flow {
-            0% { background-position: 200% 0; }
-            100% { background-position: 0% 0; }
-        }
-
-        /* Specific tunnel positioning - these will need fine-tuning based on responsive layout */
-        /* These values are illustrative and might need further adjustment for perfect alignment */
-        #tunnelSunLove {
-            top: 50%; /* Adjusted to connect from main pyramid's lower side */
-            left: 35%;
-            width: 20%; /* Adjusted width for connection */
-            transform: rotate(-30deg);
-            transform-origin: 0% 50%;
-        }
-
-        #tunnelSunMoon {
-            top: 53%; /* Adjusted to connect from main pyramid's lower side */
-            right: 35%;
-            width: 20%; /* Adjusted width for connection */
-            transform: rotate(30deg);
-            transform-origin: 100% 50%;
-        }
-
-        /* Styling for user input section */
-        .user-input-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 90%;
-            max-width: 500px;
-            margin-top: 2rem;
-            gap: 0.75rem;
-        }
-
-        .user-input-section input[type="text"] {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border-radius: 0.75rem;
-            border: 1px solid rgba(74, 85, 104, 0.6);
-            background-color: rgba(0, 0, 0, 0.4);
-            color: #e0e0e0;
-            font-size: 1rem;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .user-input-section input[type="text"]:focus {
-            outline: none;
-            border-color: #ffcc00;
-            box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.3), 0 0 10px rgba(255, 215, 0, 0.2);
-        }
-
-        /* Styles for the new hidden lore page */
-        .hidden-page {
-            display: flex; /* Changed to flex to enable flex properties */
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start; /* Changed to flex-start to align content to top */
-            width: 95%;
-            max-width: 900px;
-            padding: 1rem;
-            box-sizing: border-box;
-            color: #e0e0e0;
-            margin-top: 0; /* Adjusted margin-top */
-            min-height: auto; /* Changed to auto to allow content to dictate height */
-            z-index: 10;
-            opacity: 0; /* For smooth transition */
-            transform: translateY(20px); /* For smooth transition */
-            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
-            pointer-events: none; /* Prevent interaction when hidden */
-            background-color: rgba(0, 0, 0, 0.6); /* NEW: Subtle background for visual definition */
-            border-radius: 1rem; /* NEW: Rounded corners for the page container */
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2); /* NEW: Subtle shadow for depth */
-        }
-
-        .hidden-page.active {
-            display: flex; /* Show when active */
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto; /* Allow interaction when active */
-        }
-
-        .lore-content-area {
-            background-color: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(74, 85, 104, 0.6);
-            border-radius: 0.75rem;
-            padding: clamp(1rem, 3vw, 2rem);
-            margin-top: 1.5rem; /* Adjusted margin-top */
-            text-align: left;
-            font-size: clamp(0.95rem, 1.6vw, 1.15rem);
-            line-height: 1.6;
-            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6);
-            /* Removed animation here */
-        }
-
-        /* Styles for interactive lore sections */
-        .lore-section {
-            background-color: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(74, 85, 104, 0.4);
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            width: 100%;
-            overflow: hidden; /* For smooth transition */
-        }
-
-        .lore-section-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out;
-            padding: 0 1rem; /* Add padding for content */
-            position: relative; /* For icon positioning */
-        }
-
-        .lore-section-content.expanded {
-            max-height: 500px; /* Adjust as needed for content length */
-            padding-bottom: 1rem; /* Add bottom padding when expanded */
-        }
-
-        .lore-section-icon {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            width: 24px;
-            height: 24px;
-            color: #FFD700;
-            opacity: 0.6;
-        }
-
-        /* New: Deepen Insight button */
-        .deepen-insight-button {
-            background: linear-gradient(to bottom right, #4a5568, #2d3748);
-            color: #90CDF4; /* Light blue for mystical feel */
-            padding: 0.4rem 0.8rem;
-            border-radius: 0.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-            border: none;
-            outline: none;
-            font-size: 0.8rem;
-            margin-top: 0.8rem;
-        }
-
-        .deepen-insight-button:hover {
-            background: linear-gradient(to bottom right, #5a6578, #3d4758);
-            transform: translateY(-1px);
-            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);
-        }
-
-        .deepen-insight-button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-        }
-
-        .deepen-insight-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* New: LLM Insight container */
-        .llm-insight-container {
-            margin-top: 1rem;
-            padding: 0.8rem;
-            background-color: rgba(255, 255, 255, 0.08);
-            border-left: 3px solid #90CDF4; /* Blue accent */
-            border-radius: 0.5rem;
-            font-style: italic;
-            color: #c0d9f0; /* Lighter blue-gray */
-            font-size: 0.9rem;
-            line-height: 1.4;
-            opacity: 0;
-            max-height: 0;
-            overflow: hidden;
-            transition: opacity 0.7s ease-out, max-height 0.7s ease-out;
-        }
-
-        .llm-insight-container.visible {
-            opacity: 1;
-            max-height: 500px; /* Adjusted for more content */
-        }
-
-        .llm-insight-container.loading::after {
-            content: '...';
-            animation: blinking-dots 1s infinite;
-            margin-left: 0.5rem;
-        }
-
-
-        /* Wisdoms and Prophecies Section */
-        /* This section has been removed */
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Theme switcher buttons styling */
-        .theme-switcher {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-            margin-bottom: 2rem;
             z-index: 20;
         }
-
-        .theme-button {
-            background: linear-gradient(to bottom, #7a7a7a, #5a5a5a);
-            color: #fff;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .title-container {
+            text-align: left;
+            flex-grow: 1;
+        }
+        .app-header h1 {
+            font-family: 'Spectral', serif;
+            font-size: clamp(1.5rem, 4vw, 2.2rem); 
+            margin: 0;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            animation: title-glow 4s infinite alternate;
+            color: #FFD700;
+            letter-spacing: 0.1em;
+        }
+        .runic-subtitle {
+            font-family: 'Spectral', serif;
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            color: #b8860b;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            margin: 0.25rem 0 0 0;
+            letter-spacing: normal;
+        }
+        body[data-theme="day"] .app-header h1 {
+            color: #1e3a8a;
+            text-shadow: 0 1px 3px rgba(255, 255, 255, 0.7);
+            animation: none;
+        }
+        body[data-theme="day"] .runic-subtitle {
+             color: #4a5568;
+             text-shadow: none;
+        }
+        @keyframes title-glow {
+            from { text-shadow: 0 0 15px rgba(255, 215, 0, 0.6); color: #FFD700; }
+            to { text-shadow: 0 0 25px rgba(255, 180, 0, 0.9); color: #fff8e1; }
+        }
+        .menu-button {
+            background: none; border: none; font-size: clamp(1.5rem, 3vw, 2.5rem);
+            cursor: pointer; padding: 0.5rem; border-radius: 0.5rem;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin-left: 1rem;
+        }
+        body[data-theme="night"] .menu-button { color: #FFD700; }
+        body[data-theme="day"] .menu-button { color: #1e3a8a; }
+        .menu-button:hover { background-color: rgba(255, 255, 255, 0.1); transform: scale(1.1); }
+        .overlay-menu {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.95); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 1000;
+            opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .overlay-menu.active { opacity: 1; visibility: visible; }
+        .overlay-menu-close {
+            position: absolute; top: 1rem; right: 1rem; background: none; border: none;
+            color: #FFD700; font-size: 2rem; cursor: pointer; transition: transform 0.3s ease;
+        }
+        .overlay-menu-close:hover { transform: rotate(90deg); }
+        .overlay-menu nav ul {
+            list-style: none; padding: 0; display: flex; flex-direction: row;
+            flex-wrap: wrap; justify-content: center; gap: 1.5rem; width: 100%;
+        }
+        .overlay-menu nav ul li a {
+            color: #e0e0e0; font-size: clamp(1.2rem, 2.5vw, 1.8rem); text-decoration: none;
+            padding: 0.5rem 1rem; border-radius: 0.5rem;
+            transition: color 0.3s ease, text-shadow 0.3s ease, background-color 0.3s ease;
+        }
+        .overlay-menu nav ul li a:hover {
+            color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+            background-color: rgba(255, 215, 0, 0.05);
+        }
+        .pyramids-visual-group {
+            position: relative; width: 100%; display: flex; justify-content: center; align-items: flex-end;
+            margin-top: 2rem; min-height: 400px;
+        }
+        .pyramid-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 1.5rem;
+        }
+        .pyramid {
+            position: relative;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        }
-
-        .theme-button:hover {
-            background: linear-gradient(to bottom, #8a8a8a, #6a6a6a);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-        }
-
-        .theme-button.active {
-            background: linear-gradient(to bottom, #ffcc00, #b8860b);
-            color: #333;
-            border-color: #ffd700;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
-            transform: translateY(-1px);
-        }
-
-        /* NEW: Initial Entry Overlay Styles */
-        #initialEntryOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: radial-gradient(circle at center, #000000 0%, #1a0033 100%); /* Deep space purple/black */
+            transition: transform 0.3s ease;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            z-index: 2000; /* Higher than everything else */
-            color: #FFD700;
-            transition: opacity 1.5s ease-out, visibility 1.5s ease-out; /* Smooth fade-out */
         }
-
-        #initialEntryOverlay.hidden {
+        .pyramid:hover {
+            transform: translateY(-5px);
+        }
+        .pyramid-shape {
+            background: linear-gradient(45deg, #4a4a4a, #1a1a1a);
+            width: 100%;
+            aspect-ratio: 2 / 1;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+        .pyramid-name {
+            margin-top: 0.75rem;
+            font-family: 'Spectral', serif;
+        }
+        body[data-theme="night"] .pyramid-name { 
+            color: #FFD700; 
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+        }
+        body[data-theme="day"] .pyramid-name {
+            color: #2c5282;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+        }
+        .pyramid.center {
+            width: 280px;
+        }
+        .pyramid.center .pyramid-shape {
+            background: linear-gradient(45deg, #DAA520, #B8860B);
+        }
+        .pyramid.side {
+            width: 100px;
+            transform: translateY(30px);
+        }
+         .pyramid.side:hover {
+            transform: translateY(25px);
+        }
+        .beam {
+            position: absolute;
+            bottom: 95%;
+            left: 50%;
+            width: 12px;
+            height: 100vh;
+            transform-origin: bottom center;
+            background: linear-gradient(to top, var(--beam-color-start), var(--beam-color-end));
             opacity: 0;
-            visibility: hidden;
-            pointer-events: none; /* Make it unclickable when hidden */
+            filter: blur(5px);
+            animation: shoot-up 5s ease-out infinite;
         }
-
-        .entry-content {
-            text-align: center;
-            padding: 2rem;
-            background-color: rgba(0, 0, 0, 0.4);
+        .beam.red {
+             --beam-color-start: rgba(255, 60, 60, 0.9);
+             --beam-color-end: rgba(255, 120, 120, 0);
+             animation-delay: 1s;
+        }
+        .beam.green {
+             --beam-color-start: rgba(80, 255, 80, 0.9);
+             --beam-color-end: rgba(120, 255, 120, 0);
+             animation-delay: 0s;
+        }
+        .beam.gold {
+             --beam-color-start: rgba(255, 215, 0, 0.9);
+             --beam-color-end: rgba(255, 225, 50, 0);
+             animation-delay: 0.5s;
+        }
+        @keyframes shoot-up {
+            0% { transform: translateX(-50%) scaleY(0); opacity: 0; }
+            10% { transform: translateX(-50%) scaleY(1); opacity: 0.9; }
+            90% { transform: translateX(-50%) scaleY(1); opacity: 0.9; }
+            100% { transform: translateX(-50%) scaleY(1); opacity: 0; }
+        }
+        .whisper-box {
+            background-color: rgba(0, 0, 0, 0.5); border: 1px solid #4A5568;
+            border-radius: 0.75rem; padding: 1.2rem; margin-top: 1.5rem;
+            min-height: 80px; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+            font-style: italic; font-size: clamp(0.9rem, 1.5vw, 1.1rem); max-width: 90%;
+            width: 100%;
+            position: relative;
+        }
+        .whisper-box.loading::after { content: '...'; animation: blinking-dots 1.5s infinite; position: absolute; }
+        @keyframes blinking-dots { 0%{opacity: 0;} 50%{opacity: 1;} 100%{opacity: 0;} }
+        .runic-text {
+            font-family: 'Spectral', serif; font-size: clamp(1.5rem, 3vw, 2.2rem);
+            color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.6); min-height: 1.5em;
+        }
+        .english-translation {
+            color: #e0e0e0; opacity: 0; max-height: 0; overflow: hidden;
+            transition: opacity 0.5s ease, max-height 0.5s ease;
+        }
+        .english-translation.visible { opacity: 1; max-height: 500px; margin-top: 0.5rem; }
+        .runic-toggle {
+            background: none; border: 1px solid #FFD700; color: #FFD700; cursor: pointer;
+            padding: 0.25rem 0.5rem; border-radius: 0.25rem; transition: all 0.3s;
+            margin-top: 1rem; display: none;
+        }
+        .runic-toggle:hover { background-color: rgba(255,215,0,0.1); }
+        .user-input-section {
+            display: flex; flex-direction: column; align-items: center; width: 90%; max-width: 500px;
+            margin-top: 1.5rem; gap: 0.75rem;
+        }
+        .whisper-button {
+            background: linear-gradient(to bottom right, #5a6578, #3d4758); color: #ffcc00;
+            padding: 0.6rem 1.2rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer;
+            transition: all 0.3s ease; border: none; width: 100%;
+        }
+        .whisper-button:hover {
+            background: linear-gradient(to bottom right, #6a7588, #4d5768); transform: translateY(-2px);
+        }
+        .page { display: none; width: 100%; }
+        .page.active { display: flex; flex-direction: column; align-items: center; animation: fadeIn 1s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .page-content-container {
+            width: 100%; max-width: 900px;
+            background-color: rgba(0,0,0,0.6);
+            border: 1px solid #4a5568;
             border-radius: 1rem;
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
-            animation: entry-glow 3s infinite alternate;
-            cursor: pointer; /* Indicate it's clickable */
+            padding: 2rem;
+            margin-top: 1.5rem;
         }
-
-        @keyframes entry-glow {
-            from { box-shadow: 0 0 50px rgba(255, 215, 0, 0.5); }
-            to { box-shadow: 0 0 70px rgba(255, 215, 0, 0.8); }
+        body[data-theme="day"] .page-content-container {
+            background-color: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0,0,0,0.1);
         }
-
-        .entry-title {
-            font-size: clamp(3rem, 7vw, 5rem);
-            font-family: 'Spectral', serif;
-            margin-bottom: 1rem;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.6);
-            animation: fadeIn 2s ease-out;
-        }
-
-        .entry-runes {
-            font-family: 'Spectral', serif;
-            font-size: clamp(4rem, 10vw, 8rem);
+        #messageFeedback {
             color: #FFD700;
-            text-shadow: 0 0 60px #FFD700, 0 0 90px rgba(255, 215, 0, 0.9), 0 0 120px rgba(255, 215, 0, 0.7);
-            letter-spacing: 0.25em;
-            animation: entrance-rune-pulse 1.5s infinite alternate; /* Re-using existing animation */
-            margin-bottom: 1rem;
+            font-style: italic;
+            margin-top: 1rem;
+            min-height: 4em;
         }
-
-        .entry-instruction {
-            font-size: clamp(1rem, 2vw, 1.5rem);
+        #runeDisplay {
+            font-family: 'Spectral', serif;
+            font-size: 3rem;
+            letter-spacing: 0.5rem;
+            color: #FFD700;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            margin-top: 1.5rem;
+            min-height: 1.5em;
+        }
+        #runeInterpretation {
             color: #e0e0e0;
-            opacity: 0.8;
-            animation: fadeIn 3s ease-out;
-            animation-delay: 0.5s;
+            font-style: italic;
+            margin-top: 1rem;
+            min-height: 3em;
+            line-height: 1.6;
         }
-
-        /* NEW: Pyramid Beam */
-        .pyramid-beam {
-            position: absolute;
-            bottom: 100%; /* Position above the pyramid top */
-            left: 50%;
-            transform: translateX(-50%);
-            width: clamp(15px, 3vw, 30px); /* Responsive width - made narrower */
-            height: 200px; /* Changed from 4% to fixed px for better visibility */
-            background: linear-gradient(to top, rgba(255, 215, 0, 0.8), rgba(255, 215, 0, 0.0));
-            filter: blur(0.8px); /* Reduced blur slightly */
-            opacity: 0; /* Hidden by default */
-            z-index: 9; /* Below the pyramid top, but above base */
-            pointer-events: none; /* Ensure it's not clickable */
-            /* Removed transition here as animation will handle it */
+        .theme-switcher { display: flex; gap: 1rem; margin-block: 1rem; z-index: 20; }
+        .theme-button {
+            background: #5a5a5a; color: #fff; padding: 0.5rem 1rem;
+            border-radius: 0.5rem; cursor: pointer;
+            transition: all 0.3s ease; font-weight: bold;
         }
-
-        .pyramid-beam.active {
-            animation: beam-pulse 8s infinite alternate ease-in-out; /* Changed duration to 8s */
-            opacity: 1; /* Fully visible when active */
+        .theme-button:hover { transform: translateY(-2px); }
+        .theme-button.active { background: #ffcc00; color: #333; }
+        #initialEntryOverlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000;
+            display: flex; justify-content: center; align-items: center; text-align: center;
+            z-index: 2000; color: #FFD700; transition: opacity 1.5s ease-out; cursor: pointer;
         }
-
-        @keyframes beam-pulse {
-            0% {
-                transform: translateX(-50%) scaleY(1);
-                opacity: 0.4;
-                background: linear-gradient(to top, rgba(255, 215, 0, 0.8), rgba(255, 215, 0, 0.0)); /* Golden */
-            }
-            50% {
-                transform: translateX(-50%) scaleY(1.1);
-                opacity: 1;
-                background: linear-gradient(to top, rgba(255, 0, 0, 0.8), rgba(255, 0, 0, 0.0)); /* Red */
-            }
-            100% {
-                transform: translateX(-50%) scaleY(1);
-                opacity: 0.4;
-                background: linear-gradient(to top, rgba(255, 215, 0, 0.8), rgba(255, 215, 0, 0.0)); /* Golden */
-            }
+        #initialEntryOverlay.hidden { opacity: 0; pointer-events: none; }
+        .entry-title { font-size: clamp(1.5rem, 4vw, 2.5rem); font-family: 'Spectral', serif; order: 2; margin-top: 1.5rem;}
+        .entry-instruction { font-size: clamp(1rem, 2vw, 1.5rem); color: #e0e0e0; opacity: 0.8; margin-top: 1rem; order: 3; }
+        .entry-runic {
+            font-family: 'Spectral', serif;
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            color: #FFD700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            letter-spacing: 0.1em;
+            order: 1;
         }
-
-        /* NEW: Small Pyramid Beam */
-        .small-pyramid-beam {
-            position: absolute;
-            bottom: 100%; /* Position above the small pyramid top */
-            left: 50%;
-            transform: translateX(-50%);
-            width: clamp(8px, 2vw, 15px); /* Increased width for better visibility */
-            height: 200px; /* Straight up height - Matches main pyramid beam */
-            background: linear-gradient(to top, rgba(255, 0, 0, 0.8), rgba(255, 0, 0, 0.0)); /* Default: Red color for Moon */
-            filter: blur(0.3px); /* Reduced blur slightly */
-            opacity: 0; /* Hidden by default */
-            z-index: 9; /* Below the pyramid text, but above pyramid base */
-            pointer-events: none;
-            transition: opacity 0.3s ease-out; /* Smooth fade in/out */
-        }
-
-        @keyframes small-beam-pulse {
-            0% { transform: translateX(-50%) scaleY(1); opacity: 0.8; } /* Increased opacity for better visibility */
-            50% { transform: translateX(-50%) scaleY(1.1); opacity: 1; }
-            100% { transform: translateX(-50%) scaleY(1); opacity: 0.8; } /* Increased opacity for better visibility */
-        }
-
-
-        /* New: Sun/Moon elements */
         .celestial-body {
-            position: fixed;
-            top: 5%;
-            right: 5%;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            z-index: 0; /* Behind main content */
-            transition: opacity 2s ease-in-out, background-color 2s ease-in-out, box-shadow 2s ease-in-out, background-image 2s ease-in-out; /* Added background-image transition */
-            background-size: cover; /* Ensure image covers the circle */
-            background-position: center; /* Center the image */
+            position: fixed; top: 5%; right: 5%; width: 80px; height: 80px;
+            border-radius: 50%; z-index: 0; transition: all 2s ease-in-out;
+            background-size: cover; background-position: center;
         }
-
         body[data-theme="night"] .celestial-body {
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/FullMoon2010.jpg/1200px-FullMoon2010.jpg'); /* Actual Moon image */
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/FullMoon2010.jpg/1200px-FullMoon2010.jpg');
             box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
-            opacity: 0.8;
         }
-
         body[data-theme="day"] .celestial-body {
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg/1280px-The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg'); /* Actual Day Sun image */
-            box-shadow: 0 0 50px rgba(255, 215, 0, 1);
-            opacity: 1;
+            background-color: #FFD700;
+            background-image: none;
+            box-shadow: 0 0 50px #FFD700, 0 0 100px #FFA500;
+            animation: sun-glow 4s infinite alternate;
         }
-
-        /* Ambient sound toggle button */
+        @keyframes sun-glow {
+            from { box-shadow: 0 0 50px #FFD700, 0 0 100px #FFA500; }
+            to { box-shadow: 0 0 70px #FFFF00, 0 0 120px #FFD700; }
+        }
         .audio-toggle-button {
-            position: fixed;
-            bottom: 1rem;
-            left: 1rem;
-            background: linear-gradient(to bottom right, #5a6578, #3d4758);
-            color: #ffcc00;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-            transition: all 0.3s ease;
+            position: fixed; bottom: 1rem; right: 1rem; background: #5a6578;
+            color: #ffcc00; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: bold;
+            cursor: pointer; z-index: 1000; transition: all 0.3s ease;
         }
-
-        .audio-toggle-button:hover {
-            background: linear-gradient(to bottom right, #6a7588, #4d5768);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-        }
-
-        .audio-toggle-button.active {
-            background: linear-gradient(to bottom right, #ffcc00, #b8860b);
-            color: #333;
-        }
-
-        /* Meditation Page Styles */
-    
+        .audio-toggle-button.active { background: #ffcc00; color: #333; }
         .meditation-circle {
-            width: clamp(150px, 30vw, 250px);
-            height: clamp(150px, 30vw, 250px);
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.4), rgba(255, 215, 0, 0.0));
-            border-radius: 50%;
-            margin: 2rem auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
-            transition: all 1s ease-in-out;
+            width: clamp(150px, 30vw, 250px); height: clamp(150px, 30vw, 250px);
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.4), transparent);
+            border-radius: 50%; margin: 2rem auto; display: flex;
+            justify-content: center; align-items: center; transition: all 1s ease-in-out;
         }
-
-        .meditation-circle.pulsing {
-            animation: pulse-meditation 2s infinite alternate ease-in-out;
-        }
-
+        .meditation-circle.pulsing { animation: pulse-meditation 4s infinite alternate ease-in-out; }
         @keyframes pulse-meditation {
             from { transform: scale(1); box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
             to { transform: scale(1.05); box-shadow: 0 0 50px rgba(255, 215, 0, 0.8); }
         }
-
         .meditation-circle .rune-symbol {
-            font-size: clamp(4rem, 8vw, 6rem);
-            color: #FFD700;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
+            font-size: clamp(4rem, 8vw, 6rem); color: #FFD700;
         }
-
-        .meditation-controls {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
         .meditation-button {
-            background: linear-gradient(to bottom right, #5a6578, #3d4758);
-            color: #ffcc00;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.75rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-            border: none;
-            outline: none;
-            font-size: 1rem;
+             background: #5a6578; color: #ffcc00; padding: 0.75rem 1.5rem;
+             border-radius: 0.5rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease;
         }
-
-        .meditation-button:hover {
-            background: linear-gradient(to bottom right, #6a7588, #4d5768);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-        }
-
-        .meditation-button:active {
-            transform: translateY(0);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-        }
-
-        /* NEW: Meditation Theme Selector */
-        .meditation-theme-selector {
-            margin-top: 1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            background-color: rgba(0, 0, 0, 0.4);
-            color: #e0e0e0;
-            border: 1px solid rgba(74, 85, 104, 0.6);
-            font-size: 1rem;
-            cursor: pointer;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .meditation-theme-selector:focus {
-            outline: none;
-            border-color: #ffcc00;
-            box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.3), 0 0 10px rgba(255, 215, 0, 0.2);
-        }
-
-        /* Mist effect */
-        .mist-effect {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 30%; /* Mist covers bottom 30% of screen */
-            background: linear-gradient(to top, rgba(255, 255, 255, 0.08), transparent);
-            pointer-events: none;
-            z-index: 5; /* Above background, below pyramids */
-            opacity: 0; /* Hidden by default */
-            transition: opacity 2s ease-in-out;
-            animation: mist-drift 40s linear infinite alternate;
-        }
-
-        body[data-theme="night"] .mist-effect {
-            opacity: 0.3; /* More visible at night */
-        }
-
-        body[data-theme="day"] .mist-effect {
-            opacity: 0.1; /* Subtle during day */
-        }
-
-        @keyframes mist-drift {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(5%); }
-        }
-
-        /* Donation Page Styles */
-        #donationPage {
-            color: #FFD700;
-            text-align: center;
-            width: 100%;
-            max-width: 700px;
-            padding: 0.5rem; /* Reduced padding */
-            box-sizing: border-box;
-            border: 1px solid rgba(255, 215, 0, 0.4);
-            animation: fadeIn 2s ease-in-out;
-            margin-top: 2rem; /* Added margin-top to separate from header */
-        }
-
-        #donationPage h2 {
-            font-family: 'Spectral', serif;
-            font-size: clamp(1.8rem, 4vw, 3rem);
-            margin-bottom: 0.5rem; /* Reduced margin */
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-            color: #FFD700;
-        }
-
-        #donationPage .donation-message {
-            font-size: clamp(0.9rem, 1.6vw, 1.2rem); /* Slightly smaller font */
-            color: #e0e0e0;
-            line-height: 1.4; /* Slightly tighter line height */
-            margin-bottom: 1rem; /* Reduced margin */
-        }
-
-        .donate-button {
-            background: linear-gradient(to bottom right, #DAA520, #B8860B); /* Gold gradient */
+        .meditation-button.active {
+            background: linear-gradient(to bottom, #ffcc00, #b8860b);
             color: #333;
-            padding: 0.8rem 2rem;
-            border-radius: 0.75rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-            border: none;
-            outline: none;
-            font-size: 1.1rem;
-            text-decoration: none; /* For anchor tag */
-            display: inline-block; /* For anchor tag */
-            position: relative;
-            overflow: hidden;
         }
-
-        .donate-button:hover {
-            background: linear-gradient(to bottom right, #FFD700, #DAA520);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-            transform: translateY(-2px);
+        .rune-alphabet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #4a5568;
+            width: 100%;
         }
-
-        .donate-button:active {
-            transform: translateY(0);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-        }
-
-        .donate-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -75%;
-            width: 50%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: skewX(-20deg);
-            transition: all 0.5s ease;
-        }
-
-        .donate-button:hover::before {
-            left: 125%;
-        }
-
-        /* Contact Page Styles */
-        #contactPage .contact-form {
+        .rune-alphabet-item {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            width: 100%;
-            max-width: 500px;
-            margin-top: 1.5rem;
+            align-items: center;
+            background-color: rgba(0,0,0,0.2);
+            padding: 0.5rem;
+            border-radius: 0.5rem;
         }
-
-        #contactPage textarea {
-            width: 100%;
-            min-height: 150px;
-            padding: 0.75rem 1rem;
-            border-radius: 0.75rem;
-            border: 1px solid rgba(74, 85, 104, 0.6);
-            background-color: rgba(0, 0, 0, 0.4);
-            color: #e0e0e0;
-            font-size: 1rem;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            resize: vertical; /* Allow vertical resizing */
-        }
-
-        #contactPage textarea:focus {
-            outline: none;
-            border-color: #ffcc00;
-            box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.3), 0 0 10px rgba(255, 215, 0, 0.2);
-        }
-
-        #contactPage .submit-button {
-            background: linear-gradient(to bottom right, #5a6578, #3d4758);
-            color: #ffcc00;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.75rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-            border: none;
-            outline: none;
-            font-size: 1rem;
-        }
-
-        #contactPage .submit-button:hover {
-            background: linear-gradient(to bottom right, #6a7588, #4d5768);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-        }
-
-        #contactPage .submit-button:active {
-            transform: translateY(0);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-        }
-
-        #contactPage .submit-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        #contactPage .message-feedback {
-            margin-top: 1rem;
-            font-size: 0.9rem;
-            color: #90CDF4; /* Light blue for feedback */
-            font-style: italic;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-        }
-
-        #contactPage .message-feedback.visible {
-            opacity: 1;
-        }
-
-        /* Styles for the new rune reading page */
-        #runeReadingPage .rune-reading-container {
-            background-color: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(74, 85, 104, 0.6);
-            border-radius: 0.75rem;
-            padding: clamp(1rem, 3vw, 2rem);
-            margin-top: 1.5rem;
-            text-align: center;
-            font-size: clamp(0.95rem, 1.6vw, 1.15rem);
-            line-height: 1.6;
-            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6);
-            width: 100%;
-            max-width: 600px;
-        }
-
-        #runeReadingPage .rune-display {
+        .rune-alphabet-char {
             font-family: 'Spectral', serif;
-            font-size: clamp(3rem, 6vw, 5rem);
+            font-size: 2rem;
             color: #FFD700;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
-            margin-bottom: 1rem;
-            min-height: 1.5em;
         }
-
-        #runeReadingPage .rune-interpretation {
-            font-style: italic;
-            color: #e0e0e0;
-            margin-top: 1rem;
-            min-height: 1.5em;
+        .rune-alphabet-name {
+            font-size: 0.8rem;
+            color: #a0aec0;
+            margin-top: 0.25rem;
         }
-
-        /* NEW: Styles for critical error display */
-        #criticalErrorDisplay {
-            display: none; /* Hidden by default */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #ff4d4d; /* Bright red */
-            color: white;
-            padding: 1rem;
-            text-align: center;
-            z-index: 9999; /* On top of everything */
+        .donate-button {
+            background: linear-gradient(to bottom right, #DAA520, #B8860B);
+            color: #1a1a1a;
+            padding: 0.8rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
             font-size: 1.1rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        .donate-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
         }
 
     </style>
 </head>
-<body data-theme="night">
-    <div id="criticalErrorDisplay"></div>
 
+<body data-theme="night">
     <div id="initialEntryOverlay">
-        <div class="entry-content">
-            <h2 class="entry-title">Ancient Echoes</h2>
-            <div class="entry-runes" id="entryRunes">ᛖᚾᛏᛖᚱ</div> <p class="entry-instruction">Click to Awaken the Veil</p>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <p class="entry-runic">ᛅᚾᛋᛁᛅᚾᛏ ᛂᚴᚬᛋ ᚬᚠ ᚦᛅ ᛒᚬᛋᚾᛁᛅᚾ ᛬ ᛒᚢᚱᛅᛘᛁᛏᛋ</p>
+            <h2 class="entry-title">Ancient Echoes of the Bosnian Pyramids</h2>
+            <p class="entry-instruction">Click to Awaken the Veil</p>
         </div>
     </div>
-
-    <div class="cosmic-dust-container"></div>
-
-    <div class="runes-container"></div>
-
-    <div class="veil-overlay" id="veilOverlay"></div>
-
-    <div class="celestial-body" id="celestialBody"></div>
-
-    <div class="mist-effect"></div> <!-- New Mist Effect -->
-
+    <div class="celestial-body"></div>
     <div class="main-content-area" id="mainContentArea">
         <header class="app-header">
-            <h1>Ancient Echoes</h1>
-            <button class="menu-button" id="menuButton" aria-expanded="false" aria-controls="overlayMenu">☰</button>
+            <div class="title-container">
+                <h1>ᛅᚾᛋᛁᛅᚾᛏ ᛂᚴᚬᛋ ᚬᚠ ᚦᛅ ᛒᚬᛋᚾᛁᛅᚾ ᛬ ᛒᚢᚱᛅᛘᛁᛏᛋ</h1>
+                <p class="runic-subtitle">Ancient Echoes of the Bosnian Pyramids</p>
+            </div>
+            <button class="menu-button" id="menuButton">☰</button>
         </header>
-
-        <div class="theme-switcher">
-            <button class="theme-button active" data-theme-name="night">Night</button>
-            <button class="theme-button" data-theme-name="day">Day</button>
-        </div>
 
         <div class="overlay-menu" id="overlayMenu">
             <button class="overlay-menu-close" id="closeMenuButton">✖</button>
             <nav>
                 <ul>
                     <li><a href="#" data-page="home">Home</a></li>
-                    <li><a href="#" data-page="lore">Lore</a></li>
                     <li><a href="#" data-page="meditation">Meditation</a></li>
-                    <li><a href="#" data-page="runeReading">Rune Reading</a></li> <!-- New Rune Reading Link -->
-                    <li><a href="#" data-page="donation">Donation</a></li>
-                    <li><a href="#" data-page="contact">Contact the Keepers</a></li>
+                    <li><a href="#" data-page="runeReading">Rune Reading</a></li>
+                    <li><a href="#" data-page="about">About</a></li>
+                    <li><a href="#" data-page="donate">Donate</a></li>
+                    <li><a href="#" data-page="contact">Contact</a></li>
                 </ul>
             </nav>
         </div>
 
-        <section id="homePage" class="flex flex-col items-center w-full">
-            <p class="text-gray-300 text-center mb-6">
-                In the heart of Bosnia, within the sleepy town of Visoko, lie ancient structures
-                that hold the mysteries of the Bosnian Pyramids and the lost wisdom of the Veil of Amenti.
-                Interact with these structures or seek counsel to receive whispered insights.
+        <section id="homePage" class="page active">
+            <p class="text-gray-300 text-center mb-2 italic">
+                 Beneath the Bosnian soil, where myth and mountain meet, lie structures that pulse with forgotten energy. They call to those who remember a time before time. Touch them, and listen to the ancient echoes.
             </p>
-
+            <div class="theme-switcher">
+                <button class="theme-button active" data-theme-name="night">Night</button>
+                <button class="theme-button" data-theme-name="day">Day</button>
+            </div>
             <div class="pyramids-visual-group" id="pyramidGroup">
-                <div class="pyramid-of-sun-main">
-                    <div class="pyramid-top" data-pyramid="sun-top">
-                        <span class="pyramid-rune-top-left" style="--initial-rotation: -15deg;">ᛝ</span> <span class="pyramid-rune-top-right" style="--initial-rotation: 20deg;">ᛈ</span>
-                        <div class="pyramid-beam" id="pyramidBeam"></div>
+                 <div class="pyramid-container">
+                    <div class="pyramid side" data-pyramid="dragon">
+                        <div class="beam red"></div>
+                        <div class="pyramid-shape"></div>
+                        <h3 class="pyramid-name">Dragon</h3>
                     </div>
-                    <div class="pyramid-base" data-pyramid="sun-base">
-                        <div class="pyramid-entrance" data-pyramid="sun-entrance">
-                            <span class="entrance-runes">ᛖᚾᛏᛖᚱ</span> <div class="entrance-glow"></div>
-                        </div>
-                        <span class="pyramid-rune-base-left" style="--initial-rotation: 10deg;">ᛟ</span> <span class="pyramid-rune-base-right" style="--initial-rotation: -25deg;">ᛞ</span> </div>
+                    <div class="pyramid center" data-pyramid="sun">
+                        <div class="beam green"></div>
+                        <div class="pyramid-shape"></div>
+                        <h3 class="pyramid-name">Sun</h3>
+                    </div>
+                    <div class="pyramid side" data-pyramid="moon">
+                        <div class="beam gold"></div>
+                        <div class="pyramid-shape"></div>
+                        <h3 class="pyramid-name">Moon</h3>
+                    </div>
                 </div>
-
-                <div id="pyramidLove" class="pyramid-small" data-pyramid="dragon">
-                    <h3 class="text-white text-sm font-bold">Dragon</h3>
-                    <div class="small-pyramid-beam" id="pyramidLoveBeam"></div>
-                </div>
-                <div id="pyramidMoon" class="pyramid-small" data-pyramid="moon">
-                    <h3 class="text-white text-sm font-bold">Moon</h3>
-                    <div class="small-pyramid-beam" id="pyramidMoonBeam"></div>
-                </div>
-
-                <div id="tunnelSunLove" class="tunnel-line"></div>
-                <div id="tunnelSunMoon" class="tunnel-line"></div>
             </div>
-
-            <div class="whisper-box" id="whisperBox" aria-live="polite" aria-atomic="true">
-                <div class="runic-text" id="runicOutput"></div>
+            <div class="whisper-box" id="whisperBox">
+                <div class="runic-text" id="runicOutput">Click a pyramid to begin...</div>
                 <div class="english-translation" id="englishOutput"></div>
-                <button class="runic-toggle" id="toggleTranslation">ⓘ</button>
-            </div>
-
-            <div class="user-input-section">
-                <input type="text" id="userQuestionInput" placeholder="Ask the ancients a question...">
-                <button class="whisper-button" id="seekCounselButton">Seek Ancient Counsel</button>
-                <button class="whisper-button" id="dailyWisdomButton">Receive Daily Wisdom</button> <!-- New Daily Wisdom Button -->
-            </div>
-
-            </section>
-
-        <section id="lorePage" class="hidden-page">
-            <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Ancient Lore & Hidden Truths</h2>
-            <p class="text-gray-300 text-center mb-4">
-                Explore the deeper narratives woven into the fabric of these ancient structures.
-            </p>
-
-            <div class="lore-content-area w-full">
-                <div class="lore-section">
-                    <h3 class="text-2xl font-bold text-yellow-300 mb-2 cursor-pointer" data-toggle-id="lore1" data-icon="pyramid">The Genesis of Pyramids</h3>
-                    <div class="lore-section-content" id="lore1">
-                        <p>
-                            Whispers from deep time suggest that these pyramids are not mere mounds of earth,
-                            but intricate energy conduits built by a civilization far advanced, long before
-                            recorded history. They were designed to harmonize with Earth's resonant frequencies,
-                            channeling cosmic energies for the enlightenment and well-being of early human societies.
-                        </p>
-                        <button class="deepen-insight-button">Deepen Insight ✨</button>
-                        <div class="llm-insight-container"></div>
-                    </div>
-                </div>
-                <div class="lore-section">
-                    <h3 class="text-2xl font-bold text-yellow-300 mb-2 cursor-pointer" data-toggle-id="lore2" data-icon="veil">The Veil of Amenti</h3>
-                    <div class="lore-section-content" id="lore2">
-                        <p>
-                            The Veil of Amenti, a concept long debated in esoteric circles, is said to be a energetic
-                            barrier, a spiritual membrane separating dimensions. The Bosnian Pyramids, particularly
-                            the Pyramid of the Sun, are believed to be key points for piercing or subtly interacting
-                            with this Veil, allowing for the flow of ancient knowledge and higher consciousness into our realm.
-                            It is not a physical barrier, but a frequency-based construct that filters universal truths.
-                        </p>
-                        <button class="deepen-insight-button">Deepen Insight ✨</button>
-                        <div class="llm-insight-container"></div>
-                    </div>
-                </div>
-                <div class="lore-section">
-                    <h3 class="text-2xl font-bold text-yellow-300 mb-2 cursor-pointer" data-toggle-id="lore3" data-icon="guardian">Guardians of the Echoes</h3>
-                    <div class="lore-section-content" id="lore3">
-                        <p>
-                            Through ages, certain lineages and secret societies have known of these structures. They are
-                            the 'Keepers of the Echoes', safeguarding the pyramids and the knowledge they embody.
-                            Their role is to ensure that the energies are used for benevolence and that the true
-                            purpose of these ancient marvels is not corrupted. They communicate through subtle signs
-                            and whispers carried on the wind.
-                        </p>
-                        <button class="deepen-insight-button">Deepen Insight ✨</button>
-                        <div class="llm-insight-container"></div>
-                    </div>
-                </div>
-                <div class="lore-section">
-                    <h3 class="text-2xl font-bold text-yellow-300 mb-2 cursor-pointer" data-toggle-id="lore4" data-icon="awakening">The Great Awakening</h3>
-                    <div class="lore-section-content" id="lore4">
-                        <p>
-                            Prophecies speak of a Great Awakening, a time when humanity will be ready to fully
-                            reconnect with the wisdom stored within these pyramids. As the planetary
-                            consciousness rises, the Veil of Amenti thins, and the pyramids
-                            begin to hum with renewed power, guiding humanity toward a new golden age
-                            of understanding and spiritual evolution.
-                        </p>
-                        <button class="deepen-insight-button">Deepen Insight ✨</button>
-                        <div class="llm-insight-container"></div>
-                    </div>
-                </div>
+                <button class="runic-toggle" id="toggleTranslation">Show Translation</button>
             </div>
         </section>
 
-        <!-- The "Wisdoms & Prophecies" section has been removed as per your request. -->
-
-        <section id="meditationPage" class="hidden-page">
-            <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Guided Meditation</h2>
-            <p class="text-gray-300 text-center mb-4">
-                Connect with the ancient energies through focused intention.
-                Allow the subtle vibrations to guide your inner journey.
-            </p>
-            <div class="meditation-circle" id="meditationCircle">
-                <div class="rune-symbol" id="meditationRune">ᛗ</div> <!-- Mannaz rune for humanity/self -->
+        <section id="meditationPage" class="page">
+            <div class="page-content-container">
+                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Guided Meditation</h2>
+                <p class="text-gray-300 text-center mb-4">Connect with the ancient energies through focused intention.</p>
+                <div class="meditation-circle" id="meditationCircle">
+                    <div class="rune-symbol" id="meditationRune">ᛗ</div>
+                </div>
+                <p id="meditationStatus" class="text-gray-400 mt-4 text-center">Ready to begin your inner journey.</p>
+                 <button class="meditation-button mt-4" id="toggleMeditationVoiceButton">Enable Meditation Voice</button>
             </div>
-            <div class="meditation-controls">
-                <button class="meditation-button" id="startMeditation">Start Meditation</button>
-                <button class="meditation-button" id="stopMeditation">Stop Meditation</button>
-            </div>
-            <select id="meditationThemeSelector" class="meditation-theme-selector">
-                <option value="general">General Guidance</option>
-                <option value="clarity">Seek Clarity</option>
-                <option value="peace">Find Inner Peace</option>
-                <option value="connection">Connect with Ancestors</option>
-            </select>
-            <p id="meditationStatus" class="text-gray-400 mt-4"></p>
         </section>
+        
+        <section id="runeReadingPage" class="page">
+            <div class="page-content-container">
+                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Rune Reading</h2>
+                <div class="user-input-section">
+                    <input type="text" id="runeQuestionInput" class="w-full p-2 rounded bg-gray-800 text-white text-center" placeholder="Ask the runes a question...">
+                    <button class="whisper-button" id="drawRunesButton">Draw Runes</button>
+                </div>
+                <div class="text-center">
+                    <div id="runeDisplay"></div>
+                    <div id="runeInterpretation"></div>
+                    <button class="meditation-button mt-4 hidden" id="toggleRuneVoiceButton">Enable Reading Voice</button>
+                </div>
 
-        <section id="runeReadingPage" class="hidden-page">
-            <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Personalized Rune Reading</h2>
-            <p class="text-gray-300 text-center mb-4">
-                Pose a question to the ancient runes, and receive guidance from the cosmic energies.
-            </p>
-            <div class="rune-reading-container">
-                <input type="text" id="runeQuestionInput" placeholder="Ask the runes a question..." class="w-full p-3 rounded-lg border border-gray-600 bg-gray-800 text-gray-200 text-center mb-4 focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400">
-                <button class="whisper-button" id="drawRunesButton">Draw Runes for Insight ✨</button>
-                <div class="rune-display mt-6" id="runeDisplay"></div>
-                <div class="rune-interpretation" id="runeInterpretation"></div>
+                <div class="rune-alphabet-grid">
+                    </div>
             </div>
         </section>
 
-        <section id="donationPage" class="hidden-page">
-            <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Support the Echoes</h2>
-            <p class="donation-message text-center">
-                Your contributions help maintain this portal and share ancient insights.
-            </p>
-            <!-- INSERT YOUR ACTUAL DONATION LINK HERE -->
-            <a href="https://buy.stripe.com/6oU5kC1LraJKan8f1UeEo09" target="_blank" rel="noopener noreferrer" class="donate-button">
-                Donate Now ✨
-            </a>
-            <p class="text-gray-400 text-sm mt-4">
-                (This is a placeholder link. Please replace with your actual donation link.)
-            </p>
+        <section id="aboutPage" class="page">
+            <div class="page-content-container text-gray-300 text-center">
+                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">About Ancient Echoes</h2>
+                <p class="mb-4">
+                    This portal is an interactive art project designed to evoke the mystery and wonder surrounding sites of ancient power, like the Bosnian Pyramids. It is an exploration of myth, energy, and the whispers of history.
+                </p>
+                <p>
+                    Using simulated interactions and browser-based technologies, we aim to create a space for contemplation and imagination. The wisdom, readings, and responses are generated for inspirational and entertainment purposes, encouraging a deeper connection to the enigmatic past.
+                </p>
+            </div>
         </section>
 
-        <section id="contactPage" class="hidden-page">
-            <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Contact the Keepers</h2>
-            <p class="text-gray-300 text-center mb-4">
-                If your heart is pure and your intentions aligned, your message may reach the Keepers.
-                Speak your truth into the ether, and await the subtle signs.
-            </p>
-            <div class="lore-content-area w-full text-center">
-                <form id="contactForm" class="contact-form">
-                    <label for="keeperMessage" class="sr-only">Your Message to the Keepers</label>
-                    <textarea id="keeperMessage" placeholder="Type your message here..."></textarea>
-                    <button type="submit" class="submit-button" id="sendMessageButton" disabled>Send Message to the Keepers</button>
-                    <p id="messageFeedback" class="message-feedback"></p>
+        <section id="donatePage" class="page">
+            <div class="page-content-container text-gray-300 text-center">
+                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Support the Echoes</h2>
+                <p class="mb-6">
+                    If this experience has resonated with you, consider supporting the continued exploration of these ancient mysteries. Your contribution helps maintain this digital space and allows for the creation of new mystical journeys.
+                </p>
+                <a href="https://buy.stripe.com/6oU5kC1LraJKan8f1UeEo09" target="_blank" rel="noopener noreferrer" class="donate-button">
+                    Donate Now
+                </a>
+            </div>
+        </section>
+
+
+        <section id="contactPage" class="page">
+            <div class="page-content-container">
+                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Contact the Keepers</h2>
+                <form id="contactForm" class="flex flex-col items-center gap-4 w-full max-w-md mx-auto">
+                    <textarea id="keeperMessage" class="w-full p-2 rounded bg-gray-800 text-white" rows="4" placeholder="Your message..."></textarea>
+                    <button type="submit" class="whisper-button">Send Message</button>
+                    <p id="messageFeedback"></p>
                 </form>
             </div>
         </section>
-
     </div>
-
-    <div class="discovery-log-container" id="discoveryLog">
-        <h3>Discovery Log <span id="userIdDisplay" class="text-xs text-gray-500 ml-2"></span></h3>
-        <div id="logEntries">
-            </div>
-    </div>
-    <button class="log-toggle-button" id="toggleLogButton" aria-expanded="false" aria-controls="discoveryLog">Toggle Log</button>
-    <button class="audio-toggle-button" id="audioToggleButton" aria-label="Toggle Ambient Audio">🔊</button>
-
-
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Frontend elements (no changes needed here)
-            const whisperBox = document.getElementById('whisperBox');
-            const runicOutput = document.getElementById('runicOutput');
-            const englishOutput = document.getElementById('englishOutput');
-            const toggleTranslationButton = document.getElementById('toggleTranslation');
-            const userQuestionInput = document.getElementById('userQuestionInput');
-            const seekCounselButton = document.getElementById('seekCounselButton');
-            const dailyWisdomButton = document.getElementById('dailyWisdomButton');
-            const veilOverlay = document.getElementById('veilOverlay');
-            const pyramidGroup = document.getElementById('pyramidGroup');
-            const menuButton = document.getElementById('menuButton');
-            const overlayMenu = document.getElementById('overlayMenu');
-            const closeMenuButton = document.getElementById('closeMenuButton');
-            const navLinks = document.querySelectorAll('.overlay-menu nav ul li a');
-            const homePage = document.getElementById('homePage');
-            const lorePage = document.getElementById('lorePage');
-            const contactPage = document.getElementById('contactPage');
-            const meditationPage = document.getElementById('meditationPage');
-            const runeReadingPage = document.getElementById('runeReadingPage'); // New: Rune Reading Page
-            const donationPage = document.getElementById('donationPage');
-            const discoveryLog = document.getElementById('discoveryLog');
-            const logEntries = document.getElementById('logEntries');
-            const toggleLogButton = document.getElementById('toggleLogButton');
-            const themeButtons = document.querySelectorAll('.theme-button');
-            const deepenInsightButtons = document.querySelectorAll('.deepen-insight-button');
-            const loreSectionHeaders = document.querySelectorAll('.lore-section h3');
-            const pyramidBeam = document.getElementById('pyramidBeam');
-            const pyramidElements = document.querySelectorAll('[data-pyramid]');
-            const pyramidLoveBeam = document.getElementById('pyramidLoveBeam');
-            const pyramidMoonBeam = document.getElementById('pyramidMoonBeam');
-            const initialEntryOverlay = document.getElementById('initialEntryOverlay');
-            const mainContentArea = document.getElementById('mainContentArea');
-            const audioToggleButton = document.getElementById('audioToggleButton');
-            const userIdDisplay = document.getElementById('userIdDisplay');
-            const mistEffect = document.querySelector('.mist-effect');
-            const criticalErrorDisplay = document.getElementById('criticalErrorDisplay'); // NEW: Error display element
-
-            // Contact Form Elements
-            const contactForm = document.getElementById('contactForm');
-            const keeperMessageTextarea = document.getElementById('keeperMessage');
-            const sendMessageButton = document.getElementById('sendMessageButton');
-            const messageFeedback = document.getElementById('messageFeedback');
-
-            // Meditation specific elements
-            const startMeditationButton = document.getElementById('startMeditation');
-            const stopMeditationButton = document.getElementById('stopMeditation');
-            const meditationCircle = document.getElementById('meditationCircle');
-            const meditationStatus = document.getElementById('meditationStatus');
-            const meditationRune = document.getElementById('meditationRune');
-            const meditationThemeSelector = document.getElementById('meditationThemeSelector');
-
-            // Rune Reading elements
-            const runeQuestionInput = document.getElementById('runeQuestionInput');
-            const drawRunesButton = document.getElementById('drawRunesButton');
-            const runeDisplay = document.getElementById('runeDisplay');
-            const runeInterpretation = document.getElementById('runeInterpretation');
-
-
-            let translationVisible = false;
-            let isGenerating = false;
-            let isAmbientPlaying = false;
-            let isMeditationPlaying = false;
-            let currentMeditationRuneIndex = 0;
-            let meditationRuneInterval;
-
-            // Firebase variables
-            let app;
-            let db;
-            let auth;
-            let userId;
-            let isAuthReady = false;
-            let firebaseConnectionFailed = false; // NEW: Flag for connection status
-
-            // --- IMPORTANT: For local execution, replace these placeholder values with your ACTUAL Firebase project configuration. ---
-            // Go to your Firebase Console -> Project settings -> General -> Your apps -> Web app.
-            // Copy the 'firebaseConfig' object from there and paste it below.
-           const defaultFirebaseConfig= {
-  apiKey: "AIzaSyB4CxJorgdTIkFtm-mEGJ4T6XD_L-mSwpE",
-  authDomain: "pyramids-deedb.firebaseapp.com",
-  projectId: "pyramids-deedb",
-  storageBucket: "pyramids-deedb.firebasestorage.app",
-  messagingSenderId: "388561790248",
-  appId: "1:388561790248:web:4935efec547f14f15d1c1d"
-};
-
-            // Use __firebase_config if available (Canvas environment), otherwise use defaultFirebaseConfig
-            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : defaultFirebaseConfig;
-
-            // The appId for Firestore paths will be taken directly from your firebaseConfig.
-            const appId = typeof __app_id !== 'undefined' ? __app_id : firebaseConfig.appId;
-
-
-            // --- Utility for Exponential Backoff ---
-            async function fetchWithExponentialBackoff(fetchFunction, maxRetries = 5, delay = 1000) {
-                for (let i = 0; i < maxRetries; i++) {
-                    try {
-                        const response = await fetchFunction();
-                        if (response.ok) {
-                            return response;
-                        } else {
-                            // Handle specific HTTP errors if needed, otherwise retry
-                            console.warn(`Fetch failed (attempt ${i + 1}/${maxRetries}): ${response.status} ${response.statusText}`);
-                            if (response.status === 403) {
-                                // If it's a permission error, no point in retrying
-                                throw new Error(`Permission denied (403). Check Firebase rules or API key.`);
-                            }
-                        }
-                    } catch (error) {
-                        console.warn(`Fetch error (attempt ${i + 1}/${maxRetries}):`, error);
-                    }
-                    await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
-                }
-                throw new Error(`Max retries (${maxRetries}) exceeded. Failed to fetch.`);
-            }
-
-            async function firestoreWithExponentialBackoff(firestoreFunction, maxRetries = 5, delay = 1000) {
-                for (let i = 0; i < maxRetries; i++) {
-                    try {
-                        const result = await firestoreFunction();
-                        return result;
-                    } catch (error) {
-                        console.warn(`Firestore operation failed (attempt ${i + 1}/${maxRetries}):`, error);
-                        if (error.code === 'permission-denied' || error.code === 'unauthenticated') {
-                            throw new Error(`Firestore permission denied or unauthenticated. Check Firebase rules or auth state.`);
-                        }
-                    }
-                    await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
-                }
-                throw new Error(`Max retries (${maxRetries}) exceeded. Failed Firestore operation.`);
-            }
-            // --- End Utility for Exponential Backoff ---
-
-
-            // Initialize Firebase
-            try {
-                console.log("Attempting Firebase initialization...");
-
-                // Initialize Firebase app with the determined config
-                app = firebase.initializeApp(firebaseConfig);
-                db = firebase.getFirestore(app);
-                auth = firebase.getAuth(app);
-                console.log("Firebase app, db, auth objects created.");
-
-                // Use __initial_auth_token if available (Canvas environment), otherwise sign in anonymously (local/dev)
-                if (typeof __initial_auth_token !== 'undefined') {
-                    try {
-                        await firebase.signInWithCustomToken(auth, __initial_auth_token);
-                        console.log("signInWithCustomToken attempted and succeeded for Canvas environment.");
-                    } catch (tokenError) {
-                        console.warn("signInWithCustomToken failed, falling back to signInAnonymously:", tokenError);
-                        await firebase.signInAnonymously(auth);
-                        console.log("signInAnonymously attempted as fallback.");
-                    }
-                } else {
-                    await firebase.signInAnonymously(auth);
-                    console.log("signInAnonymously attempted for local execution.");
-                }
-
-                firebase.onAuthStateChanged(auth, (user) => {
-                    console.log("onAuthStateChanged callback fired.");
-                    if (user) {
-                        userId = user.uid;
-                        userIdDisplay.textContent = `User ID: ${userId}`;
-                        console.log("Firebase initialized. User ID:", userId);
-                        loadDiscoveryLog();
-                        isAuthReady = true;
-                        sendMessageButton.disabled = false; // Enable contact form for authenticated users
-                        console.log("sendMessageButton enabled. isAuthReady set to true.");
-                    } else {
-                        // This branch should ideally not be hit if signInAnonymously succeeds,
-                        // but provides a fallback if no user is found for any reason.
-                        userId = crypto.randomUUID(); // Assign a random UUID for truly anonymous/unauthenticated state
-                        userIdDisplay.textContent = `User ID: ${userId} (Anonymous)`;
-                        console.log("Firebase initialized. Anonymous User ID (fallback):", userId);
-                        loadDiscoveryLog(); // Load log even for anonymous user
-                        isAuthReady = true;
-                        sendMessageButton.disabled = false; // Allow anonymous users to send messages
-                        console.log("sendMessageButton enabled. isAuthReady set to true (anonymous user).");
-                    }
-                });
-
-            } catch (error) {
-                console.error("Error during Firebase initialization or sign-in:", error);
-                firebaseConnectionFailed = true; // NEW: Set failure flag
-                criticalErrorDisplay.style.display = 'block'; // NEW: Show the error banner
-                criticalErrorDisplay.innerHTML = `<strong>Connection Error:</strong> The application could not connect to its backend services (Firebase). Features like logging and sending messages will be unavailable. <br><strong>Details:</strong> ${error.message}`;
-                
-                isAuthReady = true; // Still set to true to unblock UI, but with failure flag
-                sendMessageButton.disabled = true; // Disable if Firebase init fails
-            }
-
-
-            // Tone.js setup - Ensure audio context is started on user interaction
-            document.documentElement.addEventListener('mousedown', () => {
-                if (Tone.context.state !== 'running') {
-                    Tone.start();
-                }
-            });
-
-            // --- Sound Definitions (No changes) ---
-            const longReverb = new Tone.Freeverb({ roomSize: 0.9, dampening: 5000, wet: 0.7 }).toDestination();
-            const etherealDelay = new Tone.PingPongDelay({ delayTime: "4n", feedback: 0.7, wet: 0.6 }).connect(longReverb);
-
-            const pyramidWhisperSynth = new Tone.Synth({ oscillator: { type: "triangle" }, envelope: { attack: 1.0, decay: 2.0, sustain: 0.2, release: 3.0 } }).connect(etherealDelay);
-            function playPyramidWhisper() { pyramidWhisperSynth.triggerAttackRelease("C1", "4s"); }
-
-            const counselWhisperSynth = new Tone.NoiseSynth({ noise: { type: "pink" }, envelope: { attack: 0.05, decay: 1.0, sustain: 0.0, release: 1.5 } }).chain(new Tone.Filter(800, "lowpass"), etherealDelay);
-            function playCounselWhisper() { counselWhisperSynth.triggerAttackRelease("1.5s"); }
-
-            const insightWhisperSynth = new Tone.PluckSynth({ attackNoise: 0.5, dampening: 4000, resonance: 0.9 }).chain(new Tone.Chorus(2, 3.5, 0.7), etherealDelay);
-            function playInsightWhisper() { insightWhisperSynth.triggerAttackRelease("G5", "1s"); insightWhisperSynth.triggerAttackRelease("C6", "1s", Tone.now() + 0.2); }
-
-            const veilWhisperSynth = new Tone.AMSynth({ harmonicity: 1.5, oscillator: { type: "triangle" }, envelope: { attack: 2, decay: 3, sustain: 0.0, release: 5 }, modulation: { type: "sine" }, modulationEnvelope: { attack: 0.5, decay: 0.1, sustain: 1, release: 0.5 } }).connect(longReverb);
-            function playVeilWhisper() { veilWhisperSynth.triggerAttackRelease("A3", "4s"); }
-
-            const menuToggleSynth = new Tone.Synth({ oscillator: { type: "triangle" }, envelope: { attack: 0.01, decay: 0.4, sustain: 0.0, release: 0.5 } }).toDestination();
-            function playMenuToggleSound() { menuToggleSynth.triggerAttackRelease("C5", "0.6s"); }
-
-            const logToggleSynth = new Tone.NoiseSynth({ noise: { type: "white" }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.3 } }).chain(new Tone.Filter(2000, "bandpass"), new Tone.Panner(0.5).toDestination());
-            function playLogToggleSound() { logToggleSynth.triggerAttackRelease("0.5s"); }
-
-            const themeChangeSynth = new Tone.Synth({ oscillator: { type: "sine" }, envelope: { attack: 0.02, decay: 0.1, sustain: 0.0, release: 0.2 } }).toDestination();
-            function playThemeChangeSound() { themeChangeSynth.triggerAttackRelease("D5", "8n"); }
-
-            const entryChimeSynth = new Tone.Synth({ oscillator: { type: "sine" }, envelope: { attack: 0.5, decay: 1.0, sustain: 0.1, release: 2.0 } }).toDestination();
-            function playEntryChime() { entryChimeSynth.triggerAttackRelease("C3", "3s"); }
-
-            const beamSynth = new Tone.Synth({ oscillator: { type: "sine" }, envelope: { attack: 0.2, decay: 0.8, sustain: 0.1, release: 1.5 } }).chain(new Tone.Filter(1000, "lowpass"), longReverb);
-            function playBeamSound() { beamSynth.triggerAttackRelease("C5", "2s"); }
-
-            const smallPyramidSynth = new Tone.Synth({ oscillator: { type: "sine" }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.5 } }).toDestination();
-            function playSmallPyramidSound() { smallPyramidSynth.triggerAttackRelease("G4", "0.5s"); }
-
-            const ambientDrone = new Tone.AMSynth({ harmonicity: 0.5, oscillator: { type: "sine" }, envelope: { attack: 5, decay: 0, sustain: 1, release: 5 }, modulation: { type: "sine" }, modulationEnvelope: { attack: 5, decay: 0, sustain: 1, release: 5 } }).toDestination();
-            ambientDrone.volume.value = -30;
-
-            function toggleAmbientAudio() {
-                if (isAmbientPlaying) {
-                    ambientDrone.triggerRelease();
-                    audioToggleButton.textContent = '🔇';
-                    audioToggleButton.classList.remove('active');
-                    logDiscovery("Ambient audio muted.");
-                } else {
-                    ambientDrone.triggerAttack("C2");
-                    audioToggleButton.textContent = '�';
-                    audioToggleButton.classList.add('active');
-                    logDiscovery("Ambient audio playing.");
-                }
-                isAmbientPlaying = !isAmbientPlaying;
-            }
-
-            const meditationDrone = new Tone.FMSynth({
-                harmonicity: 3.1,
-                oscillator: { type: "sine" },
-                envelope: { attack: 4, decay: 0, sustain: 1, release: 4 },
-                modulation: { type: "square" },
-                modulationEnvelope: { attack: 2, decay: 0, sustain: 1, release: 2 }
-            }).toDestination();
-            meditationDrone.volume.value = -20;
-
-            const meditationThemes = {
-                general: {
-                    runes: [
-                        { symbol: 'ᛗ', name: 'Mannaz', meaning: 'Humanity, the Self, social order' },
-                        { symbol: 'ᛟ', name: 'Othala', meaning: 'Inheritance, ancestral spiritual power' },
-                        { symbol: 'ᛞ', name: 'Dagaz', meaning: 'Day, breakthrough, awakening' }
-                    ],
-                    guidance: "Feel the ancient hum guiding your inner journey."
-                },
-                clarity: {
-                    runes: [
-                        { symbol: 'ᚲ', name: 'Kenaz', meaning: 'Illumination, knowledge, creativity' },
-                        { symbol: 'ᛋ', name: 'Sowilo', meaning: 'Wholeness, success, solar energy' },
-                        { symbol: 'ᛖ', name: 'Ehaz', meaning: 'Movement, progress, trust' }
-                    ],
-                    guidance: "Focus on the light within, seeking clarity in your path."
-                },
-                peace: {
-                    runes: [
-                        { symbol: 'ᛁ', name: 'Isa', meaning: 'Stillness, ice, self-control' },
-                        { symbol: 'ᚹ', name: 'Wunjo', meaning: 'Joy, comfort, harmony' },
-                        { symbol: 'ᛚ', name: 'Laguz', meaning: 'Flow, water, intuition, subconscious' }
-                    ],
-                    guidance: "Embrace the stillness, letting inner peace wash over you."
-                },
-                connection: {
-                    runes: [
-                        { symbol: 'ᛟ', name: 'Othala', meaning: 'Inheritance, ancestral spiritual power' },
-                        { symbol: 'ᛝ', name: 'Ingwaz', meaning: 'Fertility, completion, inner growth' },
-                        { symbol: 'ᛉ', name: 'Algiz', meaning: 'Protection, defense, connection to divine' }
-                    ],
-                    guidance: "Reach out to the echoes of your ancestors, feeling their timeless connection."
-                }
-            };
-
-            function startMeditationAudio() {
-                if (!isMeditationPlaying) {
-                    const selectedTheme = meditationThemeSelector.value;
-                    const themeData = meditationThemes[selectedTheme];
-
-                    meditationDrone.triggerAttack("A1");
-                    meditationDrone.triggerAttack("E2", Tone.now() + 0.5);
-                    isMeditationPlaying = true;
-                    meditationCircle.classList.add('pulsing');
-                    meditationStatus.textContent = themeData.guidance;
-                    logDiscovery(`Meditation started: ${selectedTheme} theme.`);
-
-                    currentMeditationRuneIndex = 0;
-                    meditationRune.textContent = themeData.runes[currentMeditationRuneIndex].symbol;
-
-                    if (meditationRuneInterval) {
-                        clearInterval(meditationRuneInterval);
-                    }
-                    meditationRuneInterval = setInterval(() => cycleMeditationRune(selectedTheme), 10000);
-                }
-            }
-
-            function stopMeditationAudio() {
-                if (isMeditationPlaying) {
-                    meditationDrone.triggerRelease();
-                    isMeditationPlaying = false;
-                    meditationCircle.classList.remove('pulsing');
-                    meditationStatus.textContent = "Meditation ended. Inner peace found.";
-                    logDiscovery("Meditation ended.");
-                    if (meditationRuneInterval) {
-                        clearInterval(meditationRuneInterval);
-                    }
-                }
-            }
-
-            function cycleMeditationRune(theme) {
-                const themeData = meditationThemes[theme];
-                currentMeditationRuneIndex = (currentMeditationRuneIndex + 1) % themeData.runes.length;
-                const rune = themeData.runes[currentMeditationRuneIndex];
-                meditationRune.textContent = rune.symbol;
-                meditationStatus.textContent = `${themeData.guidance} Meditating on ${rune.name}: ${rune.meaning}`;
-            }
-            // --- End Sound Definitions ---
-
-            function createCosmicDust() {
-                const container = document.querySelector('.cosmic-dust-container');
-                for (let i = 0; i < 50; i++) {
-                    const particle = document.createElement('div');
-                    particle.classList.add('cosmic-dust-particle');
-                    const size = Math.random() * 3 + 1;
-                    particle.style.width = `${size}px`;
-                    particle.style.height = `${size}px`;
-                    const xStart = Math.random() * 100 + 'vw';
-                    const yStart = Math.random() * 100 + 'vh';
-                    const xEnd = Math.random() * 100 + 'vw';
-                    const yEnd = Math.random() * 100 + 'vh';
-                    const scaleStart = Math.random() * 0.5 + 0.5;
-                    const scaleEnd = Math.random() * 0.5 + 0.8;
-                    const duration = Math.random() * 20 + 20;
-
-                    particle.style.setProperty('--x-start', xStart);
-                    particle.style.setProperty('--y-start', yStart);
-                    particle.style.setProperty('--x-end', xEnd);
-                    particle.style.setProperty('--y-end', yEnd);
-                    particle.style.setProperty('--scale-start', scaleStart);
-                    particle.style.setProperty('--scale-end', scaleEnd);
-                    particle.style.animationDuration = `${duration}s`;
-                    particle.style.animationDelay = `-${Math.random() * duration}s`;
-                    container.appendChild(particle);
-                }
-            }
-            createCosmicDust();
-
-            function createRuneBackground() {
-                const runes = ['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᚾ', 'ᛁ', 'ᛃ', 'ᛇ', 'ᛈ', 'ᛉ', 'ᛋ', 'ᛏ', 'ᛒ', 'ᛖ', 'ᛗ', 'ᛚ', 'ᛝ', 'ᛟ', 'ᛞ'];
-                const runeChar = runes[Math.floor(Math.random() * runes.length)];
-                const runeElement = document.createElement('div');
-                runeElement.classList.add('rune');
-                runeElement.textContent = runeChar;
-
-                const size = Math.random() * 2 + 1;
-                runeElement.style.fontSize = `${size}rem`;
-
-                const x = Math.random() * 100;
-                const y = -10;
-                runeElement.style.left = `${x}vw`;
-                runeElement.style.top = `${y}vh`;
-
-                const rotationStart = Math.random() * 360;
-                const rotationEnd = rotationStart + 360 * (Math.random() > 0.5 ? 1 : -1);
-                const yOffset = 100 + Math.random() * 20;
-                const duration = Math.random() * 10 + 15;
-                runeElement.style.animationDelay = `-${Math.random() * duration}s`;
-
-                runeElement.style.setProperty('--rotation-start', `${rotationStart}deg`);
-                runeElement.style.setProperty('--rotation-end', `${rotationEnd}deg`);
-                runeElement.style.setProperty('--y-offset', `${yOffset}vh`);
-                runeElement.style.animationDuration = `${duration}s`;
-
-                document.querySelector('.runes-container').appendChild(runeElement);
-
-                runeElement.addEventListener('animationend', () => {
-                    runeElement.remove();
-                });
-            }
-
-            setInterval(createRuneBackground, 6000);
-
-            // Function to add discovery log entries to Firestore
-            async function logDiscovery(message) {
-                if (firebaseConnectionFailed || !db || !userId) {
-                    console.warn("Firestore not available. Log entry not saved to backend.");
-                    // Still display in UI for immediate feedback
-                    const entry = document.createElement('div');
-                    entry.classList.add('log-entry', 'text-gray-400');
-                    entry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
-                    logEntries.prepend(entry);
-                    return;
-                }
-
-                try {
-                    await firestoreWithExponentialBackoff(() =>
-                        firebase.addDoc(firebase.collection(db, `artifacts/${appId}/users/${userId}/discovery_log`), {
-                            message: message,
-                            timestamp: firebase.serverTimestamp()
-                        })
-                    );
-                } catch (e) {
-                    console.error("Error saving log to Firestore: ", e);
-                    const entry = document.createElement('div');
-                    entry.classList.add('log-entry', 'text-gray-400', 'text-red-400');
-                    entry.textContent = `${new Date().toLocaleTimeString()} (Failed to save): ${message} - Error: ${e.message}`;
-                    logEntries.prepend(entry);
-                }
-            }
-
-            // Function to load discovery log entries from Firestore
-            function loadDiscoveryLog() {
-                if (firebaseConnectionFailed || !db || !userId) {
-                    console.warn("Firestore not available. Cannot load log from backend.");
-                    return;
-                }
-
-                const logCollectionRef = firebase.collection(db, `artifacts/${appId}/users/${userId}/discovery_log`);
-                // Note: orderBy can cause index issues. If so, remove orderBy and sort in client.
-                const q = firebase.query(logCollectionRef, firebase.orderBy('timestamp', 'desc'), firebase.limit(20));
-
-                firebase.onSnapshot(q, (snapshot) => {
-                    logEntries.innerHTML = '';
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        const entry = document.createElement('div');
-                        entry.classList.add('log-entry', 'text-gray-400');
-                        const date = data.timestamp ? data.timestamp.toDate().toLocaleTimeString() : 'N/A';
-                        entry.textContent = `${date}: ${data.message}`;
-                        logEntries.appendChild(entry);
-                    });
-                }, (error) => {
-                    console.error("Error fetching discovery log: ", error);
-                    logDiscovery("Failed to load past discoveries from Firestore.");
-                });
-            }
-
-            // Define pyramid themes for more specific counsel (still needed for frontend logic)
-            const pyramidThemes = {
-                'sun-top': 'the pinnacle of enlightenment and cosmic energy, representing higher consciousness and universal truths',
-                'sun-base': 'the foundation of ancient wisdom and earthly connection, representing grounding and stability',
-                'sun-entrance': 'the gateway to inner knowledge and hidden truths, representing transformation and revelation',
-                'dragon': 'the primal energy of the Earth, courage, and transformation, representing strength and inner power',
-                'moon': 'the intuitive depths, cycles of change, and hidden reflections, representing intuition and emotional wisdom'
-            };
-
-            // Function to provide dynamic ancient counsel (now calls Gemini API directly)
-            async function getAncientCounsel(promptContext, pyramidPart = null) {
-                if (firebaseConnectionFailed) {
-                    runicOutput.textContent = "ᛖᚱᚱᛟᚱ ᛞᛖᛖᛈ";
-                    englishOutput.innerHTML = `<strong>Connection Error:</strong> Cannot seek counsel without a connection to the ancient network. Please check the error message at the top of the page.`;
-                    englishOutput.classList.add('visible');
-                    toggleTranslationButton.style.display = 'block';
-                    return;
-                }
-                if (isGenerating) {
-                    logDiscovery("The ancient energies are still coalescing. Please wait.");
-                    return;
-                }
-
-                isGenerating = true;
-                runicOutput.textContent = '';
-                englishOutput.innerHTML = '';
-                englishOutput.classList.remove('visible');
-                toggleTranslationButton.style.display = 'none';
-                whisperBox.classList.add('loading');
-                playCounselWhisper();
-                logDiscovery(`Seeking counsel for: "${promptContext}"...`);
-
-                try {
-                    const prompt = `Generate a short, mystical runic inscription and its English translation. The inscription should sound like an ancient prophecy or wisdom related to ${promptContext}.
-
-                    Format the output as follows:
-                    Runic: [Runic characters here]
-                    English: [English translation here]
-
-                    Example:
-                    Runic: ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ
-                    English: The path is not found.`;
-
-                    let chatHistory = [];
-                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                    const payload = { contents: chatHistory };
-                    const apiKey = ""; // Canvas will automatically provide this
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-                    const response = await fetchWithExponentialBackoff(() =>
-                        fetch(apiUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        })
-                    );
-
-                    const result = await response.json();
-                    
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const text = result.candidates[0].content.parts[0].text;
-                        console.log("Gemini API Response (Ancient Counsel):", text); // Log for debugging
-
-                        let runicText = null;
-                        let englishText = null;
-
-                        // Use regex to find "Runic:" and "English:" labels, case-insensitive
-                        const runicMatch = text.match(/Runic:\s*(.*)/i);
-                        const englishMatch = text.match(/English:\s*(.*)/i);
-
-                        if (runicMatch && runicMatch[1]) {
-                            runicText = runicMatch[1].trim();
-                        }
-                        if (englishMatch && englishMatch[1]) {
-                            englishText = englishMatch[1].trim();
-                        }
-
-                        // Fallback: If labels are not found, try to split by newline
-                        if (!runicText && !englishText) {
-                            const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-                            if (lines.length >= 2) {
-                                const hasRunicChars = (str) => /[ᚠ-ᛞ]/.test(str);
-                                if (hasRunicChars(lines[0])) {
-                                    runicText = lines[0];
-                                    englishText = lines.slice(1).join('\n');
-                                }
-                            }
-                        }
-
-                        if (runicText && englishText) {
-                            runicOutput.textContent = runicText;
-                            englishOutput.innerHTML = `<strong>Wisdom/Prophecy:</strong> ${englishText.replace(/\n/g, '<br>')}`;
-                            logDiscovery(`Received new counsel: ${englishText.substring(0, 30)}...`);
-                        } else {
-                            console.error("Failed to parse Gemini response for counsel. Raw text:", text);
-                            runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
-                            englishOutput.innerHTML = `<strong>Wisdom/Prophecy:</strong> The ancient echoes are faint. The format of the message was unclear. Please try again.`;
-                            logDiscovery("Failed to parse counsel. Unexpected Gemini API response format.");
-                        }
-                    } else {
-                        console.error("Gemini API response was empty or malformed.", result);
-                        runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
-                        englishOutput.innerHTML = "<strong>Wisdom/Prophecy:</strong> The ancient echoes are faint. No counsel today.";
-                        logDiscovery("Failed to receive counsel. Empty or malformed Gemini API response.");
-                    }
-                } catch (error) {
-                    console.error("Error fetching ancient counsel from Gemini API:", error);
-                    runicOutput.textContent = "ᛖᚱᚱᛟᚱ ᛞᛖᛖᛈ";
-                    englishOutput.innerHTML = `<strong>Wisdom/Prophecy:</strong> A disturbance in the ether prevents clear reception. Error: ${error.message}. Please try again.`;
-                    logDiscovery(`Error seeking counsel: ${error.message}`);
-                } finally {
-                    whisperBox.classList.remove('loading');
-                    toggleTranslationButton.style.display = 'block';
-                    translationVisible = false;
-                    englishOutput.classList.remove('visible');
-                    isGenerating = false;
-
-                    pyramidGroup.classList.add('pyramid-energized');
-                    setTimeout(() => {
-                        pyramidGroup.classList.remove('pyramid-energized');
-                    }, 800);
-                }
-            }
-
-            // Function to get daily wisdom (now calls Gemini API directly)
-            async function getDailyWisdom() {
-                 if (firebaseConnectionFailed) {
-                    runicOutput.textContent = "ᛖᚱᚱᛟᚱ ᛞᛖᛖᛈ";
-                    englishOutput.innerHTML = `<strong>Connection Error:</strong> Cannot receive daily wisdom without a connection to the ancient network. Please check the error message at the top of the page.`;
-                    englishOutput.classList.add('visible');
-                    toggleTranslationButton.style.display = 'block';
-                    return;
-                }
-                if (isGenerating) {
-                    logDiscovery("The ancient energies are still coalescing. Please wait.");
-                    return;
-                }
-
-                isGenerating = true;
-                runicOutput.textContent = '';
-                englishOutput.innerHTML = '';
-                englishOutput.classList.remove('visible');
-                toggleTranslationButton.style.display = 'none';
-                whisperBox.classList.add('loading');
-                playCounselWhisper();
-                logDiscovery("Receiving daily wisdom...");
-
-                try {
-                    const prompt = `Generate a short, mystical runic inscription and its English translation. The inscription should be a piece of daily wisdom or a short prophecy.
-
-                    Format the output as follows:
-                    Runic: [Runic characters here]
-                    English: [English translation here]
-
-                    Example:
-                    Runic: ᛞᚢᚱᚾ ᛚᛁᚠᛖ
-                    English: Embrace the flow of life.`;
-
-                    let chatHistory = [];
-                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                    const payload = { contents: chatHistory };
-                    const apiKey = ""; // Canvas will automatically provide this
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-                    const response = await fetchWithExponentialBackoff(() =>
-                        fetch(apiUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        })
-                    );
-                    const result = await response.json();
-                    
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const text = result.candidates[0].content.parts[0].text;
-                        console.log("Gemini API Response (Daily Wisdom):", text); // Log for debugging
-
-                        let runicText = null;
-                        let englishText = null;
-
-                        // Use regex to find "Runic:" and "English:" labels, case-insensitive
-                        const runicMatch = text.match(/Runic:\s*(.*)/i);
-                        const englishMatch = text.match(/English:\s*(.*)/i);
-
-                        if (runicMatch && runicMatch[1]) {
-                            runicText = runicMatch[1].trim();
-                        }
-                        if (englishMatch && englishMatch[1]) {
-                            englishText = englishMatch[1].trim();
-                        }
-
-                        // Fallback: If labels are not found, try to split by newline
-                        if (!runicText && !englishText) {
-                            const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-                            if (lines.length >= 2) {
-                                const hasRunicChars = (str) => /[ᚠ-ᛞ]/.test(str);
-                                if (hasRunicChars(lines[0])) {
-                                    runicText = lines[0];
-                                    englishText = lines.slice(1).join('\n');
-                                }
-                            }
-                        }
-
-                        if (runicText && englishText) {
-                            runicOutput.textContent = runicText;
-                            englishOutput.innerHTML = `<strong>Daily Wisdom:</strong> ${englishText.replace(/\n/g, '<br>')}`;
-                            logDiscovery(`Received daily wisdom: ${englishText.substring(0, 30)}...`);
-                        } else {
-                            console.error("Failed to parse Gemini response for daily wisdom. Raw text:", text);
-                            runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
-                            englishOutput.innerHTML = "<strong>Daily Wisdom:</strong> The ancient echoes are faint. Unexpected format. No wisdom today.";
-                            logDiscovery("Failed to parse daily wisdom. Unexpected Gemini API response format.");
-                        }
-                    } else {
-                        console.error("Gemini API response was empty or malformed for daily wisdom.", result);
-                        runicOutput.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
-                        englishOutput.innerHTML = "<strong>Daily Wisdom:</strong> The ancient echoes are faint. No wisdom today.";
-                        logDiscovery("Failed to receive daily wisdom. Empty or malformed Gemini API response.");
-                    }
-                } catch (error) {
-                    console.error("Error fetching daily wisdom from Gemini API:", error);
-                    runicOutput.textContent = "ᛖᚱᚱᛟᚱ ᛞᛖᛖᛈ";
-                    englishOutput.innerHTML = `<strong>Daily Wisdom:</strong> A disturbance in the ether prevents clear reception. Error: ${error.message}. Please try again.`;
-                    logDiscovery(`Error seeking daily wisdom: ${error.message}`);
-                } finally {
-                    whisperBox.classList.remove('loading');
-                    toggleTranslationButton.style.display = 'block';
-                    translationVisible = false;
-                    englishOutput.classList.remove('visible');
-                    isGenerating = false;
-
-                    pyramidGroup.classList.add('pyramid-energized');
-                    setTimeout(() => {
-                        pyramidGroup.classList.remove('pyramid-energized');
-                    }, 800);
-                }
-            }
-
-            // Function to provide dynamic lore expansion (now calls Gemini API directly)
-            async function getDynamicLoreExpansion(title, content, insightContainer, button) {
-                if (firebaseConnectionFailed) {
-                    insightContainer.textContent = "Connection to the ancient network has been lost. Cannot deepen insight.";
-                    insightContainer.classList.add('visible');
-                    return;
-                }
-                if (button.disabled) {
-                    logDiscovery("Insight already being generated or recently generated. Please wait.");
-                    return;
-                }
-
-                button.disabled = true;
-                insightContainer.textContent = '';
-                insightContainer.classList.remove('visible');
-                insightContainer.classList.add('loading');
-                playInsightWhisper();
-                logDiscovery(`Deepening insight for: "${title}"...`);
-
-                try {
-                    const prompt = `Expand on the following lore passage, providing a deeper, mystical insight. Focus on connecting it to ancient mysteries, cosmic energies, or spiritual implications.
-
-                    Title: ${title}
-                    Passage: ${content}
-
-                    Provide a concise, compelling insight (2-4 sentences).`;
-
-                    let chatHistory = [];
-                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                    const payload = { contents: chatHistory };
-                    const apiKey = ""; // Canvas will automatically provide this
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-                    const response = await fetchWithExponentialBackoff(() =>
-                        fetch(apiUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        })
-                    );
-                    const result = await response.json();
-                    
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const insightText = result.candidates[0].content.parts[0].text;
-                        insightContainer.textContent = insightText;
-                        insightContainer.classList.add('visible');
-                        logDiscovery(`Received deeper insight for: "${title.substring(0, 20)}..."`);
-                    } else {
-                        insightContainer.textContent = "The ancient scrolls are unreadable at this moment. Try again.";
-                        logDiscovery("Failed to retrieve deeper insight. Empty or malformed Gemini API response.");
-                    }
-                } catch (error) {
-                    console.error("Error fetching lore expansion from Gemini API:", error);
-                    insightContainer.textContent = `A shimmer in the Veil prevents this insight from forming. Error: ${error.message}. Please try again.`;
-                    logDiscovery(`Error deepening insight: ${error.message}`);
-                } finally {
-                    insightContainer.classList.remove('loading');
-                    setTimeout(() => {
-                        button.disabled = false;
-                    }, 3000); // Re-enable button after a delay
-                }
-            }
-
-            // Function to get personalized rune reading
-            async function getPersonalizedRuneReading(question) {
-                if (firebaseConnectionFailed) {
-                    runeInterpretation.textContent = "Connection to the ancient network has been lost. Cannot draw runes.";
-                    return;
-                }
-                if (isGenerating) {
-                    logDiscovery("The ancient energies are still coalescing. Please wait.");
-                    return;
-                }
-
-                isGenerating = true;
-                runeDisplay.textContent = '';
-                runeInterpretation.textContent = '';
-                runeReadingPage.classList.add('loading'); // Use the page itself for loading indicator
-                playInsightWhisper(); // Use insight whisper for rune reading
-                logDiscovery(`Drawing runes for question: "${question}"...`);
-
-                try {
-                    const prompt = `Generate a three-rune reading and its interpretation for the question: "${question}".
-                    The runes should be selected from the Elder Futhark set. Provide the runes as Unicode characters.
-                    The interpretation should be mystical and insightful, connecting the runes to the question.
-
-                    Format the output as follows:
-                    Runes: [Rune1] [Rune2] [Rune3]
-                    Interpretation: [Your mystical interpretation here, 3-5 sentences]
-
-                    Example:
-                    Runes: ᚠ ᚢ ᚦ
-                    Interpretation: The Fates whisper of new beginnings, a test of will, and the unfolding of destiny. Embrace the unknown, for clarity shall emerge from the shadows.`;
-
-                    let chatHistory = [];
-                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                    const payload = { contents: chatHistory };
-                    const apiKey = ""; // Canvas will automatically provide this
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-                    const response = await fetchWithExponentialBackoff(() =>
-                        fetch(apiUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        })
-                    );
-                    const result = await response.json();
-                    
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const text = result.candidates[0].content.parts[0].text;
-                        console.log("Gemini API Response (Rune Reading):", text); // Log for debugging
-
-                        let runesText = null;
-                        let interpretationText = null;
-
-                        // Use regex to find "Runes:" and "Interpretation:" labels, case-insensitive
-                        const runesMatch = text.match(/Runes:\s*(.*)/i);
-                        const interpretationMatch = text.match(/Interpretation:\s*(.*)/i);
-
-                        if (runesMatch && runesMatch[1]) {
-                            runesText = runesMatch[1].trim();
-                        }
-                        if (interpretationMatch && interpretationMatch[1]) {
-                            interpretationText = interpretationMatch[1].trim();
-                        }
-
-                        // Fallback logic
-                        if (!runesText && !interpretationText) {
-                            const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-                            if (lines.length >= 2) {
-                                const hasRunicChars = (str) => /[ᚠ-ᛞ]/.test(str);
-                                if (hasRunicChars(lines[0])) {
-                                    runesText = lines[0];
-                                    interpretationText = lines.slice(1).join('\n');
-                                }
-                            }
-                        }
-
-                        if (runesText && interpretationText) {
-                            runeDisplay.textContent = runesText;
-                            runeInterpretation.textContent = interpretationText;
-                            logDiscovery(`Received rune reading for "${question.substring(0, 30)}...": ${runesText}`);
-                        } else {
-                            console.error("Failed to parse Gemini response for rune reading. Raw text:", text);
-                            runeDisplay.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
-                            runeInterpretation.textContent = "The runes are veiled. The format of the message was unclear. Please try again.";
-                            logDiscovery("Failed to parse rune reading. Unexpected Gemini API response format.");
-                        }
-                    } else {
-                        console.error("Gemini API response was empty or malformed for rune reading.", result);
-                        runeDisplay.textContent = "ᛟᚱᚾ ᚾᛟᛏ ᚠᛟᚢᚾᛞ";
-                        runeInterpretation.textContent = "The runes are veiled. Try focusing your intent more clearly.";
-                        logDiscovery("Failed to receive rune reading. Empty or malformed Gemini API response.");
-                    }
-                } catch (error) {
-                    console.error("Error fetching rune reading from Gemini API:", error);
-                    runeDisplay.textContent = "ᛖᚱᚱᛟᚱ ᛞᛖᛖᛈ";
-                    runeInterpretation.textContent = `A disturbance in the ether prevents the runes from forming. Error: ${error.message}. Please try again.`;
-                    logDiscovery(`Error drawing runes: ${error.message}`);
-                } finally {
-                    runeReadingPage.classList.remove('loading');
-                    isGenerating = false;
-
-                    pyramidGroup.classList.add('pyramid-energized');
-                    setTimeout(() => {
-                        pyramidGroup.classList.remove('pyramid-energized');
-                    }, 800);
-                }
-            }
-
-
-            // Event Listeners for Pyramid interactions (no changes to this logic, just the underlying getAncientCounsel call)
-            pyramidElements.forEach(element => {
-                element.addEventListener('click', () => {
-                    const pyramidPart = element.dataset.pyramid;
-                    logDiscovery(`You touched the ${pyramidPart} of the pyramid.`);
-
-                    let specificPromptContext = `a general wisdom from the ${pyramidPart} pyramid.`;
-                    if (pyramidPart === 'sun-top') {
-                        specificPromptContext = `the pinnacle of enlightenment and cosmic energy`;
-                    } else if (pyramidPart === 'sun-base') {
-                        specificPromptContext = `the foundation of ancient wisdom and earthly connection`;
-                    } else if (pyramidPart === 'sun-entrance') {
-                        specificPromptContext = `the gateway to inner knowledge and hidden truths`;
-                    } else if (pyramidPart === 'dragon') {
-                        specificPromptContext = `the primal energy of the Earth, courage, and transformation`;
-                    } else if (pyramidPart === 'moon') {
-                        specificPromptContext = `the intuitive depths, cycles of change, and hidden reflections`;
-                    }
-
-                    if (pyramidPart === 'sun-top' || pyramidPart === 'sun-base' || pyramidPart === 'sun-entrance') {
-                        playPyramidWhisper();
-                        getAncientCounsel(specificPromptContext, pyramidPart);
-
-                        pyramidBeam.classList.add('active');
-                        playBeamSound();
-                        setTimeout(() => {
-                            pyramidBeam.classList.remove('active');
-                        }, 8000);
-                    } else if (pyramidPart === 'dragon' || pyramidPart === 'moon') {
-                        playSmallPyramidSound();
-                        element.style.transform = `${element.style.transform} scale(1.08) rotateY(10deg)`;
-                        setTimeout(() => {
-                            element.style.transform = element.style.transform.replace(' scale(1.08) rotateY(10deg)', '');
-                        }, 500);
-                        getAncientCounsel(specificPromptContext, pyramidPart);
-
-                        if (pyramidPart === 'dragon') {
-                            pyramidLoveBeam.style.background = 'linear-gradient(to top, rgba(0, 255, 0, 0.8), rgba(0, 255, 0, 0.0))';
-                            pyramidLoveBeam.classList.add('active');
-                            setTimeout(() => {
-                                pyramidLoveBeam.classList.remove('active');
-                            }, 3000);
-                        } else if (pyramidPart === 'moon') {
-                            pyramidMoonBeam.style.background = 'linear-gradient(to top, rgba(255, 0, 0, 0.8), rgba(255, 0, 0, 0.0))';
-                            pyramidMoonBeam.classList.add('active');
-                            setTimeout(() => {
-                                pyramidMoonBeam.classList.remove('active');
-                            }, 3000);
-                        }
-                    }
-                });
-            });
-
-            // Event listener for the "Seek Ancient Counsel" button
-            seekCounselButton.addEventListener('click', () => {
-                const question = userQuestionInput.value.trim();
-                if (question) {
-                    getAncientCounsel(question);
-                    userQuestionInput.value = '';
-                } else {
-                    logDiscovery("Please ask a question to seek ancient counsel.");
-                }
-            });
-
-            // Event listener for the "Receive Daily Wisdom" button
-            dailyWisdomButton.addEventListener('click', getDailyWisdom);
-
-            // Event listener for Enter key in the input field
-            userQuestionInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    seekCounselButton.click();
-                }
-            });
-
-            // Toggle translation button
-            toggleTranslationButton.addEventListener('click', () => {
-                playMenuToggleSound();
-                translationVisible = !translationVisible;
-                if (translationVisible) {
-                    englishOutput.classList.add('visible');
-                    toggleTranslationButton.textContent = 'Hide English';
-                } else {
-                    englishOutput.classList.remove('visible');
-                    toggleTranslationButton.textContent = 'Show English';
-                }
-            });
-
-            // Veil interaction
-            veilOverlay.addEventListener('click', () => {
-                veilOverlay.classList.toggle('active');
-                playVeilWhisper();
-                logDiscovery("The Veil shimmered, revealing fleeting glimpses...");
-            });
-
-            // Menu functionality
-            menuButton.addEventListener('click', () => {
-                playMenuToggleSound();
-                overlayMenu.classList.add('active');
-                menuButton.setAttribute('aria-expanded', 'true');
-            });
-
-            closeMenuButton.addEventListener('click', () => {
-                playMenuToggleSound();
-                overlayMenu.classList.remove('active');
-                menuButton.setAttribute('aria-expanded', 'false');
-            });
-
-            navLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    playMenuToggleSound();
-                    const page = e.target.dataset.page;
-                    showPage(page);
-                    overlayMenu.classList.remove('active');
-                    menuButton.setAttribute('aria-expanded', 'false');
-                });
-            });
-
-            function showPage(pageName) {
-                const allPages = document.querySelectorAll('section[id$="Page"]');
-
-                allPages.forEach(page => {
-                    if (page.classList.contains('active')) {
-                        page.style.opacity = '0';
-                        page.style.transform = 'translateY(20px)';
-                        page.style.pointerEvents = 'none';
-                        setTimeout(() => {
-                            page.classList.remove('active');
-                            page.classList.add('hidden-page');
-                        }, 700);
-                    }
-                });
-
-                const targetPage = document.getElementById(`${pageName}Page`);
-                if (targetPage) {
-                    setTimeout(() => {
-                        targetPage.classList.remove('hidden-page');
-                        targetPage.classList.add('active');
-                        targetPage.style.opacity = '1';
-                        targetPage.style.transform = 'translateY(0)';
-                        targetPage.style.pointerEvents = 'auto';
-                    }, 500);
-                } else {
-                    console.warn(`Attempted to navigate to non-existent page: ${pageName}Page. Redirecting to home.`);
-                    setTimeout(() => {
-                        document.getElementById('homePage').classList.remove('hidden-page');
-                        document.getElementById('homePage').classList.add('active');
-                        document.getElementById('homePage').style.opacity = '1';
-                        document.getElementById('homePage').style.transform = 'translateY(0)';
-                        document.getElementById('homePage').style.pointerEvents = 'auto';
-                    }, 500);
-                }
-
-                if (pageName !== 'meditation' && isMeditationPlaying) {
-                    stopMeditationAudio();
-                }
-
-                logDiscovery(`Navigated to: ${pageName.charAt(0).toUpperCase() + pageName.slice(1)} Page.`);
-            }
-
-            showPage('home');
-            homePage.classList.remove('active');
-
-            // Log toggle button
-            toggleLogButton.addEventListener('click', () => {
-                playLogToggleSound();
-                const isLogActive = discoveryLog.classList.toggle('active');
-                toggleLogButton.textContent = isLogActive ? 'Hide Log' : 'Show Log';
-                toggleLogButton.setAttribute('aria-expanded', isLogActive);
-                logDiscovery(`Discovery Log ${isLogActive ? 'opened' : 'closed'}.`);
-            });
-
-            logDiscovery("System initialized. The ancient energies stir...");
-
-            // Theme switching logic
-            themeButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    playThemeChangeSound();
-                    const themeName = button.dataset.themeName;
-                    document.body.dataset.theme = themeName;
-
-                    themeButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-
-                    logDiscovery(`Theme changed to: ${themeName}`);
-                });
-            });
-
-            // Event listeners for Deepen Insight buttons
-            deepenInsightButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const loreSection = button.closest('.lore-section');
-                    const title = loreSection.querySelector('h3').textContent;
-                    const content = loreSection.querySelector('p').textContent;
-                    const insightContainer = loreSection.querySelector('.llm-insight-container');
-                    getDynamicLoreExpansion(title, content, insightContainer, button);
-
-                    // Trigger pyramid energy surge when lore section is expanded
-                    pyramidGroup.classList.add('pyramid-energized');
-                    setTimeout(() => {
-                        pyramidGroup.classList.remove('pyramid-energized');
-                    }, 800);
-                });
-            });
-
-            // Function to get SVG icon based on data-icon attribute (no changes)
-            function getLoreIconSVG(iconName) {
-                switch (iconName) {
-                    case 'pyramid':
-                        return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pyramid"><path d="M2.5 16.81l8.37 3.75a2 2 0 001.76 0l8.37-3.75A2 2 0 0022 15.07V8.93a2 2 0 00-1.03-1.74l-8.37-3.75a2 2 0 00-1.76 0L2.5 7.19A2 2 0 002 8.93v6.14a2 2 0 00.5 1.74z"/><path d="M12 22v-8"/><path d="M2.5 16.81L12 14v8"/><path d="M21.5 16.81L12 14v8"/></svg>`;
-                    case 'veil':
-                        return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cloud"><path d="M17.5 14.5a.75.75 0 000 1.5h.5a.75.75 0 000-1.5z"/><path d="M10 20a5 5 0 01-4.75-5.25A4.5 4.5 0 017 7h.5A4.5 4.5 0 0115 7.5a4.5 4.5 0 011-.5h.5A3.5 3.5 0 0120 10c0 1.5-.5 2.5-1.25 3.25A4.5 4.5 0 0117.5 18H10z"/></svg>`;
-                    case 'guardian':
-                        return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
-                    case 'awakening':
-                        return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun"><circle cx="12" cy="12" r="8"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M4.93 19.07l1.41-1.41"/><path d="M17.66 6.34l1.41-1.41"/></svg>`;
-                    default:
-                        return '';
-                }
-            }
-
-            // Interactive Lore Sections (Expand/Collapse) (no changes)
-            loreSectionHeaders.forEach(header => {
-                header.addEventListener('click', () => {
-                    const contentId = header.dataset.toggleId;
-                    const contentElement = document.getElementById(contentId);
-                    if (contentElement) {
-                        contentElement.classList.toggle('expanded');
-                        let icon = contentElement.querySelector('.lore-section-icon');
-                        if (contentElement.classList.contains('expanded')) {
-                            if (!icon) {
-                                const iconName = header.dataset.icon;
-                                if (iconName) {
-                                    icon = document.createElement('div');
-                                    icon.classList.add('lore-section-icon');
-                                    icon.innerHTML = getLoreIconSVG(iconName);
-                                    contentElement.appendChild(icon);
-                                }
-                            }
-                            // Trigger pyramid energy surge when lore section is expanded
-                            pyramidGroup.classList.add('pyramid-energized');
-                            setTimeout(() => {
-                                pyramidGroup.classList.remove('pyramid-energized');
-                            }, 800);
-                        } else {
-                            if (icon) {
-                                icon.remove();
-                            }
-                        }
-                    }
-                });
-            });
-
-            // Initial Entry Overlay Logic (no changes)
-            initialEntryOverlay.addEventListener('click', () => {
-                playEntryChime();
-                initialEntryOverlay.classList.add('hidden');
-                mainContentArea.classList.add('active');
-                toggleAmbientAudio();
-                logDiscovery("You have awakened the Veil. The journey begins...");
-            });
-
-            // Audio Toggle Button Event Listener (no changes)
-            audioToggleButton.addEventListener('click', toggleAmbientAudio);
-
-            // Meditation Button Event Listeners (no changes)
-            startMeditationButton.addEventListener('click', startMeditationAudio);
-            stopMeditationButton.addEventListener('click', stopMeditationAudio);
-
-            // Contact Form Submission Logic (now uses Firestore directly)
-            contactForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-
-                const message = keeperMessageTextarea.value.trim();
-
-                if (!message) {
-                    messageFeedback.textContent = "Please type a message before sending.";
-                    messageFeedback.classList.add('visible');
-                    setTimeout(() => messageFeedback.classList.remove('visible'), 3000);
-                    logDiscovery("Attempted to send empty message to Keepers.");
-                    return;
-                }
-
-                if (!isAuthReady || !db || !userId) {
-                    messageFeedback.textContent = "Establishing connection to the ancient network... Please wait a moment and try again.";
-                    messageFeedback.classList.add('visible');
-                    setTimeout(() => messageFeedback.classList.remove('visible'), 5000);
-                    console.warn("Authentication not ready or Firestore/User ID not available. Cannot send message yet.");
-                    return;
-                }
-
-                sendMessageButton.disabled = true;
-                sendMessageButton.textContent = "Sending...";
-                messageFeedback.textContent = "Your message is traveling through the ether...";
-                messageFeedback.classList.add('visible');
-                playCounselWhisper();
-
-                try {
-                    await firestoreWithExponentialBackoff(() =>
-                        firebase.addDoc(firebase.collection(db, `artifacts/${appId}/users/${userId}/contact_messages`), {
-                            message: message,
-                            timestamp: firebase.serverTimestamp(),
-                            userId: userId // Store userId with the message
-                        })
-                    );
-                    messageFeedback.textContent = "Your message has been received by the Keepers. Await their subtle signs.";
-                    keeperMessageTextarea.value = '';
-                    logDiscovery(`Message sent to Keepers: "${message.substring(0, 50)}..."`);
-                } catch (error) {
-                    console.error("Error sending message to Keepers via Firestore:", error);
-                    messageFeedback.textContent = `A disturbance prevented your message from reaching the Keepers. Error: ${error.message}.`;
-                    logDiscovery(`Failed to send message to Keepers: ${error.message}`);
-                } finally {
-                    sendMessageButton.disabled = false;
-                    sendMessageButton.textContent = "Send Message to the Keepers";
-                    setTimeout(() => messageFeedback.classList.remove('visible'), 7000);
-                }
-            });
-
-            // Rune Reading Button Event Listener
-            drawRunesButton.addEventListener('click', () => {
-                const question = runeQuestionInput.value.trim();
-                if (question) {
-                    getPersonalizedRuneReading(question);
-                    runeQuestionInput.value = '';
-                } else {
-                    logDiscovery("Please ask a question for the rune reading.");
-                    runeInterpretation.textContent = "Please ask a question to receive a rune reading.";
-                }
-            });
-
-            // Parallax effect for main content based on mouse position (no changes)
-            mainContentArea.addEventListener('mousemove', (e) => {
-                const x = (e.clientX / window.innerWidth - 0.5) * 2;
-                const y = (e.clientY / window.innerHeight - 0.5) * 2;
-
-                document.body.style.backgroundPositionX = `${-x * 5}px`;
-                document.body.style.backgroundPositionY = `${-y * 5}px`;
-                document.body.style.setProperty('--x-offset', `${-x * 10}px`);
-                document.body.style.setProperty('--y-offset', `${-y * 10}px`);
-                document.querySelector('.runes-container').style.transform = `translate(${x * 15}px, ${y * 15}px)`;
-                document.querySelector('.celestial-body').style.transform = `translate(${-x * 20}px, ${-y * 20}px)`;
-                mistEffect.style.transform = `translateX(${-x * 8}px)`;
-            });
+    <button class="audio-toggle-button" id="audioToggleButton">🔊</button>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Element References ---
+    const allPages = document.querySelectorAll('.page');
+    const whisperBox = document.getElementById('whisperBox');
+    const runicOutput = document.getElementById('runicOutput');
+    const englishOutput = document.getElementById('englishOutput');
+    const toggleTranslationButton = document.getElementById('toggleTranslation');
+    const menuButton = document.getElementById('menuButton');
+    const overlayMenu = document.getElementById('overlayMenu');
+    const closeMenuButton = document.getElementById('closeMenuButton');
+    const navLinks = document.querySelectorAll('.overlay-menu nav ul li a');
+    const themeButtons = document.querySelectorAll('.theme-button');
+    const initialEntryOverlay = document.getElementById('initialEntryOverlay');
+    const mainContentArea = document.getElementById('mainContentArea');
+    const audioToggleButton = document.getElementById('audioToggleButton');
+    const meditationCircle = document.getElementById('meditationCircle');
+    const meditationRune = document.getElementById('meditationRune');
+    const meditationStatus = document.getElementById('meditationStatus');
+    const toggleMeditationVoiceButton = document.getElementById('toggleMeditationVoiceButton');
+    const contactForm = document.getElementById('contactForm');
+    const keeperMessage = document.getElementById('keeperMessage');
+    const messageFeedback = document.getElementById('messageFeedback');
+    const drawRunesButton = document.getElementById('drawRunesButton');
+    const runeQuestionInput = document.getElementById('runeQuestionInput');
+    const runeDisplay = document.getElementById('runeDisplay');
+    const runeInterpretation = document.getElementById('runeInterpretation');
+    const toggleRuneVoiceButton = document.getElementById('toggleRuneVoiceButton');
+    const runeAlphabetGrid = document.querySelector('.rune-alphabet-grid');
+
+    let isGenerating = false;
+    let isAmbientPlaying = false;
+    let isMeditationTTSActive = false;
+    let isRuneTTSActive = false;
+
+    // --- Simulated Data ---
+    const ancientWisdoms = [ { runic: "ᛞᚱᛁᛗ ᛞᛖᛈᛖᚱ", english: "Dream deeper." }, { runic: "ᛋᛏᚨᚱᛋ ᚹᚨᛏᚲᚺ", english: "The stars watch." }, { runic: "ᛖᚲᚺᛟ ᛟᚠ ᛏᛁᛗᛖ", english: "Listen to time's echo." } ];
+    const keeperResponses = [ "The winds carry your query. Look to the earth for your answer.", "Your question echoes. The path is one of balance. Trust your intuition.", "We have heard you. Be patient, for clarity arrives like the dawn." ];
+    const runeReadings = [ { runes: "ᚠᛉᛟ", interpretation: "Protected wealth and inheritance. Your foundations are strong. Do not fear loss, for your prosperity is watched over by ancestral spirits." }, { runes: "ᚢᚱᚨ", interpretation: "A journey of strength and wisdom is ahead. Primal power fuels your movement, and divine messages will guide your way." }, { runes: "ᚦᛖᛚ", interpretation: "A gateway of change lies before you. Do not force the path; let the flow guide you through the thorns to the other side." }, { runes: "ᚹᛗᛒ", interpretation: "Joy in community and new beginnings. This is a time for connection, celebrating the self, and nurturing growth." } ];
+    const elderFuthark = [ { char: 'ᚠ', name: 'Fehu' }, { char: 'ᚢ', name: 'Uruz' }, { char: 'ᚦ', name: 'Thurisaz' }, { char: 'ᚨ', name: 'Ansuz' }, { char: 'ᚱ', name: 'Raido' }, { char: 'ᚲ', name: 'Kenaz' }, { char: 'ᚷ', name: 'Gebo' }, { char: 'ᚹ', name: 'Wunjo' }, { char: 'ᚺ', name: 'Hagalaz' }, { char: 'ᚾ', name: 'Nauthiz' }, { char: 'ᛁ', name: 'Isa' }, { char: 'ᛃ', name: 'Jera' }, { char: 'ᛇ', name: 'Eihwaz' }, { char: 'ᛈ', name: 'Perthro' }, { char: 'ᛉ', name: 'Algiz' }, { char: 'ᛋ', name: 'Sowilo' }, { char: 'ᛏ', name: 'Tiwaz' }, { char: 'ᛒ', name: 'Berkano' }, { char: 'ᛖ', name: 'Ehwaz' }, { char: 'ᛗ', name: 'Mannaz' }, { char: 'ᛚ', name: 'Laguz' }, { char: 'ᛜ', name: 'Ingwaz' }, { char: 'ᛟ', name: 'Othala' }, { char: 'ᛞ', name: 'Dagaz' } ];
+    
+    // --- Build Runic Alphabet ---
+    function buildRuneAlphabet() {
+        elderFuthark.forEach(rune => {
+            const item = document.createElement('div');
+            item.className = 'rune-alphabet-item';
+            item.innerHTML = `<div class="rune-alphabet-char">${rune.char}</div><div class="rune-alphabet-name">${rune.name}</div>`;
+            runeAlphabetGrid.appendChild(item);
         });
-    </script>
+    }
+    buildRuneAlphabet();
+
+    // --- Text-to-Speech (TTS) Functionality ---
+    function speak(text) {
+        if (!('speechSynthesis' in window)) return;
+        speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.8;
+        utterance.pitch = 0.9;
+        speechSynthesis.speak(utterance);
+    }
+
+    toggleMeditationVoiceButton.addEventListener('click', () => {
+        isMeditationTTSActive = !isMeditationTTSActive;
+        if (isMeditationTTSActive) {
+            toggleMeditationVoiceButton.textContent = "Disable Meditation Voice";
+            toggleMeditationVoiceButton.classList.add('active');
+            speak(meditationStatus.textContent);
+        } else {
+            speechSynthesis.cancel();
+            toggleMeditationVoiceButton.textContent = "Enable Meditation Voice";
+            toggleMeditationVoiceButton.classList.remove('active');
+        }
+    });
+
+    toggleRuneVoiceButton.addEventListener('click', () => {
+        isRuneTTSActive = !isRuneTTSActive;
+        if (isRuneTTSActive) {
+            toggleRuneVoiceButton.textContent = "Disable Reading Voice";
+            toggleRuneVoiceButton.classList.add('active');
+            if (runeInterpretation.textContent) {
+                speak(runeInterpretation.textContent);
+            }
+        } else {
+            speechSynthesis.cancel();
+            toggleRuneVoiceButton.textContent = "Enable Reading Voice";
+            toggleRuneVoiceButton.classList.remove('active');
+        }
+    });
+
+    // --- Main Counsel & Rune Reading Functions ---
+    function getAncientCounsel() {
+        if (isGenerating) return;
+        isGenerating = true;
+        runicOutput.textContent = '';
+        englishOutput.textContent = '';
+        englishOutput.classList.remove('visible');
+        toggleTranslationButton.style.display = 'none';
+        whisperBox.classList.add('loading');
+        playCounselWhisper();
+        setTimeout(() => {
+            const wisdom = ancientWisdoms[Math.floor(Math.random() * ancientWisdoms.length)];
+            runicOutput.textContent = wisdom.runic;
+            englishOutput.textContent = wisdom.english;
+            whisperBox.classList.remove('loading');
+            toggleTranslationButton.style.display = 'inline-block';
+            isGenerating = false;
+        }, 1500);
+    }
+
+    function getRuneReading() {
+        const question = runeQuestionInput.value.trim();
+        if (!question) {
+            runeInterpretation.textContent = "You must ask a question to receive a reading.";
+            return;
+        }
+        if (isGenerating) return;
+        isGenerating = true;
+        runeDisplay.textContent = '';
+        runeInterpretation.textContent = 'The runes are being cast...';
+        toggleRuneVoiceButton.classList.add('hidden');
+        playCounselWhisper();
+        setTimeout(() => {
+            const reading = runeReadings[Math.floor(Math.random() * runeReadings.length)];
+            runeDisplay.textContent = reading.runes;
+            runeInterpretation.textContent = reading.interpretation;
+            toggleRuneVoiceButton.classList.remove('hidden');
+            if (isRuneTTSActive) {
+                speak(reading.interpretation);
+            }
+            isGenerating = false;
+        }, 2500);
+    }
+
+    // --- Sound Engine (Tone.js) ---
+    const ambientDrone = new Tone.AMSynth({ harmonicity: 0.5, envelope: { attack: 5, release: 5 } }).toDestination();
+    ambientDrone.volume.value = -30;
+    const counselWhisperSynth = new Tone.NoiseSynth({ noise: { type: "pink" }, envelope: { attack: 0.1, decay: 1.0, release: 1.5 } }).toDestination();
+    const menuToggleSynth = new Tone.Synth({ oscillator: { type: "triangle" }, envelope: { attack: 0.01, release: 0.5 } }).toDestination();
+    
+    function playCounselWhisper() { try { counselWhisperSynth.triggerAttackRelease("1.5s"); } catch(e){} }
+    function playMenuSound() { try { menuToggleSynth.triggerAttackRelease("C5", "8n"); } catch(e){} }
+
+    function toggleAmbientAudio() {
+        try {
+            if (Tone.context.state !== 'running') { Tone.start(); }
+            if (isAmbientPlaying) {
+                ambientDrone.triggerRelease();
+                audioToggleButton.classList.remove('active');
+            } else {
+                ambientDrone.triggerAttack("C2");
+                audioToggleButton.classList.add('active');
+            }
+            isAmbientPlaying = !isAmbientPlaying;
+        } catch(e) {
+            console.warn("Audio could not be started.", e);
+            audioToggleButton.disabled = true;
+        }
+    }
+    
+    // --- UI & Page Navigation ---
+    initialEntryOverlay.addEventListener('click', () => {
+        initialEntryOverlay.classList.add('hidden');
+        mainContentArea.classList.add('active');
+        toggleAmbientAudio();
+    }, { once: true });
+
+    audioToggleButton.addEventListener('click', toggleAmbientAudio);
+    
+    document.querySelectorAll('.pyramid').forEach(pyramid => {
+        pyramid.addEventListener('click', getAncientCounsel);
+    });
+
+    toggleTranslationButton.addEventListener('click', () => {
+        englishOutput.classList.toggle('visible');
+    });
+    
+    drawRunesButton.addEventListener('click', getRuneReading);
+
+    menuButton.addEventListener('click', () => {
+        playMenuSound();
+        overlayMenu.classList.add('active');
+    });
+
+    closeMenuButton.addEventListener('click', () => {
+        playMenuSound();
+        overlayMenu.classList.remove('active');
+    });
+
+    function showPage(pageId) {
+        window.scrollTo(0, 0);
+        speechSynthesis.cancel();
+        allPages.forEach(page => {
+            page.classList.remove('active');
+        });
+        const targetPage = document.getElementById(pageId);
+        if (targetPage) {
+            targetPage.classList.add('active');
+        }
+    }
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            playMenuSound();
+            const pageId = e.target.dataset.page + 'Page';
+            showPage(pageId);
+            overlayMenu.classList.remove('active');
+        });
+    });
+
+    themeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const themeName = button.dataset.themeName;
+            document.body.dataset.theme = themeName;
+            themeButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        });
+    });
+    
+    // --- Simulated Contact Form ---
+    contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const message = keeperMessage.value.trim();
+        if (!message) {
+            messageFeedback.textContent = 'You must scribe a message to receive a reply.';
+            setTimeout(() => { messageFeedback.textContent = ''; }, 4000);
+            return;
+        }
+        
+        messageFeedback.textContent = 'The Keepers are contemplating your message...';
+        playCounselWhisper();
+        
+        setTimeout(() => {
+            const response = keeperResponses[Math.floor(Math.random() * keeperResponses.length)];
+            messageFeedback.textContent = response;
+            contactForm.reset();
+        }, 3000);
+
+        setTimeout(() => { messageFeedback.textContent = ''; }, 15000);
+    });
+
+    // --- Simulated Meditation ---
+    const meditationScripts = {
+        'ᛗ': "Focus on the self. Feel the connection to all of humanity.",
+        'ᛟ': "Think of your heritage, your ancestors. Feel their strength.",
+        'ᛞ': "Embrace the dawn of a new understanding. A breakthrough is near.",
+        'ᚲ': "Open yourself to illumination and creativity. Knowledge flows to you.",
+        'ᛋ': "Feel wholeness and success. The sun's energy empowers you.",
+        'ᛁ': "Find stillness within. Be calm and centered, like ice.",
+        'ᚹ': "Allow joy and harmony to fill your spirit.",
+        'ᛚ': "Go with the flow. Trust your intuition, like water."
+    };
+    const meditationRunes = Object.keys(meditationScripts);
+    let runeIndex = 0;
+
+    setInterval(() => {
+        meditationCircle.classList.toggle('pulsing');
+        runeIndex = (runeIndex + 1) % meditationRunes.length;
+        const currentRune = meditationRunes[runeIndex];
+        meditationRune.textContent = currentRune;
+        
+        const script = meditationScripts[currentRune];
+        meditationStatus.textContent = script;
+        if (isMeditationTTSActive) {
+            speak(script);
+        }
+    }, 8000);
+});
+</script>
 </body>
 </html>
