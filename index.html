@@ -408,6 +408,22 @@
             color: #a0aec0;
             margin-top: 0.25rem;
         }
+        .rune-history {
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #4a5568;
+            width: 100%;
+            text-align: left;
+            line-height: 1.7;
+            color: #a0aec0;
+        }
+        .rune-history h3 {
+            font-family: 'Spectral', serif;
+            font-size: 1.5rem;
+            color: #FFD700;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
         .donate-button {
             background: linear-gradient(to bottom right, #DAA520, #B8860B);
             color: #1a1a1a;
@@ -520,6 +536,19 @@
 
                 <div class="rune-alphabet-grid">
                     </div>
+
+                <div class="rune-history">
+                    <h3>The Bosnian Valley of the Pyramids and Runic Script</h3>
+                    <p>
+                        Within the Ravne tunnel network, a prehistoric underground labyrinth beneath the Bosnian Valley of the Pyramids, researchers led by Dr. Semir Osmanagić have discovered numerous stones with inscriptions. These markings, found on large megalithic blocks, are claimed to be a form of proto-runic writing, potentially one of the oldest scripts ever discovered in Europe.
+                    </p>
+                    <p class="mt-4">
+                        According to the researchers at the site, the age of these inscriptions could date back tens of thousands of years, far predating established runic alphabets like the Elder Futhark shown above. The symbols share similarities with various ancient scripts but are considered unique. Proponents believe these writings are evidence of a highly advanced civilization that understood energy, astronomy, and sacred geometry.
+                    </p>
+                    <p class="mt-4">
+                        It is important to note that these findings are highly controversial. Mainstream archaeologists and historians generally consider the Bosnian pyramids to be natural geological formations known as flatirons, and they do not recognize the inscriptions as an ancient runic system. However, the site remains an active area of alternative research and continues to attract those interested in the deeper, hidden history of humanity.
+                    </p>
+                </div>
             </div>
         </section>
 
@@ -597,7 +626,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isRuneTTSActive = false;
 
     // --- Simulated Data ---
-    const ancientWisdoms = [ { runic: "ᛞᚱᛁᛗ ᛞᛖᛈᛖᚱ", english: "Dream deeper." }, { runic: "ᛋᛏᚨᚱᛋ ᚹᚨᛏᚲᚺ", english: "The stars watch." }, { runic: "ᛖᚲᚺᛟ ᛟᚠ ᛏᛁᛗᛖ", english: "Listen to time's echo." } ];
+    const ancientWisdoms = [ { runic: "ᛞᚱᛁᛗ ᛞᛖᛈᛖᚱ", english: "Dream deeper." }, { runic: "ᛋᛏᚨᚱᛋ ᚹᚨᛏᚲᚺ", english: "The stars watch." }, { runic: "ᛖᚲᚺᛟ ᛟᚠ ᛏᛁᛗᛖ", english: "Listen to time's echo." }, { runic: "ᚦᛅ ᛋᛏᛟᚾᛋ ᛋᛒᛂᛅᚴ", english: "The stones speak to those who listen." }, { runic: "ᚢᛅᛁᛚ ᛁᛋ ᚦᛁᚾ", english: "Where the worlds touch, the veil is thin." }, { runic: "ᛋᛂᛅᚴ ᚦᛅ ᛏᚱᚢᚦ", english: "Seek the truth, not the comfort of answers." }, { runic: "ᛒᛅᛚᛅᚾᛋ ᛁᛋ ᚴᛅᛁ", english: "Balance is the key to unlocking potential." }, { runic: "ᛂᚾᛅᚱᚵᛁ ᚠᛚᚬᚢᛋ", english: "Energy flows where intention goes." }, { runic: "ᚦᛅ ᛒᛅᚦ ᛁᛋ ᚢᛁᚦᛁᚾ", english: "The path you seek is found within." }, { runic: "ᚦᛅ ᛘᚬᚢᚾᛏᛅᛁᚾ ᛒᚱᛂᛅᚦᛋ", english: "The mountain breathes with the ages." } ];
     const keeperResponses = [ "The winds carry your query. Look to the earth for your answer.", "Your question echoes. The path is one of balance. Trust your intuition.", "We have heard you. Be patient, for clarity arrives like the dawn." ];
     const runeReadings = [ { runes: "ᚠᛉᛟ", interpretation: "Protected wealth and inheritance. Your foundations are strong. Do not fear loss, for your prosperity is watched over by ancestral spirits." }, { runes: "ᚢᚱᚨ", interpretation: "A journey of strength and wisdom is ahead. Primal power fuels your movement, and divine messages will guide your way." }, { runes: "ᚦᛖᛚ", interpretation: "A gateway of change lies before you. Do not force the path; let the flow guide you through the thorns to the other side." }, { runes: "ᚹᛗᛒ", interpretation: "Joy in community and new beginnings. This is a time for connection, celebrating the self, and nurturing growth." } ];
     const elderFuthark = [ { char: 'ᚠ', name: 'Fehu' }, { char: 'ᚢ', name: 'Uruz' }, { char: 'ᚦ', name: 'Thurisaz' }, { char: 'ᚨ', name: 'Ansuz' }, { char: 'ᚱ', name: 'Raido' }, { char: 'ᚲ', name: 'Kenaz' }, { char: 'ᚷ', name: 'Gebo' }, { char: 'ᚹ', name: 'Wunjo' }, { char: 'ᚺ', name: 'Hagalaz' }, { char: 'ᚾ', name: 'Nauthiz' }, { char: 'ᛁ', name: 'Isa' }, { char: 'ᛃ', name: 'Jera' }, { char: 'ᛇ', name: 'Eihwaz' }, { char: 'ᛈ', name: 'Perthro' }, { char: 'ᛉ', name: 'Algiz' }, { char: 'ᛋ', name: 'Sowilo' }, { char: 'ᛏ', name: 'Tiwaz' }, { char: 'ᛒ', name: 'Berkano' }, { char: 'ᛖ', name: 'Ehwaz' }, { char: 'ᛗ', name: 'Mannaz' }, { char: 'ᛚ', name: 'Laguz' }, { char: 'ᛜ', name: 'Ingwaz' }, { char: 'ᛟ', name: 'Othala' }, { char: 'ᛞ', name: 'Dagaz' } ];
