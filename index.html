@@ -165,9 +165,24 @@
             transform: translateY(-5px);
         }
         .pyramid-shape {
-            background: linear-gradient(45deg, #4a4a4a, #1a1a1a);
             width: 100%;
             aspect-ratio: 2 / 1;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            position: relative;
+        }
+        .pyramid-shape::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 50%);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            opacity: 0.7;
+        }
+        .pyramid-shape::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 30%);
             clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
         }
         .pyramid-name {
@@ -186,11 +201,14 @@
             width: 280px;
         }
         .pyramid.center .pyramid-shape {
-            background: linear-gradient(45deg, #DAA520, #B8860B);
+            background: #DAA520; /* Dark Gold */
         }
         .pyramid.side {
             width: 100px;
             transform: translateY(30px);
+        }
+        .pyramid.side .pyramid-shape {
+            background: #41464b; /* Dark Stone */
         }
          .pyramid.side:hover {
             transform: translateY(25px);
@@ -199,34 +217,39 @@
             position: absolute;
             bottom: 95%;
             left: 50%;
-            width: 12px;
+            width: 15px;
             height: 100vh;
             transform-origin: bottom center;
             background: linear-gradient(to top, var(--beam-color-start), var(--beam-color-end));
             opacity: 0;
-            filter: blur(5px);
-            animation: shoot-up 5s ease-out infinite;
+            filter: blur(8px);
+            animation: beam-flicker 4s ease-in-out infinite;
         }
         .beam.red {
-             --beam-color-start: rgba(255, 60, 60, 0.9);
+             --beam-color-start: rgba(255, 60, 60, 0.8);
              --beam-color-end: rgba(255, 120, 120, 0);
              animation-delay: 1s;
         }
         .beam.green {
-             --beam-color-start: rgba(80, 255, 80, 0.9);
+             --beam-color-start: rgba(80, 255, 80, 0.8);
              --beam-color-end: rgba(120, 255, 120, 0);
              animation-delay: 0s;
         }
         .beam.gold {
-             --beam-color-start: rgba(255, 215, 0, 0.9);
+             --beam-color-start: rgba(255, 215, 0, 0.8);
              --beam-color-end: rgba(255, 225, 50, 0);
              animation-delay: 0.5s;
         }
-        @keyframes shoot-up {
-            0% { transform: translateX(-50%) scaleY(0); opacity: 0; }
+        @keyframes beam-flicker {
+            0%, 100% { transform: translateX(-50%) scaleY(0.95); opacity: 0.7; }
             10% { transform: translateX(-50%) scaleY(1); opacity: 0.9; }
+            20% { transform: translateX(-50%) scaleY(0.98); opacity: 0.8; }
+            30% { transform: translateX(-50%) scaleY(1.02); opacity: 0.95; }
+            40%, 60% { transform: translateX(-50%) scaleY(1); opacity: 0.85; }
+            50% { transform: translateX(-50%) scaleY(0.95); opacity: 0.7; }
+            70% { transform: translateX(-50%) scaleY(1); opacity: 0.9; }
+            80% { transform: translateX(-50%) scaleY(0.97); opacity: 0.75; }
             90% { transform: translateX(-50%) scaleY(1); opacity: 0.9; }
-            100% { transform: translateX(-50%) scaleY(1); opacity: 0; }
         }
         .whisper-box {
             background-color: rgba(0, 0, 0, 0.5); border: 1px solid #4A5568;
