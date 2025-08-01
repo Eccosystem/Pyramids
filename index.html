@@ -116,14 +116,8 @@
             to { text-shadow: 0 0 25px rgba(255, 180, 0, 0.9); color: #fff8e1; }
         }
         .menu-button {
-            background: none; border: none; font-size: clamp(1.5rem, 3vw, 2.5rem);
-            cursor: pointer; padding: 0.5rem; border-radius: 0.5rem;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-            margin-left: 1rem;
+            display: none;
         }
-        body[data-theme="night"] .menu-button { color: #FFD700; }
-        body[data-theme="day"] .menu-button { color: #1e3a8a; }
-        .menu-button:hover { background-color: rgba(255, 255, 255, 0.1); transform: scale(1.1); }
         .overlay-menu {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.95); display: flex; flex-direction: column;
@@ -334,20 +328,46 @@
             letter-spacing: 0.1em;
             order: 1;
         }
+        .moon-orbit {
+            position: fixed;
+            top: 5%;
+            left: 5%;
+            width: calc(90% - 80px);
+            height: 80px;
+            z-index: 50;
+            animation: move-across 90s linear infinite alternate;
+        }
+        @keyframes move-across {
+            from { transform: translateX(0); }
+            to { transform: translateX(100%); }
+        }
         .celestial-body {
-            position: fixed; top: 5%; right: 5%; width: 80px; height: 80px;
-            border-radius: 50%; z-index: 0; transition: all 2s ease-in-out;
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            transition: all 2s ease-in-out;
             background-size: cover; background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Spectral', serif;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            user-select: none;
         }
         body[data-theme="night"] .celestial-body {
             background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/FullMoon2010.jpg/1200px-FullMoon2010.jpg');
             box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+            color: #FFD700;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
         body[data-theme="day"] .celestial-body {
             background-color: #FFD700;
             background-image: none;
             box-shadow: 0 0 50px #FFD700, 0 0 100px #FFA500;
             animation: sun-glow 4s infinite alternate;
+            color: #FFD700;
+            text-shadow: 0 0 8px rgba(100, 50, 0, 0.6);
         }
         @keyframes sun-glow {
             from { box-shadow: 0 0 50px #FFD700, 0 0 100px #FFA500; }
@@ -468,14 +488,15 @@
             <p class="entry-instruction">Click to Awaken the Veil</p>
         </div>
     </div>
-    <div class="celestial-body"></div>
+    <div class="moon-orbit">
+        <div class="celestial-body" id="menuButton">MENU</div>
+    </div>
     <div class="main-content-area" id="mainContentArea">
         <header class="app-header">
             <div class="title-container">
                 <h1>ᛅᚾᛋᛁᛅᚾᛏ ᛂᚴᚬᛋ ᚬᚠ ᚦᛅ ᛒᚬᛋᚾᛁᛅᚾ ᛬ ᛒᚢᚱᛅᛘᛁᛏᛋ</h1>
                 <p class="runic-subtitle">Ancient Echoes of the Bosnian Pyramids</p>
             </div>
-            <button class="menu-button" id="menuButton">☰</button>
         </header>
 
         <div class="overlay-menu" id="overlayMenu">
