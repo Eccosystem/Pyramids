@@ -12,10 +12,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
     <style>
         /*
-         * IMPROVEMENTS:
-         * 1. Added CSS variables for maintainability.
-         * 2. Added a reduced-motion media query for accessibility.
-         */
+        * IMPROVEMENTS:
+        * 1. Added CSS variables for maintainability.
+        * 2. Added a reduced-motion media query for accessibility.
+        * 3. Added styling for the new visitor counter.
+        */
         :root {
             --night-bg-start: #10141c;
             --night-bg-end: #000000;
@@ -201,6 +202,60 @@
             70% { transform: translateX(-50%) scaleY(1); opacity: 0.9; }
             80% { transform: translateX(-50%) scaleY(0.97); opacity: 0.75; }
             90% { transform: translateX(-50%) scaleY(1); opacity: 0.9; }
+        }
+
+        /* Visitor Counter Styling */
+        .echo-counter {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1rem;
+            padding: 1rem;
+            width: 100%;
+            max-width: 250px;
+            background-color: rgba(255, 215, 0, 0.05);
+            border: 1px solid var(--primary-night);
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            text-align: center;
+            transition: all 0.5s ease-in-out;
+        }
+        body[data-theme="day"] .echo-counter {
+            background-color: rgba(30, 58, 138, 0.05);
+            border: 1px solid var(--primary-day);
+            box-shadow: 0 0 15px rgba(30, 58, 138, 0.3);
+        }
+        .echo-counter-label {
+            font-family: 'Spectral', serif;
+            color: var(--primary-night);
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            transition: color 0.5s, text-shadow 0.5s;
+        }
+        body[data-theme="day"] .echo-counter-label {
+            color: var(--primary-day);
+            text-shadow: 0 1px 3px rgba(255, 255, 255, 0.7);
+        }
+        .echo-counter-value {
+            font-family: 'Spectral', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: var(--primary-night);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            margin-top: 0.5rem;
+            animation: text-glow 3s infinite alternate;
+            transition: color 0.5s, text-shadow 0.5s;
+        }
+        body[data-theme="day"] .echo-counter-value {
+            color: var(--primary-day);
+            text-shadow: 0 1px 3px rgba(255, 255, 255, 0.7);
+            animation: none;
+        }
+        @keyframes text-glow {
+            from { text-shadow: 0 0 10px rgba(255, 215, 0, 0.7); }
+            to { text-shadow: 0 0 20px rgba(255, 215, 0, 0.9); }
         }
 
         /* Whisper Box Styling */
@@ -445,13 +500,18 @@
             <p class="text-gray-300 text-center mb-2 italic">
                 Beneath the Bosnian soil, where myth and mountain meet, lie structures that pulse with forgotten energy. They call to those who remember a time before time. Touch them, and listen to the ancient echoes.
             </p>
+            
+            <div class="echo-counter">
+                <span class="echo-counter-label">Echoes Heard</span>
+                <span class="echo-counter-value" id="visitCounter">0</span>
+            </div>
             <div class="theme-switcher">
                 <button class="theme-button active" data-theme-name="night" aria-label="Switch to night theme">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="1.2em" height="1.2em"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69a.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-3.818 2.04-7.174 5.168-8.972a.75.75 0 01.818.162z" clip-rule="evenodd"></path></svg>
                     <span>Night</span>
                 </button>
                 <button class="theme-button" data-theme-name="day" aria-label="Switch to day theme">
-                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="1.2em" height="1.2em"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.106a.75.75 0 010 1.06l-1.591 1.59a.75.75 0 11-1.06-1.06l1.59-1.591a.75.75 0 011.06 0zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.894 17.894a.75.75 0 011.06 0l1.591 1.591a.75.75 0 11-1.06 1.06l-1.591-1.59a.75.75 0 010-1.061zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM5.106 17.894a.75.75 0 010-1.06l1.591-1.591a.75.75 0 111.06 1.06l-1.59 1.591a.75.75 0 01-1.06 0zM4.5 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zM6.106 5.106a.75.75 0 011.06 0l1.591 1.591a.75.75 0 01-1.06 1.06L5.106 6.167a.75.75 0 010-1.06z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="1.2em" height="1.2em"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.106a.75.75 0 010 1.06l-1.591 1.59a.75.75 0 11-1.06-1.06l1.59-1.591a.75.75 0 011.06 0zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.894 17.894a.75.75 0 011.06 0l1.591 1.591a.75.75 0 11-1.06 1.06l-1.591-1.59a.75.75 0 010-1.061zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM5.106 17.894a.75.75 0 010-1.06l1.591-1.591a.75.75 0 111.06 1.06l-1.59 1.591a.75.75 0 01-1.06 0zM4.5 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zM6.106 5.106a.75.75 0 011.06 0l1.591 1.591a.75.75 0 01-1.06 1.06L5.106 6.167a.75.75 0 010-1.06z"></path></svg>
                     <span>Day</span>
                 </button>
             </div>
@@ -489,7 +549,7 @@
                     <div class="rune-symbol" id="meditationRune">ᛗ</div>
                 </div>
                 <p id="meditationStatus" class="text-gray-400 mt-4 text-center">Ready to begin your inner journey.</p>
-                 <button class="meditation-button mt-4" id="toggleMeditationVoiceButton" aria-label="Toggle meditation voice">Enable Meditation Voice</button>
+                <button class="meditation-button mt-4" id="toggleMeditationVoiceButton" aria-label="Toggle meditation voice">Enable Meditation Voice</button>
             </div>
         </section>
 
@@ -510,15 +570,15 @@
                 </div>
 
                 <div class="rune-image-gallery">
-                    <img src="runic4.png" alt="A small clay pyramid with runic-style carvings.">
-                    <img src="runic3.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="runic5.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="runic6.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="runic7.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="runic8.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="runic9.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="runic14.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="runic2.png" alt="An excavated stone pathway on the side of a pyramid.">
+                    <img src="images/runic4.webp" alt="A small clay pyramid with runic-style carvings.">
+                    <img src="images/runic3.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="images/runic5.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="images/runic6.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="images/runic7.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="images/runic8.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="images/runic9.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="images/runic14.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="images/runic2.webp" alt="An excavated stone pathway on the side of a pyramid.">
                 </div>
 
                 <div class="rune-history">
@@ -599,6 +659,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const runeInterpretation = document.getElementById('runeInterpretation');
     const toggleRuneVoiceButton = document.getElementById('toggleRuneVoiceButton');
     const runeAlphabetGrid = document.querySelector('.rune-alphabet-grid');
+    // NEW counter element
+    const visitCounterElement = document.getElementById('visitCounter');
 
     let isGenerating = false;
     let isAmbientPlaying = false;
@@ -903,12 +965,24 @@ document.addEventListener('DOMContentLoaded', () => {
             speak(script);
         }
     }, 8000);
+
+    // --- Visitor Counter Logic ---
+    function updateCounter() {
+        if (isGenerating) return; // Prevents counter from updating during other animations
+        let count = localStorage.getItem('visitCount');
+        if (count === null) {
+            count = 0;
+        } else {
+            count = parseInt(count);
+        }
+        count++;
+        localStorage.setItem('visitCount', count);
+        visitCounterElement.textContent = count;
+    }
+    
+    // Call the function on page load
+    updateCounter();
 });
 </script>
 </body>
 </html>
-
-
-
-
-
