@@ -16,6 +16,7 @@
         * 1. Added CSS variables for maintainability.
         * 2. Added a reduced-motion media query for accessibility.
         * 3. Added styling for the new visitor counter.
+        * 4. Added a new media query for mobile responsiveness.
         */
         :root {
             --night-bg-start: #10141c;
@@ -459,6 +460,15 @@
         .donate-button:hover {
             transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
         }
+        
+        /* Mobile Specific Styling */
+        @media (max-width: 768px) {
+            .celestial-body {
+                width: 60px;
+                height: 60px;
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
 <body data-theme="night">
@@ -503,8 +513,9 @@
             
             <div class="echo-counter">
                 <span class="echo-counter-label">Echoes Heard</span>
-                <span class="echo-counter-value" id="visitCounter">0</span>
+                <span class="echo-counter-value" id="visitCounter">...</span>
             </div>
+            
             <div class="theme-switcher">
                 <button class="theme-button active" data-theme-name="night" aria-label="Switch to night theme">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="1.2em" height="1.2em"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69a.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-3.818 2.04-7.174 5.168-8.972a.75.75 0 01.818.162z" clip-rule="evenodd"></path></svg>
@@ -517,17 +528,17 @@
             </div>
             <div class="pyramids-visual-group" id="pyramidGroup">
                 <div class="pyramid-container">
-                    <button class="pyramid side" data-pyramid="dragon" aria-label="Activate Dragon Pyramid">
+                    <button class="pyramid side" data-pyramid="dragon" aria-label="Touch the Dragon Pyramid to receive a new whisper">
                         <div class="beam red"></div>
                         <div class="pyramid-shape"></div>
                         <h3 class="pyramid-name">Dragon</h3>
                     </button>
-                    <button class="pyramid center" data-pyramid="sun" aria-label="Activate Sun Pyramid">
+                    <button class="pyramid center" data-pyramid="sun" aria-label="Touch the Sun Pyramid to receive a new whisper">
                         <div class="beam green"></div>
                         <div class="pyramid-shape"></div>
                         <h3 class="pyramid-name">Sun</h3>
                     </button>
-                    <button class="pyramid side" data-pyramid="moon" aria-label="Activate Moon Pyramid">
+                    <button class="pyramid side" data-pyramid="moon" aria-label="Touch the Moon Pyramid to receive a new whisper">
                         <div class="beam gold"></div>
                         <div class="pyramid-shape"></div>
                         <h3 class="pyramid-name">Moon</h3>
@@ -570,15 +581,15 @@
                 </div>
 
                 <div class="rune-image-gallery">
-                    <img src="images/runic4.webp" alt="A small clay pyramid with runic-style carvings.">
-                    <img src="images/runic3.webp" alt="A carved stone with highlighted runic symbols.">
-                    <img src="images/runic5.webp" alt="A carved stone with highlighted runic symbols.">
-                    <img src="images/runic6.webp" alt="A carved stone with highlighted runic symbols.">
-                    <img src="images/runic7.webp" alt="A carved stone with highlighted runic symbols.">
-                    <img src="images/runic8.webp" alt="A carved stone with highlighted runic symbols.">
-                    <img src="images/runic9.webp" alt="A carved stone with highlighted runic symbols.">
-                    <img src="images/runic14.webp" alt="A carved stone with highlighted runic symbols.">
-                    <img src="images/runic2.webp" alt="An excavated stone pathway on the side of a pyramid.">
+                    <img src="runic4.webp" alt="A small clay pyramid with runic-style carvings.">
+                    <img src="runic3.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="runic5.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="runic6.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="runic7.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="runic8.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="runic9.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="runic14.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="runic2.webp" alt="An excavated stone pathway on the side of a pyramid.">
                 </div>
 
                 <div class="rune-history">
@@ -659,7 +670,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const runeInterpretation = document.getElementById('runeInterpretation');
     const toggleRuneVoiceButton = document.getElementById('toggleRuneVoiceButton');
     const runeAlphabetGrid = document.querySelector('.rune-alphabet-grid');
-    // NEW counter element
     const visitCounterElement = document.getElementById('visitCounter');
 
     let isGenerating = false;
@@ -801,7 +811,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ambientDrone.volume.value = -30;
     const counselWhisperSynth = new Tone.NoiseSynth({ noise: { type: "pink" }, envelope: { attack: 0.1, decay: 1.0, release: 1.5 } }).toDestination();
     
-    // IMPROVEMENT: Ethereal menu sound
+    // Ethereal menu sound
     const menuToggleReverb = new Tone.Reverb({
         decay: 3.5,
         preDelay: 0.05,
@@ -848,13 +858,21 @@ document.addEventListener('DOMContentLoaded', () => {
         initialEntryOverlay.classList.add('hidden');
         mainContentArea.classList.add('active');
         toggleAmbientAudio();
+        updateCounter();
     }, { once: true });
 
     audioToggleButton.addEventListener('click', toggleAmbientAudio);
 
-    // IMPROVEMENT: Event delegation for more efficient handling of pyramid clicks
     document.getElementById('pyramidGroup').addEventListener('click', (e) => {
-        if (e.target.closest('.pyramid')) {
+        const pyramidButton = e.target.closest('.pyramid');
+        if (pyramidButton) {
+             const pyramidName = pyramidButton.dataset.pyramid;
+             // Animate the beam for the clicked pyramid
+             const beam = pyramidButton.querySelector('.beam');
+             if (beam) {
+                beam.style.opacity = '1';
+                setTimeout(() => beam.style.opacity = '0', 2000); // Hide beam after 2 seconds
+             }
             getAncientCounsel();
         }
     });
@@ -903,12 +921,10 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.dataset.theme = themeName;
             themeButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            // IMPROVEMENT: Store theme preference in localStorage
             localStorage.setItem('theme', themeName);
         });
     });
 
-    // IMPROVEMENT: Load theme from localStorage on startup
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
         document.body.dataset.theme = savedTheme;
@@ -926,7 +942,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const message = keeperMessage.value.trim();
         if (!message) {
             messageFeedback.textContent = 'You must scribe a message to receive a reply.';
-            setTimeout(() => { messageFeedback.textContent = ''; }, 4000);
+            setTimeout(() => { messageFeedback.textContent = '', 4000 });
             return;
         }
         messageFeedback.textContent = 'The Keepers are contemplating your message...';
@@ -937,7 +953,7 @@ document.addEventListener('DOMContentLoaded', () => {
             contactForm.reset();
         }, 3000);
 
-        setTimeout(() => { messageFeedback.textContent = ''; }, 15000);
+        setTimeout(() => { messageFeedback.textContent = '', 15000 });
     });
 
     // --- Simulated Meditation ---
@@ -968,20 +984,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Visitor Counter Logic ---
     function updateCounter() {
-        if (isGenerating) return; // Prevents counter from updating during other animations
+        if (isGenerating) return;
         let count = localStorage.getItem('visitCount');
         if (count === null) {
-            count = 0;
+            count = 1;
         } else {
-            count = parseInt(count);
+            count = parseInt(count) + 1;
         }
-        count++;
         localStorage.setItem('visitCount', count);
-        visitCounterElement.textContent = count;
+        
+        let currentCount = parseInt(visitCounterElement.textContent) || 0;
+        const step = Math.ceil((count - currentCount) / 50);
+        const interval = setInterval(() => {
+            if (currentCount < count) {
+                currentCount += step;
+                if (currentCount > count) currentCount = count;
+                visitCounterElement.textContent = currentCount;
+            } else {
+                clearInterval(interval);
+            }
+        }, 20);
     }
     
-    // Call the function on page load
-    updateCounter();
+    // Initial display before the click
+    let initialCount = localStorage.getItem('visitCount');
+    if (initialCount === null) {
+        visitCounterElement.textContent = '0';
+    } else {
+        visitCounterElement.textContent = initialCount;
+    }
 });
 </script>
 </body>
