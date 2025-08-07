@@ -19,6 +19,7 @@
         * 4. Added a new media query for mobile responsiveness.
         * 5. Added styling for the donation progress bar.
         * 6. Updated all menu-related CSS for a more thematic feel.
+        * 7. Added styling for the new volume control slider.
         */
         :root {
             --night-bg-start: #10141c;
@@ -307,6 +308,30 @@
             margin-top: 1rem; display: none;
         }
         .runic-toggle:hover { background-color: rgba(255,215,0,0.1); }
+        
+        .post-reading-message {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #4a5568;
+            text-align: center;
+            color: #a0aec0;
+            font-style: italic;
+            display: none; /* Hidden by default */
+        }
+        .post-reading-message .donate-button-small {
+            margin-top: 1rem;
+            display: inline-block;
+            background: #5a6578;
+            color: #ffcc00;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .post-reading-message .donate-button-small:hover {
+            background: #6a7588;
+            transform: translateY(-2px);
+        }
 
         /* Input and Button Styling */
         .user-input-section {
@@ -401,7 +426,7 @@
             font-family: 'Spectral', serif; font-weight: bold; font-size: 2rem;
             cursor: pointer; user-select: none; pointer-events: auto;
             color: var(--primary-night);
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
             position: relative;
         }
         .celestial-body-rune {
@@ -442,12 +467,70 @@
         @keyframes sun-glow { from { box-shadow: 0 0 50px var(--primary-night), 0 0 100px #FFA500; } to { box-shadow: 0 0 70px #FFFF00, 0 0 120px var(--primary-night); } }
 
         /* Audio and Meditation Styling */
-        .audio-toggle-button {
-            position: fixed; bottom: 1rem; right: 1rem; background: #5a6578;
-            color: #ffcc00; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: bold;
-            cursor: pointer; z-index: 1000; transition: all 0.3s ease;
+        .audio-controls {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.5rem;
+            z-index: 1000;
         }
-        .audio-toggle-button.active { background: #ffcc00; color: #333; }
+        .audio-toggle-button {
+            background: #5a6578;
+            color: #ffcc00;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        .audio-toggle-button.active {
+            background: linear-gradient(to bottom, #ffcc00, #b8860b);
+            color: #333;
+        }
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #a0aec0;
+            font-size: 0.8rem;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .volume-container input[type=range] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 100px;
+            height: 5px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+        .volume-container input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #ffcc00;
+            cursor: pointer;
+        }
+        .volume-container input[type=range]::-moz-range-thumb {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #ffcc00;
+            cursor: pointer;
+        }
         .meditation-circle {
             width: clamp(150px, 30vw, 250px); height: clamp(150px, 30vw, 250px);
             background: radial-gradient(circle, rgba(255, 215, 0, 0.4), transparent);
@@ -467,6 +550,12 @@
         .meditation-button.active {
             background: linear-gradient(to bottom, #ffcc00, #b8860b);
             color: #333;
+        }
+        .meditation-call-to-action {
+            margin-top: 1.5rem;
+            text-align: center;
+            color: #a0aec0;
+            font-style: italic;
         }
 
         /* Rune Pages Styling */
@@ -498,7 +587,45 @@
             width: 100%; height: auto; border-radius: 0.5rem;
             border: 1px solid #4a5568; object-fit: cover; aspect-ratio: 4 / 3;
         }
+        
+        .post-reading-message {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #4a5568;
+            text-align: center;
+            color: #a0aec0;
+            font-style: italic;
+            display: none; /* Hidden by default */
+        }
+        .post-reading-message .donate-button-small {
+            margin-top: 1rem;
+            display: inline-block;
+            background: #5a6578;
+            color: #ffcc00;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .post-reading-message .donate-button-small:hover {
+            background: #6a7588;
+            transform: translateY(-2px);
+        }
 
+        /* About Page specific styles */
+        .about-call-to-action {
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #4a5568;
+        }
+        .about-call-to-action h3 {
+            font-family: 'Spectral', serif;
+            font-size: 1.5rem;
+            color: var(--primary-night);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+        }
+        
         /* Donate and Contact Styling */
         .donate-button {
             background: linear-gradient(to bottom right, #DAA520, #B8860B);
@@ -507,7 +634,7 @@
             display: inline-block; transition: all 0.3s ease;
         }
         .donate-button:hover {
-            transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px); box-shadow: 5px 5px 15px rgba(255, 215, 0, 0.3);
         }
         
         /* Mobile Specific Styling */
@@ -544,6 +671,9 @@
             <ul>
                 <li><a href="#" data-page="home">
                     <span class="runic-icon">ᚷ</span> Ancient Echoes
+                </a></li>
+                <li><a href="#" data-page="visoko">
+                    <span class="runic-icon">ᚱ</span> The Visoko Valley
                 </a></li>
                 <li><a href="#" data-page="meditation">
                     <span class="runic-icon">ᛃ</span> The Inner Well
@@ -618,6 +748,24 @@
             </div>
         </section>
 
+        <section id="visokoPage" class="page">
+            <div class="page-content-container text-gray-300 text-center">
+                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">The Visoko Valley</h2>
+                <p class="text-lg italic mb-6">
+                    In the heart of Bosnia lies the town of Visoko, a place where myth and mountain meet. Here, beneath the earth, are structures that pulse with a forgotten energy, calling to those who remember a time before time.
+                </p>
+
+                <img src="images/runic7.webp" alt="The Visoko Valley with its prominent pyramid-shaped hills." class="w-full max-w-xl mx-auto rounded-lg shadow-lg my-8">
+
+                <p class="text-left mb-4">
+                    Long held by some to be the oldest and largest pyramids on Earth, the Bosnian Pyramids, particularly the Pyramid of the Sun, are a source of great debate and wonder. While mainstream science remains skeptical, research into the site suggests the presence of colossal man-made structures with a complex network of tunnels and chambers.
+                </p>
+                <p class="text-left">
+                    This land is believed to be a point of immense spiritual power, an energy vortex where the veil between worlds is thin. Our portal serves as a digital echo of this place, inviting you to explore the mysteries that still lie beneath the surface.
+                </p>
+            </div>
+        </section>
+
         <section id="meditationPage" class="page">
             <div class="page-content-container">
                 <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Guided Meditation</h2>
@@ -627,6 +775,13 @@
                 </div>
                 <p id="meditationStatus" class="text-gray-400 mt-4 text-center">Ready to begin your inner journey.</p>
                 <button class="meditation-button mt-4" id="toggleMeditationVoiceButton" aria-label="Toggle meditation voice">Enable Meditation Voice</button>
+
+                <div class="meditation-call-to-action">
+                    <p class="mt-8">
+                        The journey to the self is a sacred path. Your support helps us keep this space of inner peace and reflection open to all.
+                    </p>
+                    <a href="#donatePage" class="donate-button-small mt-4">Make an Offering</a>
+                </div>
             </div>
         </section>
 
@@ -642,11 +797,16 @@
                     <div id="runeInterpretation"></div>
                     <button class="meditation-button mt-4 hidden" id="toggleRuneVoiceButton" aria-label="Toggle reading voice">Enable Reading Voice</button>
                 </div>
+                
+                <div id="postReadingMessage" class="post-reading-message">
+                    <p>The oracle's whisper requires great energy to sustain. Consider supporting the keepers of the runes.</p>
+                    <a href="#donatePage" class="donate-button-small">Make an Offering</a>
+                </div>
 
                 <div class="rune-alphabet-grid">
                 </div>
 
-              <div class="rune-image-gallery">
+                 <div class="rune-image-gallery">
                     <img src="runic4.png" alt="A small clay pyramid with runic-style carvings.">
                     <img src="runic3.png" alt="A carved stone with highlighted runic symbols.">
                     <img src="runic5.png" alt="A carved stone with highlighted runic symbols.">
@@ -662,7 +822,7 @@
                 <div class="rune-history">
                     <h3>Dr. Semir Osmanagić and the Scientific Approach</h3>
                     <p>
-                        The investigation into the Bosnian Valley of the Pyramids is spearheaded by Dr. Semir Osmanagić, a Bosnian-American author and researcher. Through years of dedicated and often self-funded hard work, he has championed the project, bringing a multidisciplinary scientific approach to the excavations. Holding a Ph.D. in the Sociology of History with a focus on the Mayan civilization, Dr. Osmanagić has invited numerous experts from various fields—including geology, physics, and archaeology—to analyze the site.
+                        The investigation into the Bosnian Valley of the Pyramids is spearheaded by Dr. Semir Osmanagić, a Bosnian-American author and researcher. Through years of dedicated and often self-funded hard work, he has championed the project, bringing a multidisciplinary scientific approach to the excavations. Holding a Ph.D. in the Sociology of History with a focus on the Mayan civilization, Dr. Semir Osmanagić has invited numerous experts from various fields—including geology, physics, and archaeology—to analyze the site.
                     </p>
                     <p class="mt-4">
                         A key aspect of his approach involves avoiding purely speculative theories in favor of measurable data. This includes material analysis, georadar scanning, and radiocarbon dating. One of the most significant findings came from this methodology. A fossilized leaf found on a conglomerate block within the excavations was sent for analysis. A laboratory in Kiel, Germany, conducted radiocarbon dating on the sample, successfully proving the artifact to be approximately 34,000 years old. This suggests that the construction, and the civilization responsible, could be far older than any currently recognized advanced ancient culture.
@@ -673,13 +833,21 @@
 
         <section id="aboutPage" class="page">
             <div class="page-content-container text-gray-300 text-center">
-                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">About Ancient Echoes</h2>
+                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">On the Veil</h2>
                 <p class="mb-4">
                     This portal is an interactive art project designed to evoke the mystery and wonder surrounding sites of ancient power, like the Bosnian Pyramids. It is an exploration of myth, energy, and the whispers of history. We are dedicated to providing a space for contemplation and imagination, allowing visitors to connect with the enigmatic past on a personal level.
                 </p>
                 <p>
                     Using simulated interactions and browser-based technologies, we aim to create a space for contemplation and imagination. The wisdom, readings, and responses are generated for inspirational and entertainment purposes, encouraging a deeper connection to the enigmatic past.
                 </p>
+
+                <div class="about-call-to-action">
+                    <h3 class="text-center">Join the Keepers of the Echoes</h3>
+                    <p class="mt-4">
+                        This portal, a bridge between worlds, is maintained by a small group of devoted keepers. Their work ensures the whispers of the past continue to guide our present. Join us in this sacred duty.
+                    </p>
+                    <a href="#donatePage" class="donate-button mt-4">Become a Keeper</a>
+                </div>
             </div>
         </section>
 
@@ -709,15 +877,15 @@
                 </p>
                 
                 <div class="flex flex-col md:flex-row justify-center items-center gap-4 mb-8">
-                    <a href="https://buy.stripe.com/..." class="whisper-button w-full md:w-auto">
+                    <a href="https://your-stripe-link-for-5-offering" class="whisper-button w-full md:w-auto">
                         <span class="block font-bold text-xl">$5</span>
-                        <span class="block text-sm">Monthly  Offering</span>
+                        <span class="block text-sm">One-Time Offering</span>
                     </a>
-                    <a href="https://buy.stripe.com/..." class="whisper-button w-full md:w-auto">
+                    <a href="https://your-stripe-link-for-15-monthly" class="whisper-button w-full md:w-auto">
                         <span class="block font-bold text-xl">$15</span>
                         <span class="block text-sm">Monthly Keeper</span>
                     </a>
-                    <a href="https://buy.stripe.com/..." class="whisper-button w-full md:w-auto">
+                    <a href="https://your-stripe-link-for-50-yearly" class="whisper-button w-full md:w-auto">
                         <span class="block font-bold text-xl">$50</span>
                         <span class="block text-sm">Yearly Guardian</span>
                     </a>
@@ -731,7 +899,7 @@
 
         <section id="contactPage" class="page">
             <div class="page-content-container">
-                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Contact the Keepers</h2>
+                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Commune with a Keeper</h2>
                 <form id="contactForm" class="flex flex-col items-center gap-4 w-full max-w-md mx-auto">
                     <textarea id="keeperMessage" class="w-full p-2 rounded bg-gray-800 text-white" rows="4" placeholder="Your message..." aria-label="Your message to the keepers"></textarea>
                     <button type="submit" class="whisper-button">Send Message</button>
@@ -740,7 +908,14 @@
             </div>
         </section>
     </div>
-    <button class="audio-toggle-button" id="audioToggleButton" aria-label="Toggle ambient audio">🔊</button>
+
+    <div class="audio-controls">
+        <div class="volume-container">
+            <span>🔊</span>
+            <input type="range" id="masterVolumeSlider" min="-60" max="0" value="-10" step="1" aria-label="Master volume control">
+        </div>
+        <button class="audio-toggle-button" id="audioToggleButton" aria-label="Toggle ambient audio">Play Ambient Melodies</button>
+    </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -772,6 +947,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleRuneVoiceButton = document.getElementById('toggleRuneVoiceButton');
     const runeAlphabetGrid = document.querySelector('.rune-alphabet-grid');
     const visitCounterElement = document.getElementById('visitCounter');
+    const postReadingMessage = document.getElementById('postReadingMessage');
+    const masterVolumeSlider = document.getElementById('masterVolumeSlider');
     
     // Donation elements
     const donationProgress = document.getElementById('donation-progress');
@@ -782,7 +959,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isMeditationTTSActive = false;
     let isRuneTTSActive = false;
 
-    // --- Simulated Data ---
+    // --- Simulated Data with new donation prompts ---
     const ancientWisdoms = [
         { runic: "ᛞᚱᛁᛗ ᛞᛖᛈᛖᚱ", english: "Dream deeper." },
         { runic: "ᛋᛏᚨᚱᛋ ᚹᚨᛏᚲᚺ", english: "The stars watch." },
@@ -793,12 +970,14 @@ document.addEventListener('DOMContentLoaded', () => {
         { runic: "ᛒᛅᛚᛅᚾᛋ ᛁᛋ ᚴᛅᛁ", english: "Balance is the key to unlocking potential." },
         { runic: "ᛂᚾᛅᚱᚵᛁ ᚠᛚᚬᚢᛋ", english: "Energy flows where intention goes." },
         { runic: "ᚦᛅ ᛒᛅᚦ ᛁᛋ ᚢᛁᚦᛁᚾ", english: "The path you seek is found within." },
-        { runic: "ᚦᛅ ᛘᚬᚢᚾᛏᛅᛁᚾ ᛒᚱᛂᛅᚦᛋ", english: "The mountain breathes with the ages." }
+        { runic: "ᚦᛅ ᛘᚬᚢᚾᛏᛅᛁᚾ ᛒᚱᛂᛅᚦᛋ", english: "The mountain breathes with the ages." },
+        // New donation-themed whispers
+        { runic: "ᚢᚱ ᚬᚠᚠᛂᚱᛁᚾᚵ ᛋᚢᛋᛏᛅᛁᚾᛋ ᚦᛁᛋ ᚢᛅᛁᛚ", english: "Your offering sustains this veil." },
+        { runic: "ᛅ ᛚᛁᚵᚦ ᚬᚠ ᛘᛅᚾᛃ ᛋᛏᚱᛅᛁᚾᚵᚦᛋ ᚦᛁᛋ ᛒᚬᛏᛅᛚ", english: "A light from many strengthens this portal." }
     ];
     const keeperResponses = [
-        "The winds carry your query. Look to the earth for your answer.",
-        "Your question echoes. The path is one of balance. Trust your intuition.",
-        "We have heard you. Be patient, for clarity arrives like the dawn."
+        "Your whisper has been received. A keeper will attend to it in due course.",
+        "Your query has echoed through the veil. We have heard you.",
     ];
     const runeReadings = [
         { runes: "ᚠᛉᛟ", interpretation: "Protected wealth and inheritance. Your foundations are strong. Do not fear loss, for your prosperity is watched over by ancestral spirits." },
@@ -823,7 +1002,14 @@ document.addEventListener('DOMContentLoaded', () => {
         elderFuthark.forEach(rune => {
             const item = document.createElement('div');
             item.className = 'rune-alphabet-item';
-            item.innerHTML = `<div>${rune.char}</div><div>${rune.name}</div>`;
+            const charDiv = document.createElement('div');
+            charDiv.className = 'rune-alphabet-char';
+            charDiv.textContent = rune.char;
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'rune-alphabet-name';
+            nameDiv.textContent = rune.name;
+            item.appendChild(charDiv);
+            item.appendChild(nameDiv);
             runeAlphabetGrid.appendChild(item);
         });
     }
@@ -898,12 +1084,14 @@ document.addEventListener('DOMContentLoaded', () => {
         runeDisplay.textContent = '';
         runeInterpretation.textContent = 'The runes are being cast...';
         toggleRuneVoiceButton.classList.add('hidden');
+        postReadingMessage.style.display = 'none';
         playCounselWhisper();
         setTimeout(() => {
             const reading = runeReadings[Math.floor(Math.random() * runeReadings.length)];
             runeDisplay.textContent = reading.runes;
             runeInterpretation.textContent = reading.interpretation;
             toggleRuneVoiceButton.classList.remove('hidden');
+            postReadingMessage.style.display = 'block';
             if (isRuneTTSActive) {
                 speak(reading.interpretation);
             }
@@ -912,11 +1100,63 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Sound Engine (Tone.js) ---
-    const ambientDrone = new Tone.AMSynth({ harmonicity: 0.5, envelope: { attack: 5, release: 5 } }).toDestination();
-    ambientDrone.volume.value = -30;
+    const panner = new Tone.Panner().toDestination();
+    const reverb = new Tone.Reverb({
+        decay: 10,
+        preDelay: 0.1,
+        wet: 0.3
+    }).toDestination();
+    const limiter = new Tone.Limiter(-10).toDestination();
+
+    const piano = new Tone.FMSynth({
+        oscillator: { type: "sine" },
+        envelope: { attack: 2, decay: 0.5, sustain: 0.8, release: 4 },
+        modulation: { type: "square" },
+        modulationIndex: 10
+    }).connect(reverb).connect(panner);
+    piano.volume.value = -12;
+
+    const violin = new Tone.Synth({
+        oscillator: { type: "sawtooth" },
+        envelope: { attack: 2, decay: 1, sustain: 1, release: 3 },
+        filter: { Q: 2, frequency: 1500 },
+        filterEnvelope: { attack: 2, decay: 1, sustain: 0.5, release: 2, baseFrequency: 500 }
+    }).connect(reverb).connect(panner);
+    violin.volume.value = -14;
+    
+    let ambientMelody = null;
+    function playAmbientMelody() {
+        if (!ambientMelody) {
+            ambientMelody = new Tone.Sequence((time, note) => {
+                piano.triggerAttackRelease(note.piano, "4n", time);
+                violin.triggerAttackRelease(note.violin, "2n", time);
+                panner.pan.value = (Math.random() - 0.5) * 0.5;
+            }, [
+                { piano: ["C3"], violin: ["G4"] },
+                { piano: ["E3"], violin: ["A4"] },
+                { piano: ["G3"], violin: ["B4"] },
+                { piano: ["F3"], violin: ["A4"] },
+                null,
+                { piano: ["C3"], violin: ["G4"] },
+                { piano: ["E3"], violin: ["F4"] },
+                null,
+                { piano: ["D3"], violin: ["E4"] }
+            ], "2n").start(0);
+            ambientMelody.loop = true;
+            ambientMelody.loopEnd = "8m";
+        }
+        Tone.Transport.start();
+        panner.pan.value = 0;
+    }
+    
+    function stopAmbientMelody() {
+        if (ambientMelody) {
+            Tone.Transport.stop();
+        }
+    }
+
     const counselWhisperSynth = new Tone.NoiseSynth({ noise: { type: "pink" }, envelope: { attack: 0.1, decay: 1.0, release: 1.5 } }).toDestination();
     
-    // Ethereal menu sound
     const menuToggleReverb = new Tone.Reverb({
         decay: 3.5,
         preDelay: 0.05,
@@ -941,43 +1181,48 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch(e) {}
     }
 
-    function toggleAmbientAudio() {
-        try {
-            if (Tone.context.state !== 'running') { Tone.start(); }
-            if (isAmbientPlaying) {
-                ambientDrone.triggerRelease();
-                audioToggleButton.classList.remove('active');
-            } else {
-                ambientDrone.triggerAttack("C2");
-                audioToggleButton.classList.add('active');
-            }
-            isAmbientPlaying = !isAmbientPlaying;
-        } catch(e) {
-            console.warn("Audio could not be started.", e);
-            audioToggleButton.disabled = true;
-        }
-    }
+    // --- Volume control logic ---
+    masterVolumeSlider.addEventListener('input', (e) => {
+        Tone.Destination.volume.value = parseFloat(e.target.value);
+    });
+
+    Tone.Destination.volume.value = parseFloat(masterVolumeSlider.value);
+
 
     // --- UI & Page Navigation ---
     initialEntryOverlay.addEventListener('click', () => {
         initialEntryOverlay.classList.add('hidden');
         mainContentArea.classList.add('active');
-        toggleAmbientAudio();
         updateCounter();
+        // The audio start is now explicitly tied to the toggle button,
+        // so the user has full control. No audio will play on this click.
     }, { once: true });
 
-    audioToggleButton.addEventListener('click', toggleAmbientAudio);
+    audioToggleButton.addEventListener('click', () => {
+        // Since we start audio on the first click, this button now acts as a pause/play toggle.
+        if (isAmbientPlaying) {
+            stopAmbientMelody();
+            audioToggleButton.textContent = "Play Ambient Melodies";
+            audioToggleButton.classList.remove('active');
+        } else {
+            // This is the crucial part for starting audio
+            Tone.start().then(() => {
+                playAmbientMelody();
+                audioToggleButton.textContent = "Stop Ambient Melodies";
+                audioToggleButton.classList.add('active');
+            });
+        }
+        isAmbientPlaying = !isAmbientPlaying;
+    });
 
     document.getElementById('pyramidGroup').addEventListener('click', (e) => {
         const pyramidButton = e.target.closest('.pyramid');
         if (pyramidButton) {
-             const pyramidName = pyramidButton.dataset.pyramid;
-             // Animate the beam for the clicked pyramid
-             const beam = pyramidButton.querySelector('.beam');
-             if (beam) {
+            const beam = pyramidButton.querySelector('.beam');
+            if (beam) {
                 beam.style.opacity = '1';
                 setTimeout(() => beam.style.opacity = '0', 2000); // Hide beam after 2 seconds
-             }
+            }
             getAncientCounsel();
         }
     });
@@ -1047,18 +1292,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const message = keeperMessage.value.trim();
         if (!message) {
             messageFeedback.textContent = 'You must scribe a message to receive a reply.';
-            setTimeout(() => { messageFeedback.textContent = '', 4000 });
+            setTimeout(() => { messageFeedback.textContent = ''; }, 4000);
             return;
         }
-        messageFeedback.textContent = 'The Keepers are contemplating your message...';
+        messageFeedback.textContent = 'Your whisper has been received. A keeper will attend to it in due course. Your offerings help us keep this connection open.';
         playCounselWhisper();
         setTimeout(() => {
-            const response = keeperResponses[Math.floor(Math.random() * keeperResponses.length)];
-            messageFeedback.textContent = response;
             contactForm.reset();
-        }, 3000);
-
-        setTimeout(() => { messageFeedback.textContent = '', 15000 });
+            messageFeedback.textContent = '';
+        }, 5000);
     });
 
     // --- Simulated Meditation ---
@@ -1122,7 +1364,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Donation Progress Bar Logic ---
     function updateDonationProgress() {
         const goal = 1200;
-        // For a real site, this would come from a server
         const currentAmount = parseInt(localStorage.getItem('donationAmount')) || 450; 
         
         const percentage = (currentAmount / goal) * 100;
