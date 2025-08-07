@@ -11,47 +11,61 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Spectral:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
     <style>
+        /*
+         * IMPROVEMENTS:
+         * 1. Added CSS variables for maintainability.
+         * 2. Added a reduced-motion media query for accessibility.
+         */
+        :root {
+            --night-bg-start: #10141c;
+            --night-bg-end: #000000;
+            --day-bg-start: #87CEEB;
+            --day-bg-end: #f0f8ff;
+            --primary-night: #FFD700;
+            --primary-day: #1e3a8a;
+            --secondary-night: #e0e0e0;
+            --secondary-day: #4a5568;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            body, .main-content-area, .pyramid, .celestial-body, .beam {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+
         /* General Body and Background Styling */
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at center, #10141c 0%, #000000 100%);
             display: flex; flex-direction: column; justify-content: flex-start;
             align-items: center; margin: 0; overflow-x: hidden; position: relative;
+            background: radial-gradient(circle at center, var(--night-bg-start) 0%, var(--night-bg-end) 100%);
             animation: background-pulse 20s ease-in-out infinite alternate;
             transition: background 2s ease-in-out;
         }
-        body[data-theme="day"] { 
-            background: linear-gradient(to bottom, #87CEEB 0%, #c1e1f2 70%, #f0f8ff 100%);
+        body[data-theme="day"] {
+            background: linear-gradient(to bottom, var(--day-bg-start) 0%, #c1e1f2 70%, var(--day-bg-end) 100%);
             animation: none;
         }
-        body[data-theme="night"] { 
-            background: radial-gradient(circle at center, #10141c 0%, #000000 100%); 
+        body[data-theme="night"] {
+            background: radial-gradient(circle at center, var(--night-bg-start) 0%, var(--night-bg-end) 100%);
         }
         @keyframes background-pulse {
-            0% { background-color: #10141c; }
+            0% { background-color: var(--night-bg-start); }
             100% { background-color: #151a25; }
         }
         body::before, body::after {
             content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            transition: opacity 2s ease-in-out;
-            background-attachment: fixed;
-            z-index: -1;
+            transition: opacity 2s ease-in-out; background-attachment: fixed; z-index: -1;
         }
         body[data-theme="night"]::before {
             background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-            background-size: 4px 4px; 
-            opacity: 0.4; 
-            animation: drift 80s linear infinite;
+            background-size: 4px 4px; opacity: 0.4; animation: drift 80s linear infinite;
         }
         body[data-theme="day"]::before { opacity: 0; }
         body[data-theme="day"]::after {
-            background-image: 
-                url('https://www.transparenttextures.com/patterns/clouds.png'),
-                url('https://www.transparenttextures.com/patterns/soft-wallpaper.png');
-            background-repeat: repeat;
-            opacity: 0.1;
-            animation: drift-slow 180s linear infinite;
+            background-image: url('https://www.transparenttextures.com/patterns/clouds.png'), url('https://www.transparenttextures.com/patterns/soft-wallpaper.png');
+            background-repeat: repeat; opacity: 0.1; animation: drift-slow 180s linear infinite;
         }
         body[data-theme="night"]::after { opacity: 0; }
         @keyframes drift {
@@ -76,9 +90,9 @@
         }
         .title-container { text-align: left; flex-grow: 1; }
         .app-header h1 {
-            font-family: 'Spectral', serif; font-size: clamp(1.5rem, 4vw, 2.2rem); 
+            font-family: 'Spectral', serif; font-size: clamp(1.5rem, 4vw, 2.2rem);
             margin: 0; text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-            animation: title-glow 4s infinite alternate; color: #FFD700;
+            animation: title-glow 4s infinite alternate; color: var(--primary-night);
             letter-spacing: 0.1em;
         }
         .runic-subtitle {
@@ -87,13 +101,13 @@
             margin: 0.25rem 0 0 0; letter-spacing: normal;
         }
         body[data-theme="day"] .app-header h1 {
-            color: #1e3a8a; animation: none; text-shadow: 0 1px 3px rgba(255, 255, 255, 0.7);
+            color: var(--primary-day); animation: none; text-shadow: 0 1px 3px rgba(255, 255, 255, 0.7);
         }
         body[data-theme="day"] .runic-subtitle {
-            color: #4a5568; text-shadow: none;
+            color: var(--secondary-day); text-shadow: none;
         }
         @keyframes title-glow {
-            from { text-shadow: 0 0 15px rgba(255, 215, 0, 0.6); color: #FFD700; }
+            from { text-shadow: 0 0 15px rgba(255, 215, 0, 0.6); color: var(--primary-night); }
             to { text-shadow: 0 0 25px rgba(255, 180, 0, 0.9); color: #fff8e1; }
         }
 
@@ -108,7 +122,7 @@
         .overlay-menu.active { opacity: 1; visibility: visible; }
         .overlay-menu-close {
             position: absolute; top: 1rem; right: 1rem; background: none; border: none;
-            color: #FFD700; font-size: 2rem; cursor: pointer; transition: transform 0.3s ease;
+            color: var(--primary-night); font-size: 2rem; cursor: pointer; transition: transform 0.3s ease;
         }
         .overlay-menu-close:hover { transform: rotate(90deg); }
         .overlay-menu nav ul {
@@ -117,16 +131,16 @@
             gap: 2rem 1rem; width: 100%; max-width: 600px;
         }
         .overlay-menu nav ul li a {
-            color: #e0e0e0; font-size: clamp(0.9rem, 2vw, 1.1rem); text-decoration: none;
+            color: var(--secondary-night); font-size: clamp(0.9rem, 2vw, 1.1rem); text-decoration: none;
             display: flex; flex-direction: column; align-items: center;
             gap: 0.5rem; transition: all 0.3s ease;
         }
-        .overlay-menu nav ul li a:hover { color: #FFD700; transform: scale(1.1); }
+        .overlay-menu nav ul li a:hover { color: var(--primary-night); transform: scale(1.1); }
         .menu-icon {
             width: 48px; height: 48px; stroke-width: 1.5;
-            stroke: #FFD700; transition: all 0.3s ease;
+            stroke: var(--primary-night); transition: all 0.3s ease;
         }
-        .overlay-menu nav ul li a:hover .menu-icon { filter: drop-shadow(0 0 8px #FFD700); }
+        .overlay-menu nav ul li a:hover .menu-icon { filter: drop-shadow(0 0 8px var(--primary-night)); }
 
         /* Pyramid Visuals Styling */
         .pyramids-visual-group {
@@ -159,11 +173,11 @@
         .pyramid-name {
             margin-top: 0.75rem; font-family: 'Spectral', serif;
         }
-        body[data-theme="night"] .pyramid-name { 
-            color: #FFD700; text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+        body[data-theme="night"] .pyramid-name {
+            color: var(--primary-night); text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
         }
         body[data-theme="day"] .pyramid-name {
-            color: #2c5282; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+            color: var(--primary-day); text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
         }
         .pyramid.center { width: 280px; }
         .pyramid.center .pyramid-shape { background: linear-gradient(45deg, #DAA520, #B8860B); }
@@ -202,20 +216,20 @@
         @keyframes blinking-dots { 0%{opacity: 0;} 50%{opacity: 1;} 100%{opacity: 0;} }
         .runic-text {
             font-family: 'Spectral', serif; font-size: clamp(1.5rem, 3vw, 2.2rem);
-            color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.6); min-height: 1.5em;
+            color: var(--primary-night); text-shadow: 0 0 10px rgba(255, 215, 0, 0.6); min-height: 1.5em;
         }
         .english-translation {
-            color: #e0e0e0; opacity: 0; max-height: 0; overflow: hidden;
+            color: var(--secondary-night); opacity: 0; max-height: 0; overflow: hidden;
             transition: opacity 0.5s ease, max-height 0.5s ease;
         }
         .english-translation.visible { opacity: 1; max-height: 500px; margin-top: 0.5rem; }
         .runic-toggle {
-            background: none; border: 1px solid #FFD700; color: #FFD700; cursor: pointer;
+            background: none; border: 1px solid var(--primary-night); color: var(--primary-night); cursor: pointer;
             padding: 0.25rem 0.5rem; border-radius: 0.25rem; transition: all 0.3s;
             margin-top: 1rem; display: none;
         }
         .runic-toggle:hover { background-color: rgba(255,215,0,0.1); }
-        
+
         /* Input and Button Styling */
         .user-input-section {
             display: flex; flex-direction: column; align-items: center; width: 90%; max-width: 500px;
@@ -247,15 +261,15 @@
             border: 1px solid rgba(0,0,0,0.1);
         }
         #messageFeedback {
-            color: #FFD700; font-style: italic; margin-top: 1rem; min-height: 4em;
+            color: var(--primary-night); font-style: italic; margin-top: 1rem; min-height: 4em;
         }
         #runeDisplay {
             font-family: 'Spectral', serif; font-size: 3rem; letter-spacing: 0.5rem;
-            color: #FFD700; text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            color: var(--primary-night); text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
             margin-top: 1.5rem; min-height: 1.5em;
         }
         #runeInterpretation {
-            color: #e0e0e0; font-style: italic; margin-top: 1rem; min-height: 3em;
+            color: var(--secondary-night); font-style: italic; margin-top: 1rem; min-height: 3em;
             line-height: 1.6;
         }
 
@@ -271,7 +285,7 @@
         }
         .theme-button:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
         .theme-button.active {
-            background: #ffcc00; color: #333; box-shadow: 0 0 10px rgba(255,215,0,0.5);
+            background: var(--primary-night); color: #333; box-shadow: 0 0 10px rgba(255,215,0,0.5);
         }
         .theme-button svg { width: 1.2em; height: 1.2em; fill: currentColor; }
 
@@ -279,22 +293,22 @@
         #initialEntryOverlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; display: flex; justify-content: center; align-items: center; text-align: center;
-            z-index: 2000; color: #FFD700; transition: opacity 1.5s ease-out; 
+            z-index: 2000; color: var(--primary-night); transition: opacity 1.5s ease-out;
             cursor: pointer;
         }
         #initialEntryOverlay.hidden { opacity: 0; pointer-events: none; }
         .entry-title { font-size: clamp(1.5rem, 4vw, 2.5rem); font-family: 'Spectral', serif; order: 2; margin-top: 1.5rem;}
-        .entry-instruction { 
-            font-size: clamp(1rem, 2vw, 1.5rem); color: #e0e0e0; opacity: 0.8; margin-top: 1rem; order: 3; 
+        .entry-instruction {
+            font-size: clamp(1rem, 2vw, 1.5rem); color: var(--secondary-night); opacity: 0.8; margin-top: 1rem; order: 3;
             animation: pulse-text 2s infinite alternate;
         }
         @keyframes pulse-text { from { opacity: 0.8; transform: scale(1); } to { opacity: 1; transform: scale(1.05); } }
         .entry-runic {
             font-family: 'Spectral', serif; font-size: clamp(2rem, 6vw, 3.5rem);
-            color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            color: var(--primary-night); text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
             letter-spacing: 0.1em; order: 1;
         }
-        
+
         /* Celestial Body Styling */
         .moon-orbit {
             position: fixed; top: 5%; left: 5%; width: calc(90% - 80px); height: 80px;
@@ -311,16 +325,16 @@
         }
         body[data-theme="night"] .celestial-body {
             background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/FullMoon2010.jpg/1200px-FullMoon2010.jpg');
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5); color: #FFD700;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5); color: var(--primary-night);
             text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
         body[data-theme="day"] .celestial-body {
-            background-color: #FFD700; background-image: none;
-            box-shadow: 0 0 50px #FFD700, 0 0 100px #FFA500;
-            animation: sun-glow 4s infinite alternate; color: #FFD700;
+            background-color: var(--primary-night); background-image: none;
+            box-shadow: 0 0 50px var(--primary-night), 0 0 100px #FFA500;
+            animation: sun-glow 4s infinite alternate; color: var(--primary-night);
             text-shadow: 0 0 8px rgba(100, 50, 0, 0.6);
         }
-        @keyframes sun-glow { from { box-shadow: 0 0 50px #FFD700, 0 0 100px #FFA500; } to { box-shadow: 0 0 70px #FFFF00, 0 0 120px #FFD700; } }
+        @keyframes sun-glow { from { box-shadow: 0 0 50px var(--primary-night), 0 0 100px #FFA500; } to { box-shadow: 0 0 70px #FFFF00, 0 0 120px var(--primary-night); } }
 
         /* Audio and Meditation Styling */
         .audio-toggle-button {
@@ -340,7 +354,7 @@
             from { transform: scale(1); box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
             to { transform: scale(1.05); box-shadow: 0 0 50px rgba(255, 215, 0, 0.8); }
         }
-        .meditation-circle .rune-symbol { font-size: clamp(4rem, 8vw, 6rem); color: #FFD700; }
+        .meditation-circle .rune-symbol { font-size: clamp(4rem, 8vw, 6rem); color: var(--primary-night); }
         .meditation-button {
             background: #5a6578; color: #ffcc00; padding: 0.75rem 1.5rem;
             border-radius: 0.5rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease;
@@ -360,14 +374,14 @@
             display: flex; flex-direction: column; align-items: center;
             background-color: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 0.5rem;
         }
-        .rune-alphabet-char { font-family: 'Spectral', serif; font-size: 2rem; color: #FFD700; }
+        .rune-alphabet-char { font-family: 'Spectral', serif; font-size: 2rem; color: var(--primary-night); }
         .rune-alphabet-name { font-size: 0.8rem; color: #a0aec0; margin-top: 0.25rem; }
         .rune-history {
             margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #4a5568;
             width: 100%; text-align: left; line-height: 1.7; color: #a0aec0;
         }
         .rune-history h3 {
-            font-family: 'Spectral', serif; font-size: 1.5rem; color: #FFD700;
+            font-family: 'Spectral', serif; font-size: 1.5rem; color: var(--primary-night);
             text-align: center; margin-bottom: 1rem;
         }
         .rune-image-gallery {
@@ -393,16 +407,18 @@
     </style>
 </head>
 <body data-theme="night">
-    <div id="initialEntryOverlay">
+    <div id="initialEntryOverlay" aria-label="Click to awaken the veil and start the experience.">
         <div style="display: flex; flex-direction: column; align-items: center;">
             <p class="entry-runic">ᛅᚾᛋᛁᛅᚾᛏ ᛂᚴᚬᛋ ᚬᚠ ᚦᛅ ᛒᚬᛋᚾᛁᛅᚾ ᛬ ᛒᚢᚱᛅᛘᛁᛏᛋ</p>
             <h2 class="entry-title">Ancient Echoes of the Bosnian Pyramids</h2>
             <p class="entry-instruction">Click to Awaken the Veil</p>
         </div>
     </div>
+
     <div class="moon-orbit">
-        <div class="celestial-body" id="menuButton" role="button">MENU</div>
+        <button class="celestial-body" id="menuButton" aria-label="Open navigation menu">MENU</button>
     </div>
+
     <div class="main-content-area" id="mainContentArea">
         <header class="app-header">
             <div class="title-container">
@@ -412,15 +428,15 @@
         </header>
 
         <div class="overlay-menu" id="overlayMenu">
-            <button class="overlay-menu-close" id="closeMenuButton">✖</button>
-            <nav>
+            <button class="overlay-menu-close" id="closeMenuButton" aria-label="Close navigation menu">✖</button>
+            <nav aria-label="Main navigation">
                 <ul>
-                    <li><a role="button" data-page="home">Home</a></li>
-                    <li><a role="button" data-page="meditation">Meditation</a></li>
-                    <li><a role="button" data-page="runeReading">Rune Reading</a></li>
-                    <li><a role="button" data-page="about">About</a></li>
-                    <li><a role="button" data-page="donate">Donate</a></li>
-                    <li><a role="button" data-page="contact">Contact</a></li>
+                    <li><a href="#" data-page="home">Home</a></li>
+                    <li><a href="#" data-page="meditation">Meditation</a></li>
+                    <li><a href="#" data-page="runeReading">Rune Reading</a></li>
+                    <li><a href="#" data-page="about">About</a></li>
+                    <li><a href="#" data-page="donate">Donate</a></li>
+                    <li><a href="#" data-page="contact">Contact</a></li>
                 </ul>
             </nav>
         </div>
@@ -430,32 +446,32 @@
                 Beneath the Bosnian soil, where myth and mountain meet, lie structures that pulse with forgotten energy. They call to those who remember a time before time. Touch them, and listen to the ancient echoes.
             </p>
             <div class="theme-switcher">
-                <button class="theme-button active" data-theme-name="night">
+                <button class="theme-button active" data-theme-name="night" aria-label="Switch to night theme">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="1.2em" height="1.2em"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69a.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-3.818 2.04-7.174 5.168-8.972a.75.75 0 01.818.162z" clip-rule="evenodd"></path></svg>
                     <span>Night</span>
                 </button>
-                <button class="theme-button" data-theme-name="day">
+                <button class="theme-button" data-theme-name="day" aria-label="Switch to day theme">
                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="1.2em" height="1.2em"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.106a.75.75 0 010 1.06l-1.591 1.59a.75.75 0 11-1.06-1.06l1.59-1.591a.75.75 0 011.06 0zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.894 17.894a.75.75 0 011.06 0l1.591 1.591a.75.75 0 11-1.06 1.06l-1.591-1.59a.75.75 0 010-1.061zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM5.106 17.894a.75.75 0 010-1.06l1.591-1.591a.75.75 0 111.06 1.06l-1.59 1.591a.75.75 0 01-1.06 0zM4.5 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zM6.106 5.106a.75.75 0 011.06 0l1.591 1.591a.75.75 0 01-1.06 1.06L5.106 6.167a.75.75 0 010-1.06z"></path></svg>
                     <span>Day</span>
                 </button>
             </div>
             <div class="pyramids-visual-group" id="pyramidGroup">
-                 <div class="pyramid-container">
-                    <div class="pyramid side" data-pyramid="dragon">
+                <div class="pyramid-container">
+                    <button class="pyramid side" data-pyramid="dragon" aria-label="Activate Dragon Pyramid">
                         <div class="beam red"></div>
                         <div class="pyramid-shape"></div>
                         <h3 class="pyramid-name">Dragon</h3>
-                    </div>
-                    <div class="pyramid center" data-pyramid="sun">
+                    </button>
+                    <button class="pyramid center" data-pyramid="sun" aria-label="Activate Sun Pyramid">
                         <div class="beam green"></div>
                         <div class="pyramid-shape"></div>
                         <h3 class="pyramid-name">Sun</h3>
-                    </div>
-                    <div class="pyramid side" data-pyramid="moon">
+                    </button>
+                    <button class="pyramid side" data-pyramid="moon" aria-label="Activate Moon Pyramid">
                         <div class="beam gold"></div>
                         <div class="pyramid-shape"></div>
                         <h3 class="pyramid-name">Moon</h3>
-                    </div>
+                    </button>
                 </div>
             </div>
             <div class="whisper-box" id="whisperBox">
@@ -473,36 +489,36 @@
                     <div class="rune-symbol" id="meditationRune">ᛗ</div>
                 </div>
                 <p id="meditationStatus" class="text-gray-400 mt-4 text-center">Ready to begin your inner journey.</p>
-                 <button class="meditation-button mt-4" id="toggleMeditationVoiceButton">Enable Meditation Voice</button>
+                 <button class="meditation-button mt-4" id="toggleMeditationVoiceButton" aria-label="Toggle meditation voice">Enable Meditation Voice</button>
             </div>
         </section>
-        
+
         <section id="runeReadingPage" class="page">
             <div class="page-content-container">
                 <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Rune Reading</h2>
                 <div class="user-input-section">
-                    <input type="text" id="runeQuestionInput" class="w-full p-2 rounded bg-gray-800 text-white text-center" placeholder="Ask the runes a question...">
+                    <input type="text" id="runeQuestionInput" class="w-full p-2 rounded bg-gray-800 text-white text-center" placeholder="Ask the runes a question..." aria-label="Rune question input">
                     <button class="whisper-button" id="drawRunesButton">Draw Runes</button>
                 </div>
                 <div class="text-center">
                     <div id="runeDisplay"></div>
                     <div id="runeInterpretation"></div>
-                    <button class="meditation-button mt-4 hidden" id="toggleRuneVoiceButton">Enable Reading Voice</button>
+                    <button class="meditation-button mt-4 hidden" id="toggleRuneVoiceButton" aria-label="Toggle reading voice">Enable Reading Voice</button>
                 </div>
 
                 <div class="rune-alphabet-grid">
-                    </div>
-                
+                </div>
+
                 <div class="rune-image-gallery">
-                    <img src="images/runic4.png" alt="A small clay pyramid with runic-style carvings.">
-                    <img src="images/runic3.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="images/runic5.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="images/runic6.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="images/runic7.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="images/runic8.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="images/runic9.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="images/runic14.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="images/runic2.png" alt="An excavated stone pathway on the side of a pyramid.">
+                    <img src="images/runic4.webp" alt="A small clay pyramid with runic-style carvings.">
+                    <img src="images/runic3.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="images/runic5.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="images/runic6.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="images/runic7.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="images/runic8.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="images/runic9.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="images/runic14.webp" alt="A carved stone with highlighted runic symbols.">
+                    <img src="images/runic2.webp" alt="An excavated stone pathway on the side of a pyramid.">
                 </div>
 
                 <div class="rune-history">
@@ -535,7 +551,7 @@
                 <p class="mb-6">
                     If this experience has resonated with you, consider supporting the continued exploration of these ancient mysteries. Your contribution helps maintain this digital space and allows for the creation of new mystical journeys.
                 </p>
-                <a role="button" href="https://buy.stripe.com/6oU5kC1LraJKan8f1UeEo09" target="_blank" rel="noopener noreferrer" class="donate-button">
+                <a href="https://buy.stripe.com/6oU5kC1LraJKan8f1UeEo09" target="_blank" rel="noopener noreferrer" class="donate-button">
                     Donate Now
                 </a>
             </div>
@@ -545,14 +561,14 @@
             <div class="page-content-container">
                 <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Contact the Keepers</h2>
                 <form id="contactForm" class="flex flex-col items-center gap-4 w-full max-w-md mx-auto">
-                    <textarea id="keeperMessage" class="w-full p-2 rounded bg-gray-800 text-white" rows="4" placeholder="Your message..."></textarea>
+                    <textarea id="keeperMessage" class="w-full p-2 rounded bg-gray-800 text-white" rows="4" placeholder="Your message..." aria-label="Your message to the keepers"></textarea>
                     <button type="submit" class="whisper-button">Send Message</button>
                     <p id="messageFeedback"></p>
                 </form>
             </div>
         </section>
     </div>
-    <button class="audio-toggle-button" id="audioToggleButton">🔊</button>
+    <button class="audio-toggle-button" id="audioToggleButton" aria-label="Toggle ambient audio">🔊</button>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -623,13 +639,14 @@ document.addEventListener('DOMContentLoaded', () => {
         { char: 'ᛖ', name: 'Ehwaz' }, { char: 'ᛗ', name: 'Mannaz' }, { char: 'ᛚ', name: 'Laguz' },
         { char: 'ᛜ', name: 'Ingwaz' }, { char: 'ᛟ', name: 'Othala' }, { char: 'ᛞ', name: 'Dagaz' }
     ];
-    
+
     // --- Build Runic Alphabet ---
     function buildRuneAlphabet() {
+        runeAlphabetGrid.innerHTML = '';
         elderFuthark.forEach(rune => {
             const item = document.createElement('div');
             item.className = 'rune-alphabet-item';
-            item.innerHTML = `<div class="rune-alphabet-char">${rune.char}</div><div class="rune-alphabet-name">${rune.name}</div>`;
+            item.innerHTML = `<div>${rune.char}</div><div>${rune.name}</div>`;
             runeAlphabetGrid.appendChild(item);
         });
     }
@@ -721,14 +738,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const ambientDrone = new Tone.AMSynth({ harmonicity: 0.5, envelope: { attack: 5, release: 5 } }).toDestination();
     ambientDrone.volume.value = -30;
     const counselWhisperSynth = new Tone.NoiseSynth({ noise: { type: "pink" }, envelope: { attack: 0.1, decay: 1.0, release: 1.5 } }).toDestination();
-
-    // New, soft menu sound: a PolySynth with an ethereal chord and reverb.
+    
+    // IMPROVEMENT: Ethereal menu sound
     const menuToggleReverb = new Tone.Reverb({
         decay: 3.5,
         preDelay: 0.05,
         wet: 0.8
     }).toDestination();
-    
     const menuToggleSynth = new Tone.PolySynth(Tone.Synth, {
         oscillator: { type: "sine" },
         envelope: {
@@ -738,14 +754,14 @@ document.addEventListener('DOMContentLoaded', () => {
             release: 2
         }
     }).toDestination().connect(menuToggleReverb);
-    
+
     function playCounselWhisper() { try { counselWhisperSynth.triggerAttackRelease("1.5s"); } catch(e){} }
-    function playMenuSound() { 
-        try { 
+    function playMenuSound() {
+        try {
             const now = Tone.now();
             const chord = ["C4", "E4", "G4"];
             menuToggleSynth.triggerAttackRelease(chord, "4n", now);
-        } catch(e) {} 
+        } catch(e) {}
     }
 
     function toggleAmbientAudio() {
@@ -764,7 +780,7 @@ document.addEventListener('DOMContentLoaded', () => {
             audioToggleButton.disabled = true;
         }
     }
-    
+
     // --- UI & Page Navigation ---
     initialEntryOverlay.addEventListener('click', () => {
         initialEntryOverlay.classList.add('hidden');
@@ -773,15 +789,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { once: true });
 
     audioToggleButton.addEventListener('click', toggleAmbientAudio);
-    
-    document.querySelectorAll('.pyramid').forEach(pyramid => {
-        pyramid.addEventListener('click', getAncientCounsel);
+
+    // IMPROVEMENT: Event delegation for more efficient handling of pyramid clicks
+    document.getElementById('pyramidGroup').addEventListener('click', (e) => {
+        if (e.target.closest('.pyramid')) {
+            getAncientCounsel();
+        }
     });
 
     toggleTranslationButton.addEventListener('click', () => {
         englishOutput.classList.toggle('visible');
     });
-    
+
     drawRunesButton.addEventListener('click', getRuneReading);
 
     menuButton.addEventListener('click', () => {
@@ -822,9 +841,23 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.dataset.theme = themeName;
             themeButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
+            // IMPROVEMENT: Store theme preference in localStorage
+            localStorage.setItem('theme', themeName);
         });
     });
-    
+
+    // IMPROVEMENT: Load theme from localStorage on startup
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        document.body.dataset.theme = savedTheme;
+        themeButtons.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.themeName === savedTheme) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
     // --- Simulated Contact Form ---
     contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -834,10 +867,8 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => { messageFeedback.textContent = ''; }, 4000);
             return;
         }
-        
         messageFeedback.textContent = 'The Keepers are contemplating your message...';
         playCounselWhisper();
-        
         setTimeout(() => {
             const response = keeperResponses[Math.floor(Math.random() * keeperResponses.length)];
             messageFeedback.textContent = response;
@@ -866,7 +897,6 @@ document.addEventListener('DOMContentLoaded', () => {
         runeIndex = (runeIndex + 1) % meditationRunes.length;
         const currentRune = meditationRunes[runeIndex];
         meditationRune.textContent = currentRune;
-        
         const script = meditationScripts[currentRune];
         meditationStatus.textContent = script;
         if (isMeditationTTSActive) {
