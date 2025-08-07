@@ -18,6 +18,7 @@
         * 3. Added styling for the new visitor counter.
         * 4. Added a new media query for mobile responsiveness.
         * 5. Added styling for the donation progress bar.
+        * 6. Updated all menu-related CSS for a more thematic feel.
         */
         :root {
             --night-bg-start: #10141c;
@@ -130,20 +131,40 @@
         .overlay-menu-close:hover { transform: rotate(90deg); }
         .overlay-menu nav ul {
             list-style: none; padding: 0; display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem 1rem; width: 100%; max-width: 600px;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            width: 100%; max-width: 600px;
         }
         .overlay-menu nav ul li a {
-            color: var(--secondary-night); font-size: clamp(0.9rem, 2vw, 1.1rem); text-decoration: none;
-            display: flex; flex-direction: column; align-items: center;
-            gap: 0.5rem; transition: all 0.3s ease;
+            color: var(--secondary-night); font-size: clamp(1.2rem, 3vw, 1.5rem); text-decoration: none;
+            display: flex; flex-direction: row; align-items: center;
+            gap: 1rem; transition: all 0.3s ease;
+            font-family: 'Spectral', serif;
+            text-shadow: none;
         }
-        .overlay-menu nav ul li a:hover { color: var(--primary-night); transform: scale(1.1); }
-        .menu-icon {
-            width: 48px; height: 48px; stroke-width: 1.5;
-            stroke: var(--primary-night); transition: all 0.3s ease;
+        .overlay-menu nav ul li a:hover {
+            color: var(--primary-night);
+            transform: translateX(10px);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
         }
-        .overlay-menu nav ul li a:hover .menu-icon { filter: drop-shadow(0 0 8px var(--primary-night)); }
+        .runic-icon {
+            font-size: 2rem;
+            color: var(--primary-night);
+            transition: all 0.3s ease;
+        }
+        .overlay-menu nav ul li a:hover .runic-icon {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 8px var(--primary-night));
+        }
+        .overlay-menu-close svg {
+            color: var(--primary-night);
+            transition: transform 0.3s ease, filter 0.3s ease;
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+        }
+        .overlay-menu-close:hover svg {
+            transform: rotate(90deg);
+            filter: drop-shadow(0 0 10px var(--primary-night));
+        }
 
         /* Pyramid Visuals Styling */
         .pyramids-visual-group {
@@ -377,12 +398,39 @@
             width: 80px; height: 80px; border-radius: 50%;
             transition: all 2s ease-in-out; background-size: cover; background-position: center;
             display: flex; justify-content: center; align-items: center;
-            font-family: 'Spectral', serif; font-weight: bold; font-size: 1.1rem;
+            font-family: 'Spectral', serif; font-weight: bold; font-size: 2rem;
             cursor: pointer; user-select: none; pointer-events: auto;
+            color: var(--primary-night);
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+            position: relative;
+        }
+        .celestial-body-rune {
+            transition: opacity 0.3s ease;
+        }
+        .celestial-body-label {
+            position: absolute;
+            opacity: 0;
+            font-size: 1rem;
+            font-weight: normal;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(150%);
+            pointer-events: none;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            border: 1px solid var(--primary-night);
+        }
+        .celestial-body:hover .celestial-body-rune {
+            opacity: 0;
+        }
+        .celestial-body:hover .celestial-body-label {
+            opacity: 1;
+            transform: translateY(150%);
         }
         body[data-theme="night"] .celestial-body {
             background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/FullMoon2010.jpg/1200px-FullMoon2010.jpg');
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5); color: var(--primary-night);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
             text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
         body[data-theme="day"] .celestial-body {
@@ -482,7 +530,38 @@
     </div>
 
     <div class="moon-orbit">
-        <button class="celestial-body" id="menuButton" aria-label="Open navigation menu">MENU</button>
+        <button class="celestial-body" id="menuButton" aria-label="Open portal navigation">
+            <span class="celestial-body-rune">ᛗ</span>
+            <span class="celestial-body-label">MENU</span>
+        </button>
+    </div>
+
+    <div class="overlay-menu" id="overlayMenu">
+        <button class="overlay-menu-close" id="closeMenuButton" aria-label="Close portal menu">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+        </button>
+        <nav aria-label="Main navigation">
+            <ul>
+                <li><a href="#" data-page="home">
+                    <span class="runic-icon">ᚷ</span> Ancient Echoes
+                </a></li>
+                <li><a href="#" data-page="meditation">
+                    <span class="runic-icon">ᛃ</span> The Inner Well
+                </a></li>
+                <li><a href="#" data-page="runeReading">
+                    <span class="runic-icon">ᛈ</span> The Seer's Whisper
+                </a></li>
+                <li><a href="#" data-page="about">
+                    <span class="runic-icon">ᛇ</span> On the Veil
+                </a></li>
+                <li><a href="#" data-page="donate">
+                    <span class="runic-icon">ᚠ</span> Make an Offering
+                </a></li>
+                <li><a href="#" data-page="contact">
+                    <span class="runic-icon">ᚦ</span> Commune with a Keeper
+                </a></li>
+            </ul>
+        </nav>
     </div>
 
     <div class="main-content-area" id="mainContentArea">
@@ -492,21 +571,7 @@
                 <p class="runic-subtitle">Ancient Echoes of the Bosnian Pyramids</p>
             </div>
         </header>
-
-        <div class="overlay-menu" id="overlayMenu">
-            <button class="overlay-menu-close" id="closeMenuButton" aria-label="Close navigation menu">✖</button>
-            <nav aria-label="Main navigation">
-                <ul>
-                    <li><a href="#" data-page="home">Home</a></li>
-                    <li><a href="#" data-page="meditation">Meditation</a></li>
-                    <li><a href="#" data-page="runeReading">Rune Reading</a></li>
-                    <li><a href="#" data-page="about">About</a></li>
-                    <li><a href="#" data-page="donate">Donate</a></li>
-                    <li><a href="#" data-page="contact">Contact</a></li>
-                </ul>
-            </nav>
-        </div>
-
+        
         <section id="homePage" class="page active">
             <p class="text-gray-300 text-center mb-2 italic">
                 Beneath the Bosnian soil, where myth and mountain meet, lie structures that pulse with forgotten energy. They call to those who remember a time before time. Touch them, and listen to the ancient echoes.
@@ -581,8 +646,7 @@
                 <div class="rune-alphabet-grid">
                 </div>
 
-               
-                <div class="rune-image-gallery">
+                    <div class="rune-image-gallery">
                     <img src="runic4.png" alt="A small clay pyramid with runic-style carvings.">
                     <img src="runic3.png" alt="A carved stone with highlighted runic symbols.">
                     <img src="runic5.png" alt="A carved stone with highlighted runic symbols.">
@@ -645,22 +709,22 @@
                 </p>
                 
                 <div class="flex flex-col md:flex-row justify-center items-center gap-4 mb-8">
-                    <a href="https://buy.stripe.com/28E6oH6t188VfGf8LN1gs00" class="whisper-button w-full md:w-auto">
+                    <a href="https://buy.stripe.com/..." class="whisper-button w-full md:w-auto">
                         <span class="block font-bold text-xl">$5</span>
-                        <span class="block text-sm">Monthly-Offer</span>
+                        <span class="block text-sm">One-Time Offering</span>
                     </a>
-                    <a href="https://buy.stripe.com/8x24gz4kT74R51B9PR1gs01" class="whisper-button w-full md:w-auto">
+                    <a href="https://buy.stripe.com/..." class="whisper-button w-full md:w-auto">
                         <span class="block font-bold text-xl">$15</span>
                         <span class="block text-sm">Monthly Keeper</span>
                     </a>
-                    <a href="https://buy.stripe.com/bJefZhbNlgFr0Ll3rt1gs02" class="whisper-button w-full md:w-auto">
+                    <a href="https://buy.stripe.com/..." class="whisper-button w-full md:w-auto">
                         <span class="block font-bold text-xl">$50</span>
                         <span class="block text-sm">Yearly Guardian</span>
                     </a>
                 </div>
                 
                 <a href="https://buy.stripe.com/6oU5kC1LraJKan8f1UeEo09" target="_blank" rel="noopener noreferrer" class="donate-button mt-4">
-                    Make a One-Time Custom Offering
+                    Make a Custom Offering
                 </a>
             </div>
         </section>
