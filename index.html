@@ -22,12 +22,12 @@
             animation: background-pulse 20s ease-in-out infinite alternate;
             transition: background 2s ease-in-out;
         }
-        body[data-theme="day"] {
+        body[data-theme="day"] { 
             background: linear-gradient(to bottom, #87CEEB 0%, #c1e1f2 70%, #f0f8ff 100%);
             animation: none;
         }
-        body[data-theme="night"] {
-            background: radial-gradient(circle at center, #10141c 0%, #000000 100%);
+        body[data-theme="night"] { 
+            background: radial-gradient(circle at center, #10141c 0%, #000000 100%); 
         }
         @keyframes background-pulse {
             0% { background-color: #10141c; }
@@ -41,15 +41,15 @@
         }
         body[data-theme="night"]::before {
             background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-            background-size: 4px 4px;
-            opacity: 0.4;
+            background-size: 4px 4px; 
+            opacity: 0.4; 
             animation: drift 80s linear infinite;
         }
         body[data-theme="day"]::before {
             opacity: 0;
         }
         body[data-theme="day"]::after {
-            background-image:
+            background-image: 
                 url('https://www.transparenttextures.com/patterns/clouds.png'),
                 url('https://www.transparenttextures.com/patterns/soft-wallpaper.png');
             background-repeat: repeat;
@@ -87,7 +87,7 @@
         }
         .app-header h1 {
             font-family: 'Spectral', serif;
-            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            font-size: clamp(1.5rem, 4vw, 2.2rem); 
             margin: 0;
             text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
             animation: title-glow 4s infinite alternate;
@@ -138,8 +138,8 @@
             max-width: 600px;
         }
         .overlay-menu nav ul li a {
-            color: #e0e0e0;
-            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            color: #e0e0e0; 
+            font-size: clamp(0.9rem, 2vw, 1.1rem); 
             text-decoration: none;
             display: flex;
             flex-direction: column;
@@ -148,7 +148,7 @@
             transition: all 0.3s ease;
         }
         .overlay-menu nav ul li a:hover {
-            color: #FFD700;
+            color: #FFD700; 
             transform: scale(1.1);
         }
         .menu-icon {
@@ -208,8 +208,8 @@
             margin-top: 0.75rem;
             font-family: 'Spectral', serif;
         }
-        body[data-theme="night"] .pyramid-name {
-            color: #FFD700;
+        body[data-theme="night"] .pyramid-name { 
+            color: #FFD700; 
             text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
         }
         body[data-theme="day"] .pyramid-name {
@@ -242,19 +242,19 @@
             animation: beam-flicker 4s ease-in-out infinite;
         }
         .beam.red {
-            --beam-color-start: rgba(255, 60, 60, 0.8);
-            --beam-color-end: rgba(255, 120, 120, 0);
-            animation-delay: 1s;
+             --beam-color-start: rgba(255, 60, 60, 0.8);
+             --beam-color-end: rgba(255, 120, 120, 0);
+             animation-delay: 1s;
         }
         .beam.green {
-            --beam-color-start: rgba(80, 255, 80, 0.8);
-            --beam-color-end: rgba(120, 255, 120, 0);
-            animation-delay: 0s;
+             --beam-color-start: rgba(80, 255, 80, 0.8);
+             --beam-color-end: rgba(120, 255, 120, 0);
+             animation-delay: 0s;
         }
         .beam.gold {
-            --beam-color-start: rgba(255, 215, 0, 0.8);
-            --beam-color-end: rgba(255, 225, 50, 0);
-            animation-delay: 0.5s;
+             --beam-color-start: rgba(255, 215, 0, 0.8);
+             --beam-color-end: rgba(255, 225, 50, 0);
+             animation-delay: 0.5s;
         }
         @keyframes beam-flicker {
             0%, 100% { transform: translateX(-50%) scaleY(0.95); opacity: 0.7; }
@@ -345,9 +345,9 @@
         #homePage {
             position: relative;
         }
-        .theme-switcher {
-            display: flex;
-            gap: 0.5rem;
+        .theme-switcher { 
+            display: flex; 
+            gap: 0.5rem; 
             margin-block: 1.5rem;
         }
         .theme-button {
@@ -360,13 +360,13 @@
             gap: 0.5rem;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        .theme-button:hover {
-            transform: translateY(-2px);
+        .theme-button:hover { 
+            transform: translateY(-2px); 
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
-        .theme-button.active {
-            background: #ffcc00;
-            color: #333;
+        .theme-button.active { 
+            background: #ffcc00; 
+            color: #333; 
             box-shadow: 0 0 10px rgba(255,215,0,0.5);
         }
         .theme-button svg {
@@ -379,13 +379,13 @@
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000;
             display: flex; justify-content: center; align-items: center; text-align: center;
-            z-index: 2000; color: #FFD700; transition: opacity 1.5s ease-out;
+            z-index: 2000; color: #FFD700; transition: opacity 1.5s ease-out; 
             cursor: pointer;
         }
         #initialEntryOverlay.hidden { opacity: 0; pointer-events: none; }
         .entry-title { font-size: clamp(1.5rem, 4vw, 2.5rem); font-family: 'Spectral', serif; order: 2; margin-top: 1.5rem;}
-        .entry-instruction {
-            font-size: clamp(1rem, 2vw, 1.5rem); color: #e0e0e0; opacity: 0.8; margin-top: 1rem; order: 3;
+        .entry-instruction { 
+            font-size: clamp(1rem, 2vw, 1.5rem); color: #e0e0e0; opacity: 0.8; margin-top: 1rem; order: 3; 
             animation: pulse-text 2s infinite alternate;
         }
         @keyframes pulse-text {
@@ -400,18 +400,25 @@
             letter-spacing: 0.1em;
             order: 1;
         }
-        
-        /* The corrected celestial-body styles */
-        .celestial-body {
+        .moon-orbit {
             position: fixed;
             top: 5%;
             left: 5%;
-            width: 80px;
+            width: calc(90% - 80px);
             height: 80px;
+            z-index: 50;
+            animation: move-across 90s linear infinite alternate;
+            pointer-events: none;
+        }
+        @keyframes move-across {
+            from { transform: translateX(0); }
+            to { transform: translateX(100%); }
+        }
+        .celestial-body {
+            width: 80px; height: 80px;
             border-radius: 50%;
             transition: all 2s ease-in-out;
-            background-size: cover;
-            background-position: center;
+            background-size: cover; background-position: center;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -420,12 +427,7 @@
             font-size: 1.1rem;
             cursor: pointer;
             user-select: none;
-            z-index: 50;
-            animation: move-across 90s linear infinite alternate;
-        }
-        @keyframes move-across {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(calc(100vw - 110px)); }
+            pointer-events: auto;
         }
         body[data-theme="night"] .celestial-body {
             background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/FullMoon2010.jpg/1200px-FullMoon2010.jpg');
@@ -548,6 +550,7 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
         }
+
     </style>
 </head>
 
@@ -559,9 +562,9 @@
             <p class="entry-instruction">Click to Awaken the Veil</p>
         </div>
     </div>
-
-    <div class="celestial-body" id="menuButton">MENU</div>
-
+    <div class="moon-orbit">
+        <div class="celestial-body" id="menuButton">MENU</div>
+    </div>
     <div class="main-content-area" id="mainContentArea">
         <header class="app-header">
             <div class="title-container">
@@ -586,7 +589,7 @@
 
         <section id="homePage" class="page active">
             <p class="text-gray-300 text-center mb-2 italic">
-                Beneath the Bosnian soil, where myth and mountain meet, lie structures that pulse with forgotten energy. They call to those who remember a time before time. Touch them, and listen to the ancient echoes.
+                 Beneath the Bosnian soil, where myth and mountain meet, lie structures that pulse with forgotten energy. They call to those who remember a time before time. Touch them, and listen to the ancient echoes.
             </p>
             <div class="theme-switcher">
                 <button class="theme-button active" data-theme-name="night">
@@ -594,12 +597,12 @@
                     <span>Night</span>
                 </button>
                 <button class="theme-button" data-theme-name="day">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="1.2em" height="1.2em"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.106a.75.75 0 010 1.06l-1.591 1.59a.75.75 0 11-1.06-1.06l1.59-1.591a.75.75 0 011.06 0zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.894 17.894a.75.75 0 011.06 0l1.591 1.591a.75.75 0 11-1.06 1.06l-1.591-1.59a.75.75 0 010-1.061zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM5.106 17.894a.75.75 0 010-1.06l1.591-1.591a.75.75 0 111.06 1.06l-1.59 1.591a.75.75 0 01-1.06 0zM4.5 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zM6.106 5.106a.75.75 0 011.06 0l1.591 1.591a.75.75 0 01-1.06 1.06L5.106 6.167a.75.75 0 010-1.06z"></path></svg>
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="1.2em" height="1.2em"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.106a.75.75 0 010 1.06l-1.591 1.59a.75.75 0 11-1.06-1.06l1.59-1.591a.75.75 0 011.06 0zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.894 17.894a.75.75 0 011.06 0l1.591 1.591a.75.75 0 11-1.06 1.06l-1.591-1.59a.75.75 0 010-1.061zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM5.106 17.894a.75.75 0 010-1.06l1.591-1.591a.75.75 0 111.06 1.06l-1.59 1.591a.75.75 0 01-1.06 0zM4.5 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zM6.106 5.106a.75.75 0 011.06 0l1.591 1.591a.75.75 0 01-1.06 1.06L5.106 6.167a.75.75 0 010-1.06z"></path></svg>
                     <span>Day</span>
                 </button>
             </div>
             <div class="pyramids-visual-group" id="pyramidGroup">
-                <div class="pyramid-container">
+                 <div class="pyramid-container">
                     <div class="pyramid side" data-pyramid="dragon">
                         <div class="beam red"></div>
                         <div class="pyramid-shape"></div>
@@ -635,7 +638,7 @@
                  <button class="meditation-button mt-4" id="toggleMeditationVoiceButton">Enable Meditation Voice</button>
             </div>
         </section>
-
+        
         <section id="runeReadingPage" class="page">
             <div class="page-content-container">
                 <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Rune Reading</h2>
@@ -650,12 +653,18 @@
                 </div>
 
                 <div class="rune-alphabet-grid">
-                </div>
-
+                    </div>
+                
                 <div class="rune-image-gallery">
-                    <img src="https://i.imgur.com/L4xhtE7.jpeg" alt="A small clay pyramid with runic-style carvings">
-                    <img src="https://i.imgur.com/8f1qW8A.jpeg" alt="Carved stone with highlighted runic symbols">
-                    <img src="https://i.imgur.com/rD8t7zV.jpeg" alt="Excavated stone pathway on the side of the pyramid">
+                    <img src="images/runic4.png" alt="A small clay pyramid with runic-style carvings">
+                    <img src="images/runic3.png" alt="Carved stone with highlighted runic symbols">
+                    <img src="images/runic5.png" alt="Carved stone with highlighted runic symbols">
+                    <img src="images/runic6.png" alt="Carved stone with highlighted runic symbols">
+                    <img src="images/runic7.png" alt="Carved stone with highlighted runic symbols">
+                    <img src="images/runic8.png" alt="Carved stone with highlighted runic symbols">
+                    <img src="images/runic9.png" alt="Carved stone with highlighted runic symbols">
+                    <img src="images/runic14.png" alt="Carved stone with highlighted runic symbols">
+                    <img src="images/runic2.png" alt="Excavated stone pathway on the side of the pyramid">
                 </div>
 
                 <div class="rune-history">
@@ -674,10 +683,7 @@
             <div class="page-content-container text-gray-300 text-center">
                 <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">About Ancient Echoes</h2>
                 <p class="mb-4">
-                    This portal is an interactive art project designed to
-                     evoke the mystery and wonder surrounding sites of ancient power,
-                      like the Bosnian Pyramids. It is an exploration of myth, energy,
-                       and the whispers of history.
+                    This portal is an interactive art project designed to evoke the mystery and wonder surrounding sites of ancient power, like the Bosnian Pyramids. It is an exploration of myth, energy, and the whispers of history.
                 </p>
                 <p>
                     Using simulated interactions and browser-based technologies, we aim to create a space for contemplation and imagination. The wisdom, readings, and responses are generated for inspirational and entertainment purposes, encouraging a deeper connection to the enigmatic past.
@@ -751,7 +757,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const keeperResponses = [ "The winds carry your query. Look to the earth for your answer.", "Your question echoes. The path is one of balance. Trust your intuition.", "We have heard you. Be patient, for clarity arrives like the dawn." ];
     const runeReadings = [ { runes: "ᚠᛉᛟ", interpretation: "Protected wealth and inheritance. Your foundations are strong. Do not fear loss, for your prosperity is watched over by ancestral spirits." }, { runes: "ᚢᚱᚨ", interpretation: "A journey of strength and wisdom is ahead. Primal power fuels your movement, and divine messages will guide your way." }, { runes: "ᚦᛖᛚ", interpretation: "A gateway of change lies before you. Do not force the path; let the flow guide you through the thorns to the other side." }, { runes: "ᚹᛗᛒ", interpretation: "Joy in community and new beginnings. This is a time for connection, celebrating the self, and nurturing growth." } ];
     const elderFuthark = [ { char: 'ᚠ', name: 'Fehu' }, { char: 'ᚢ', name: 'Uruz' }, { char: 'ᚦ', name: 'Thurisaz' }, { char: 'ᚨ', name: 'Ansuz' }, { char: 'ᚱ', name: 'Raido' }, { char: 'ᚲ', name: 'Kenaz' }, { char: 'ᚷ', name: 'Gebo' }, { char: 'ᚹ', name: 'Wunjo' }, { char: 'ᚺ', name: 'Hagalaz' }, { char: 'ᚾ', name: 'Nauthiz' }, { char: 'ᛁ', name: 'Isa' }, { char: 'ᛃ', name: 'Jera' }, { char: 'ᛇ', name: 'Eihwaz' }, { char: 'ᛈ', name: 'Perthro' }, { char: 'ᛉ', name: 'Algiz' }, { char: 'ᛋ', name: 'Sowilo' }, { char: 'ᛏ', name: 'Tiwaz' }, { char: 'ᛒ', name: 'Berkano' }, { char: 'ᛖ', name: 'Ehwaz' }, { char: 'ᛗ', name: 'Mannaz' }, { char: 'ᛚ', name: 'Laguz' }, { char: 'ᛜ', name: 'Ingwaz' }, { char: 'ᛟ', name: 'Othala' }, { char: 'ᛞ', name: 'Dagaz' } ];
-
+    
     // --- Build Runic Alphabet ---
     function buildRuneAlphabet() {
         elderFuthark.forEach(rune => {
@@ -850,7 +856,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ambientDrone.volume.value = -30;
     const counselWhisperSynth = new Tone.NoiseSynth({ noise: { type: "pink" }, envelope: { attack: 0.1, decay: 1.0, release: 1.5 } }).toDestination();
     const menuToggleSynth = new Tone.Synth({ oscillator: { type: "triangle" }, envelope: { attack: 0.01, release: 0.5 } }).toDestination();
-
+    
     function playCounselWhisper() { try { counselWhisperSynth.triggerAttackRelease("1.5s"); } catch(e){} }
     function playMenuSound() { try { menuToggleSynth.triggerAttackRelease("C5", "8n"); } catch(e){} }
 
@@ -870,7 +876,7 @@ document.addEventListener('DOMContentLoaded', () => {
             audioToggleButton.disabled = true;
         }
     }
-
+    
     // --- UI & Page Navigation ---
     initialEntryOverlay.addEventListener('click', () => {
         initialEntryOverlay.classList.add('hidden');
@@ -879,7 +885,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { once: true });
 
     audioToggleButton.addEventListener('click', toggleAmbientAudio);
-
+    
     document.querySelectorAll('.pyramid').forEach(pyramid => {
         pyramid.addEventListener('click', getAncientCounsel);
     });
@@ -887,7 +893,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleTranslationButton.addEventListener('click', () => {
         englishOutput.classList.toggle('visible');
     });
-
+    
     drawRunesButton.addEventListener('click', getRuneReading);
 
     menuButton.addEventListener('click', () => {
@@ -930,7 +936,7 @@ document.addEventListener('DOMContentLoaded', () => {
             button.classList.add('active');
         });
     });
-
+    
     // --- Simulated Contact Form ---
     contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -940,10 +946,10 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => { messageFeedback.textContent = ''; }, 4000);
             return;
         }
-
+        
         messageFeedback.textContent = 'The Keepers are contemplating your message...';
         playCounselWhisper();
-
+        
         setTimeout(() => {
             const response = keeperResponses[Math.floor(Math.random() * keeperResponses.length)];
             messageFeedback.textContent = response;
@@ -972,7 +978,7 @@ document.addEventListener('DOMContentLoaded', () => {
         runeIndex = (runeIndex + 1) % meditationRunes.length;
         const currentRune = meditationRunes[runeIndex];
         meditationRune.textContent = currentRune;
-
+        
         const script = meditationScripts[currentRune];
         meditationStatus.textContent = script;
         if (isMeditationTTSActive) {
