@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ancient Echoes - Bosnian Pyramids</title>
-    <meta name="description" content="Explore the ancient mysteries of the Bosnian Pyramids and the Veil of Amenti. Receive mystical insights and daily wisdom.">
-    <meta name="keywords" content="Bosnian Pyramids, Veil of Amenti, ancient wisdom, mystical, prophecy, meditation, spiritual, energy, runes, AI">
+    <title>Ancient Echoes - An Interactive Journey</title>
+    <meta name="description" content="Explore the ancient mysteries of the Bosnian Pyramids through an interactive art project. Discover stories, meditate on the energies, and share your own experiences.">
+    <meta name="keywords" content="Bosnian Pyramids, interactive art, ancient wisdom, mystical, prophecy, meditation, spiritual, energy, runes, AI">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Spectral:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
     
-    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -63,16 +62,6 @@
         };
     </script>
     <style>
-        /*
-         * IMPROVEMENTS:
-         * 1. Added CSS variables for maintainability.
-         * 2. Added a reduced-motion media query for accessibility.
-         * 3. Added styling for the new visitor counter.
-         * 4. Added a new media query for mobile responsiveness.
-         * 5. Added styling for the donation progress bar.
-         * 6. Updated all menu-related CSS for a more thematic feel.
-         * 7. Added styling for the new volume control slider.
-         */
         :root {
             --night-bg-start: #10141c;
             --night-bg-end: #000000;
@@ -89,8 +78,6 @@
                 transition: none !important;
             }
         }
-
-        /* General Body and Background Styling */
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Inter', sans-serif;
@@ -133,8 +120,6 @@
             from { background-position: 0 0; }
             to { background-position: 400px 0; }
         }
-
-        /* Main Content and Header Styling */
         .main-content-area {
             width: 95%; max-width: 900px; display: flex; flex-direction: column;
             align-items: center; padding: 1rem; box-sizing: border-box; z-index: 10;
@@ -167,8 +152,6 @@
             from { text-shadow: 0 0 15px rgba(255, 215, 0, 0.6); color: var(--primary-night); }
             to { text-shadow: 0 0 20px rgba(255, 180, 0, 0.9); color: #fff8e1; }
         }
-
-        /* Overlay Menu Styling */
         .menu-button { display: none; }
         .overlay-menu {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -218,11 +201,9 @@
             transform: rotate(90deg);
             filter: drop-shadow(0 0 10px var(--primary-night));
         }
-
-        /* Pyramid Visuals Styling */
         .pyramids-visual-group {
             position: relative; width: 100%; display: flex; justify-content: center; align-items: flex-end;
-            margin-top: 2rem; min-height: 400px;
+            margin-top: 2rem; min-height: 350px;
         }
         .pyramid-container {
             display: flex; justify-content: center; align-items: flex-end; gap: 1.5rem;
@@ -256,9 +237,9 @@
         body[data-theme="day"] .pyramid-name {
             color: var(--primary-day); text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
         }
-        .pyramid.center { width: 280px; }
+        .pyramid.center { width: 250px; }
         .pyramid.center .pyramid-shape { background: linear-gradient(45deg, #DAA520, #B8860B); }
-        .pyramid.side { width: 100px; transform: translateY(30px); }
+        .pyramid.side { width: 90px; transform: translateY(30px); }
         .pyramid.side:hover { transform: translateY(25px); }
         .beam {
             position: absolute; bottom: 95%; left: 50%; width: 15px; height: 100vh;
@@ -279,62 +260,35 @@
             80% { transform: translateX(-50%) scaleY(0.97); opacity: 0.75; }
             90% { transform: translateX(-50%) scaleY(1); opacity: 0.9; }
         }
-
-        /* Visitor Counter Styling */
         .echo-counter {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-top: 1rem;
-            padding: 1rem;
-            width: 100%;
-            max-width: 250px;
-            background-color: rgba(255, 215, 0, 0.05);
-            border: 1px solid var(--primary-night);
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-            text-align: center;
-            transition: all 0.5s ease-in-out;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            margin-top: 1rem; padding: 1rem; width: 100%; max-width: 250px;
+            background-color: rgba(255, 215, 0, 0.05); border: 1px solid var(--primary-night);
+            border-radius: 10px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            text-align: center; transition: all 0.5s ease-in-out;
         }
         body[data-theme="day"] .echo-counter {
-            background-color: rgba(30, 58, 138, 0.05);
-            border: 1px solid var(--primary-day);
+            background-color: rgba(30, 58, 138, 0.05); border: 1px solid var(--primary-day);
             box-shadow: 0 0 15px rgba(30, 58, 138, 0.3);
         }
         .echo-counter-label {
-            font-family: 'Spectral', serif;
-            color: var(--primary-night);
-            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            font-family: 'Spectral', serif; color: var(--primary-night); font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            text-transform: uppercase; letter-spacing: 0.1em; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
             transition: color 0.5s, text-shadow 0.5s;
         }
-        body[data-theme="day"] .echo-counter-label {
-            color: var(--primary-day);
-            text-shadow: 0 1px 3px rgba(255, 255, 255, 0.7);
-        }
+        body[data-theme="day"] .echo-counter-label { color: var(--primary-day); text-shadow: 0 1px 3px rgba(255, 255, 255, 0.7); }
         .echo-counter-value {
-            font-family: 'Spectral', serif;
-            font-size: clamp(2rem, 5vw, 3rem);
-            color: var(--primary-night);
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-            margin-top: 0.5rem;
-            animation: text-glow 3s infinite alternate;
-            transition: color 0.5s, text-shadow 0.5s;
+            font-family: 'Spectral', serif; font-size: clamp(2rem, 5vw, 3rem); color: var(--primary-night);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7); margin-top: 0.5rem;
+            animation: text-glow 3s infinite alternate; transition: color 0.5s, text-shadow 0.5s;
         }
         body[data-theme="day"] .echo-counter-value {
-            color: var(--primary-day);
-            text-shadow: 0 1px 3px rgba(255, 255, 255, 0.7);
-            animation: none;
+            color: var(--primary-day); text-shadow: 0 1px 3px rgba(255, 255, 255, 0.7); animation: none;
         }
         @keyframes text-glow {
             from { text-shadow: 0 0 10px rgba(255, 215, 0, 0.7); }
             to { text-shadow: 0 0 20px rgba(255, 215, 0, 0.9); }
         }
-
-        /* Whisper Box Styling */
         .whisper-box {
             background-color: rgba(0, 0, 0, 0.5); border: 1px solid #4A5568;
             border-radius: 0.75rem; padding: 1.2rem; margin-top: 1.5rem;
@@ -360,32 +314,15 @@
             margin-top: 1rem; display: none;
         }
         .runic-toggle:hover { background-color: rgba(255,215,0,0.1); }
-        
         .post-reading-message {
-            margin-top: 1.5rem;
-            padding-top: 1rem;
-            border-top: 1px solid #4a5568;
-            text-align: center;
-            color: #a0aec0;
-            font-style: italic;
-            display: none; /* Hidden by default */
+            margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #4a5568;
+            text-align: center; color: #a0aec0; font-style: italic; display: none;
         }
         .post-reading-message .donate-button-small {
-            margin-top: 1rem;
-            display: inline-block;
-            background: #5a6578;
-            color: #ffcc00;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: bold;
-            transition: all 0.3s ease;
+            margin-top: 1rem; display: inline-block; background: #5a6578; color: #ffcc00;
+            padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: bold; transition: all 0.3s ease;
         }
-        .post-reading-message .donate-button-small:hover {
-            background: #6a7588;
-            transform: translateY(-2px);
-        }
-
-        /* Input and Button Styling */
+        .post-reading-message .donate-button-small:hover { background: #6a7588; transform: translateY(-2px); }
         .user-input-section {
             display: flex; flex-direction: column; align-items: center; width: 90%; max-width: 500px;
             margin-top: 1.5rem; gap: 0.75rem;
@@ -395,100 +332,56 @@
             padding: 0.6rem 1.2rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer;
             transition: all 0.3s ease; border: none; width: 100%;
         }
-        .whisper-button:hover {
-            background: linear-gradient(to bottom right, #6a7588, #4d5768); transform: translateY(-2px);
-        }
-
-        /* Page and Container Styling */
+        .whisper-button:hover { background: linear-gradient(to bottom right, #6a7588, #4d5768); transform: translateY(-2px); }
+        .whisper-button:disabled { background: #3d4758; color: #a0aec0; cursor: not-allowed; }
         .page { display: none; width: 100%; }
         .page.active { display: flex; flex-direction: column; align-items: center; animation: fadeIn 1s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .page-content-container {
-            width: 100%; max-width: 900px;
-            background-color: rgba(0,0,0,0.6);
-            border: 1px solid #4a5568;
-            border-radius: 1rem;
-            padding: 2rem;
-            margin-top: 1.5rem;
+            width: 100%; max-width: 900px; background-color: rgba(0,0,0,0.6);
+            border: 1px solid #4a5568; border-radius: 1rem; padding: 2rem; margin-top: 1.5rem;
         }
         body[data-theme="day"] .page-content-container {
-            background-color: rgba(255, 255, 255, 0.6);
-            border: 1px solid rgba(0,0,0,0.1);
+            background-color: rgba(255, 255, 255, 0.6); border: 1px solid rgba(0,0,0,0.1);
         }
-        #messageFeedback {
-            color: var(--primary-night); font-style: italic; margin-top: 1rem; min-height: 4em;
-        }
+        #messageFeedback { color: var(--primary-night); font-style: italic; margin-top: 1rem; min-height: 4em; }
         #runeDisplay {
             font-family: 'Spectral', serif; font-size: 3rem; letter-spacing: 0.5rem;
             color: var(--primary-night); text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
             margin-top: 1.5rem; min-height: 1.5em;
         }
-        #runeInterpretation {
-            color: var(--secondary-night); font-style: italic; margin-top: 1rem; min-height: 3em;
-            line-height: 1.6;
-        }
-
-        /* Runic Storyteller Page specific styles */
+        #runeInterpretation { color: var(--secondary-night); font-style: italic; margin-top: 1rem; min-height: 3em; line-height: 1.6; }
         .storyteller-runes {
-            font-family: 'Spectral', serif; font-size: clamp(2rem, 5vw, 3rem);
-            color: var(--primary-night);
+            font-family: 'Spectral', serif; font-size: clamp(2rem, 5vw, 3rem); color: var(--primary-night);
             text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
         }
         .storyteller-meaning {
             font-family: 'Spectral', serif; font-style: italic; color: #a0aec0;
-            font-size: clamp(1rem, 2vw, 1.2rem);
-            margin-top: 0.5rem;
+            font-size: clamp(1rem, 2vw, 1.2rem); margin-top: 0.5rem;
         }
-        .storyteller-stories {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #4a5568;
-        }
+        .storyteller-stories { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #4a5568; }
         .storyteller-stories h3 {
-            font-family: 'Spectral', serif;
-            font-size: 1.5rem;
-            color: var(--primary-night);
-            text-align: center;
-            margin-bottom: 1rem;
+            font-family: 'Spectral', serif; font-size: 1.5rem; color: var(--primary-night);
+            text-align: center; margin-bottom: 1rem;
         }
         .story-card {
-            background-color: rgba(0,0,0,0.3);
-            border: 1px solid #4a5568;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-bottom: 1rem;
+            background-color: rgba(0,0,0,0.3); border: 1px solid #4a5568;
+            border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;
         }
         .story-card .story-rune {
-            font-family: 'Spectral', serif;
-            font-size: 2rem;
-            color: var(--primary-night);
+            font-family: 'Spectral', serif; font-size: 2rem; color: var(--primary-night);
             text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
         }
-        .story-card .story-text {
-            color: #e0e0e0;
-            margin-top: 0.5rem;
-            font-style: italic;
-        }
+        .story-card .story-text { color: #e0e0e0; margin-top: 0.5rem; font-style: italic; }
         .story-card .story-meta {
-            color: #a0aec0;
-            font-size: 0.8rem;
-            margin-top: 0.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            color: #a0aec0; font-size: 0.8rem; margin-top: 0.5rem; display: flex;
+            justify-content: space-between; align-items: center;
         }
         .story-card .story-meta .story-user-id {
-            font-family: monospace;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 150px;
+            font-family: monospace; overflow: hidden; text-overflow: ellipsis;
+            white-space: nowrap; max-width: 150px;
         }
-        .story-card .story-meta .story-timestamp {
-            font-style: normal;
-        }
-
-        /* Theme Switcher Styling */
+        .story-card .story-meta .story-timestamp { font-style: normal; }
         #homePage { position: relative; }
         .theme-switcher { display: flex; gap: 0.5rem; margin-block: 1.5rem; }
         .theme-button {
@@ -503,8 +396,6 @@
             background: var(--primary-night); color: #333; box-shadow: 0 0 10px rgba(255,215,0,0.5);
         }
         .theme-button svg { width: 1.2em; height: 1.2em; fill: currentColor; }
-
-        /* Initial Entry Overlay Styling */
         #initialEntryOverlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; display: flex; justify-content: center; align-items: center; text-align: center;
@@ -523,8 +414,6 @@
             color: var(--primary-night); text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
             letter-spacing: 0.1em; order: 1;
         }
-
-        /* Celestial Body Styling */
         .moon-orbit {
             position: fixed; top: 5%; left: 5%; width: calc(90% - 80px); height: 80px;
             z-index: 50; animation: move-across 90s linear infinite alternate;
@@ -537,34 +426,19 @@
             display: flex; justify-content: center; align-items: center;
             font-family: 'Spectral', serif; font-weight: bold; font-size: 2rem;
             cursor: pointer; user-select: none; pointer-events: auto;
-            color: var(--primary-night);
-            text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+            color: var(--primary-night); text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
             position: relative;
         }
-        .celestial-body-rune {
-            transition: opacity 0.3s ease;
-        }
+        .celestial-body-rune { transition: opacity 0.3s ease; }
         .celestial-body-label {
-            position: absolute;
-            opacity: 0;
-            font-size: 1rem;
-            font-weight: normal;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            transform: translateY(150%);
-            pointer-events: none;
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-            background-color: rgba(0, 0, 0, 0.6);
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            border: 1px solid var(--primary-night);
+            position: absolute; opacity: 0; font-size: 1rem; font-weight: normal;
+            transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(150%);
+            pointer-events: none; text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.6); padding: 0.25rem 0.75rem;
+            border-radius: 9999px; border: 1px solid var(--primary-night);
         }
-        .celestial-body:hover .celestial-body-rune {
-            opacity: 0;
-        }
-        .celestial-body:hover .celestial-body-label {
-            opacity: 1;
-            transform: translateY(150%);
-        }
+        .celestial-body:hover .celestial-body-rune { opacity: 0; }
+        .celestial-body:hover .celestial-body-label { opacity: 1; transform: translateY(150%); }
         body[data-theme="night"] .celestial-body {
             background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/FullMoon2010.jpg/1200px-FullMoon2010.jpg');
             box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
@@ -577,71 +451,35 @@
             text-shadow: 0 0 8px rgba(100, 50, 0, 0.6);
         }
         @keyframes sun-glow { from { box-shadow: 0 0 50px var(--primary-night), 0 0 100px #FFA500; } to { box-shadow: 0 0 70px #FFFF00, 0 0 120px var(--primary-night); } }
-
-        /* Audio and Meditation Styling */
         .audio-controls {
-            position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 0.5rem;
-            z-index: 1000;
+            position: fixed; bottom: 1rem; right: 1rem;
+            display: flex; flex-direction: column; align-items: flex-end;
+            gap: 0.5rem; z-index: 1000;
         }
         .audio-toggle-button {
-            background: #5a6578;
-            color: #ffcc00;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 1000;
-            transition: all 0.3s ease;
+            background: #5a6578; color: #ffcc00; padding: 0.5rem 1rem;
+            border-radius: 0.5rem; font-weight: bold; cursor: pointer;
+            z-index: 1000; transition: all 0.3s ease;
         }
-        .audio-toggle-button.active {
-            background: linear-gradient(to bottom, #ffcc00, #b8860b);
-            color: #333;
-        }
+        .audio-toggle-button.active { background: linear-gradient(to bottom, #ffcc00, #b8860b); color: #333; }
         .volume-container {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #a0aec0;
-            font-size: 0.8rem;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+            display: flex; align-items: center; gap: 0.5rem;
+            color: #a0aec0; font-size: 0.8rem; background: rgba(0, 0, 0, 0.6);
+            padding: 0.25rem 0.75rem; border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease;
         }
         .volume-container input[type=range] {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            width: 100px;
-            height: 5px;
-            background: #d3d3d3;
-            outline: none;
-            opacity: 0.7;
-            -webkit-transition: .2s;
-            transition: opacity .2s;
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
+            width: 100px; height: 5px; background: #d3d3d3; outline: none;
+            opacity: 0.7; -webkit-transition: .2s; transition: opacity .2s;
         }
         .volume-container input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background: #ffcc00;
-            cursor: pointer;
+            -webkit-appearance: none; appearance: none; width: 15px; height: 15px;
+            border-radius: 50%; background: #ffcc00; cursor: pointer;
         }
         .volume-container input[type=range]::-moz-range-thumb {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background: #ffcc00;
-            cursor: pointer;
+            width: 15px; height: 15px; border-radius: 50%;
+            background: #ffcc00; cursor: pointer;
         }
         .meditation-circle {
             width: clamp(150px, 30vw, 250px); height: clamp(150px, 30vw, 250px);
@@ -659,18 +497,11 @@
             background: #5a6578; color: #ffcc00; padding: 0.75rem 1.5rem;
             border-radius: 0.5rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease;
         }
-        .meditation-button.active {
-            background: linear-gradient(to bottom, #ffcc00, #b8860b);
-            color: #333;
-        }
+        .meditation-button.active { background: linear-gradient(to bottom, #ffcc00, #b8860b); color: #333; }
         .meditation-call-to-action {
-            margin-top: 1.5rem;
-            text-align: center;
-            color: #a0aec0;
-            font-style: italic;
+            margin-top: 1.5rem; text-align: center;
+            color: #a0aec0; font-style: italic;
         }
-
-        /* Rune Pages Styling */
         .rune-alphabet-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
             gap: 1rem; margin-top: 2rem; padding-top: 1.5rem;
@@ -699,70 +530,29 @@
             width: 100%; height: auto; border-radius: 0.5rem;
             border: 1px solid #4a5568; object-fit: cover; aspect-ratio: 4 / 3;
         }
-        
-        .post-reading-message {
-            margin-top: 1.5rem;
-            padding-top: 1rem;
-            border-top: 1px solid #4a5568;
-            text-align: center;
-            color: #a0aec0;
-            font-style: italic;
-            display: none; /* Hidden by default */
-        }
-        .post-reading-message .donate-button-small {
-            margin-top: 1rem;
-            display: inline-block;
-            background: #5a6578;
-            color: #ffcc00;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-        .post-reading-message .donate-button-small:hover {
-            background: #6a7588;
-            transform: translateY(-2px);
-        }
-
-        /* About Page specific styles */
         .about-call-to-action {
-            margin-top: 2.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #4a5568;
+            margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #4a5568;
         }
         .about-call-to-action h3 {
-            font-family: 'Spectral', serif;
-            font-size: 1.5rem;
-            color: var(--primary-night);
-            margin-bottom: 0.5rem;
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+            font-family: 'Spectral', serif; font-size: 1.5rem; color: var(--primary-night);
+            margin-bottom: 0.5rem; text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
         }
-        
-        /* Donate and Contact Styling */
         .donate-button {
             background: linear-gradient(to bottom right, #DAA520, #B8860B);
             color: #1a1a1a; padding: 0.8rem 2rem; border-radius: 0.5rem;
             font-weight: bold; font-size: 1.1rem; text-decoration: none;
             display: inline-block; transition: all 0.3s ease;
         }
-        .donate-button:hover {
-            transform: translateY(-2px); box-shadow: 5px 5px 15px rgba(255, 215, 0, 0.3);
-        }
-        
-        /* Mobile Specific Styling */
+        .donate-button:hover { transform: translateY(-2px); box-shadow: 5px 5px 15px rgba(255, 215, 0, 0.3); }
         @media (max-width: 768px) {
-            .celestial-body {
-                width: 60px;
-                height: 60px;
-                font-size: 0.9rem;
-            }
+            .celestial-body { width: 60px; height: 60px; font-size: 0.9rem; }
         }
     </style>
 </head>
 <body data-theme="night">
     <div id="initialEntryOverlay" aria-label="Click to awaken the veil and start the experience.">
         <div style="display: flex; flex-direction: column; align-items: center;">
-            <p class="entry-runic">ᛅᚾᛋᛁᛅᚾᛏ ᛂᚴᚬᛋ ᚬᚠ ᚦᛅ ᛒᚬᛋᚾᛁᛅᚾ ᛬ ᛒᚢᚱᛅᛘᛁᛏᛋ</p>
+            <p class="entry-runic">ᛅᚾᛋᛁᛅᚾᛏ ᛂᚴᚬᛋ ᚬ᠀ ᚦᛅ ᛒᚬᛋᚾᛁᛅᚾ ᛬ ᛒᚢᚱᛅᛘᛁᛏᛋ</p>
             <h2 class="entry-title">Ancient Echoes of the Bosnian Pyramids</h2>
             <p class="entry-instruction">Click to Awaken the Veil</p>
         </div>
@@ -781,30 +571,14 @@
         </button>
         <nav aria-label="Main navigation">
             <ul>
-                <li><a href="#" data-page="home">
-                    <span class="runic-icon">ᚷ</span> Ancient Echoes
-                </a></li>
-                <li><a href="#" data-page="visoko">
-                    <span class="runic-icon">ᚱ</span> The Visoko Valley
-                </a></li>
-                <li><a href="#" data-page="meditation">
-                    <span class="runic-icon">ᛃ</span> The Inner Well
-                </a></li>
-                <li><a href="#" data-page="runeReading">
-                    <span class="runic-icon">ᛈ</span> The Seer's Whisper
-                </a></li>
-                <li><a href="#" data-page="storyteller">
-                    <span class="runic-icon">ᚹ</span> The Runic Chronicle
-                </a></li>
-                <li><a href="#" data-page="about">
-                    <span class="runic-icon">ᛇ</span> On the Veil
-                </a></li>
-                <li><a href="#" data-page="donate">
-                    <span class="runic-icon">ᚠ</span> Make an Offering
-                </a></li>
-                <li><a href="#" data-page="contact">
-                    <span class="runic-icon">ᚦ</span> Commune with a Keeper
-                </a></li>
+                <li><a href="#" data-page="home"><span class="runic-icon">ᚷ</span> Ancient Echoes</a></li>
+                <li><a href="#" data-page="visoko"><span class="runic-icon">ᚱ</span> The Visoko Valley</a></li>
+                <li><a href="#" data-page="meditation"><span class="runic-icon">ᛃ</span> The Inner Well</a></li>
+                <li><a href="#" data-page="runeReading"><span class="runic-icon">ᛈ</span> The Seer's Whisper</a></li>
+                <li><a href="#" data-page="storyteller"><span class="runic-icon">ᚹ</span> The Runic Chronicle</a></li>
+                <li><a href="#" data-page="about"><span class="runic-icon">ᛇ</span> On the Veil</a></li>
+                <li><a href="#" data-page="donate"><span class="runic-icon">ᚠ</span> Make an Offering</a></li>
+                <li><a href="#" data-page="contact"><span class="runic-icon">ᚦ</span> Commune with a Keeper</a></li>
             </ul>
         </nav>
     </div>
@@ -812,21 +586,23 @@
     <div class="main-content-area" id="mainContentArea">
         <header class="app-header">
             <div class="title-container">
-                <h1>ᛅᚾᛋᛁᛅᚾᛏ ᛂᚴᚬᛋ ᚬᚠ ᚦᛅ ᛒᚬᛋᚾᛁᛅᚾ ᛬ ᛒᚢᚱᛅᛘᛁᛏᛋ</h1>
+                <h1>ᛅᚾᛋᛁᛅᚾᛏ ᛂᚴᚬᛋ ᚬ᠀ ᚦᛅ ᛒᚬᛋᚾᛁᛅᚾ ᛬ ᛒᚢᚱᛅᛘᛁᛏᛋ</h1>
                 <p class="runic-subtitle">Ancient Echoes of the Bosnian Pyramids</p>
             </div>
         </header>
         
         <section id="homePage" class="page active">
-            <p class="text-gray-300 text-center mb-2 italic">
-                Beneath the Bosnian soil, where myth and mountain meet, lie structures that pulse with forgotten energy. They call to those who remember a time before time. Touch them, and listen to the ancient echoes.
+            <p class="text-gray-300 text-center mb-6 italic max-w-2xl">
+                Welcome, seeker. Beneath the Bosnian soil, where myth and mountain meet, lie structures that pulse with forgotten energy. They call to those who remember a time before time.
             </p>
-            
-            <div class="echo-counter">
-                <span class="echo-counter-label">Echoes Heard</span>
-                <span class="echo-counter-value" id="visitCounter">...</span>
+
+            <div class="w-full max-w-2xl bg-black/30 border border-yellow-400/20 rounded-lg p-4 mb-8 text-center">
+                <h2 class="text-yellow-400 font-bold text-lg mb-2 font-spectral">An Interactive Journey</h2>
+                <p class="text-gray-300 text-sm">
+                    This portal is an <strong>interactive art project</strong> designed to evoke the mystery and wonder of ancient power. The wisdom, readings, and responses are generated for inspirational and entertainment purposes, encouraging a deeper connection to the enigmatic past.
+                </p>
             </div>
-            
+
             <div class="theme-switcher">
                 <button class="theme-button active" data-theme-name="night" aria-label="Switch to night theme">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="1.2em" height="1.2em"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69a.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-3.818 2.04-7.174 5.168-8.972a.75.75 0 01.818.162z" clip-rule="evenodd"></path></svg>
@@ -837,6 +613,9 @@
                     <span>Day</span>
                 </button>
             </div>
+            
+            <p class="text-yellow-400 mb-4 text-center">Touch a pyramid to listen to the ancient echoes.</p>
+
             <div class="pyramids-visual-group" id="pyramidGroup">
                 <div class="pyramid-container">
                     <button class="pyramid side" data-pyramid="dragon" aria-label="Touch the Dragon Pyramid to receive a new whisper">
@@ -861,24 +640,27 @@
                 <div class="english-translation" id="englishOutput"></div>
                 <button class="runic-toggle" id="toggleTranslation">Show Translation</button>
             </div>
+             <div class="echo-counter mt-8">
+                <span class="echo-counter-label">Echoes Heard</span>
+                <span class="echo-counter-value" id="visitCounter">...</span>
+            </div>
         </section>
 
         <section id="visokoPage" class="page">
-            <div class="page-content-container text-gray-300 text-center">
+            <div class="page-content-container text-gray-300">
                 <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">The Visoko Valley</h2>
-                <p class="text-lg italic mb-6">
+                <p class="text-lg italic mb-6 text-center">
                     In the heart of Bosnia lies the town of Visoko, a place where myth and mountain meet. Here, beneath the earth, are structures that pulse with a forgotten energy, calling to those who remember a time before time.
                 </p>
 
-                <img src="https://placehold.co/600x400/1a1a1a/cccccc?text=Placeholder+Image+1" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1a1a1a/cccccc?text=Image+Not+Found';" alt="The Visoko Valley with its prominent pyramid-shaped hills." class="w-full max-w-xl mx-auto rounded-lg shadow-lg my-8">
-
-                <p class="text-left mb-4">
+                
+                
+                <p class="text-left mb-4 mt-8">
                     Long held by some to be the oldest and largest pyramids on Earth, the Bosnian Pyramids, particularly the Pyramid of the Sun, are a source of great debate and wonder. While mainstream science remains skeptical, research into the site suggests the presence of colossal man-made structures with a complex network of tunnels and chambers.
                 </p>
                 <p class="text-left">
                     This land is believed to be a point of immense spiritual power, an energy vortex where the veil between worlds is thin. Our portal serves as a digital echo of this place, inviting you to explore the mysteries that still lie beneath the surface.
                 </p>
-                <h1 style="color: red; font-weight: bold;">Land where Hitler lost every single fight</h1>
             </div>
         </section>
 
@@ -921,17 +703,18 @@
 
                 <div class="rune-alphabet-grid">
                 </div>
-                 <div class="rune-image-gallery">
-                    <img src="runic4.png" alt="A small clay pyramid with runic-style carvings.">
-                    <img src="runic3.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="runic5.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="runic6.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="runic7.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="runic8.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="runic9.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="runic14.png" alt="A carved stone with highlighted runic symbols.">
-                    <img src="runic2.png" alt="An excavated stone pathway on the side of a pyramid.">
-                    <img src="runic11.png" alt="A carved stone with highlighted runic symbols.">
+
+                <div class="rune-image-gallery">
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                 </div>
 
                 <div class="rune-history">
@@ -946,7 +729,6 @@
             </div>
         </section>
         
-        <!-- NEW Runic Storyteller Page -->
         <section id="storytellerPage" class="page">
             <div class="page-content-container">
                 <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">The Runic Chronicle</h2>
@@ -963,13 +745,12 @@
                     <textarea id="storytellerInput" class="w-full p-4 rounded bg-gray-800 text-white h-40" placeholder="Write your story here..."></textarea>
                     <button class="whisper-button mt-4" id="submitStoryButton" disabled>Submit Your Story</button>
                     <p class="text-red-400 mt-2 hidden" id="storytellerErrorMessage">Please sign in to submit a story.</p>
-                    <p class="text-yellow-400 mt-2 hidden" id="storytellerSuccessMessage">Story submitted! Thank you for sharing.</p>
+                    <p class="text-yellow-400 text-center font-spectral italic mt-4 hidden" id="storytellerSuccessMessage"></p>
                 </div>
                 
                 <div class="storyteller-stories">
                     <h3 class="text-yellow-400">Echoes from the Community</h3>
                     <div id="storiesContainer">
-                        <!-- Stories will be dynamically added here -->
                         <p class="text-gray-500 text-center italic">Loading stories from the depths of time...</p>
                     </div>
                 </div>
@@ -1098,8 +879,6 @@
         const visitCounterElement = document.getElementById('visitCounter');
         const postReadingMessage = document.getElementById('postReadingMessage');
         const masterVolumeSlider = document.getElementById('masterVolumeSlider');
-
-        // New Runic Storyteller elements
         const storytellerRune = document.getElementById('storytellerRune');
         const storytellerMeaning = document.getElementById('storytellerMeaning');
         const storytellerInput = document.getElementById('storytellerInput');
@@ -1108,8 +887,6 @@
         const storytellerStatusMessage = document.getElementById('storytellerStatusMessage');
         const storytellerErrorMessage = document.getElementById('storytellerErrorMessage');
         const storytellerSuccessMessage = document.getElementById('storytellerSuccessMessage');
-
-        // Donation elements
         const donationProgress = document.getElementById('donation-progress');
         const currentDonations = document.getElementById('current-donations');
 
@@ -1135,18 +912,15 @@
                 auth = getAuth(app);
                 db = getFirestore(app);
 
-                // Refactored onAuthStateChanged to control UI state and set userId
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         userId = user.uid;
                         console.log("Firebase authenticated. User ID:", userId);
-                        // Enable the submit button and hide error message when authenticated
                         submitStoryButton.disabled = false;
                         storytellerErrorMessage.classList.add('hidden');
                     } else {
                         userId = null;
                         console.error("Firebase authentication failed. App cannot save stories.");
-                        // Disable button and show error message when not authenticated
                         submitStoryButton.disabled = true;
                         storytellerErrorMessage.textContent = "Please sign in to submit a story.";
                         storytellerErrorMessage.classList.remove('hidden');
@@ -1163,78 +937,62 @@
             console.error("Error initializing Firebase:", e);
         }
 
-        // --- Simulated Data with new donation prompts ---
         const ancientWisdoms = [
-            { runic: "ᛞᚱᛁᛗ ᛞᛖᛈᛖᚱ", english: "Dream deeper." },
-            { runic: "ᛋᛏᚨᚱᛋ ᚹᚨᛏᚲᚺ", english: "The stars watch." },
-            { runic: "ᛖᚲᚺᛟ ᛟᚠ ᛏᛁᛗᛖ", english: "Listen to time's echo." },
-            { runic: "ᚦᛅ ᛋᛏᛟᚾᛋ ᛋᛒᛂᛅᚴ", english: "The stones speak to those who listen." },
-            { runic: "ᚢᛅᛁᛚ ᛁᛋ ᚦᛁᚾ", english: "Where the worlds touch, the veil is thin." },
-            { runic: "ᛋᛂᛅᚴ ᚦᛅ ᛏᚱᚢᚦ", english: "Seek the truth, not the comfort of answers." },
-            { runic: "ᛒᛅᛚᛅᚾᛋ ᛁᛋ ᚴᛅᛁ", english: "Balance is the key to unlocking potential." },
-            { runic: "ᛂᚾᛅᚱᚵᛁ ᚠᛚᚬᚢᛋ", english: "Energy flows where intention goes." },
-            { runic: "ᚦᛅ ᛒᛅᚦ ᛁᛋ ᚢᛁᚦᛁᚾ", english: "The path you seek is found within." },
-            { runic: "ᚦᛅ ᛘᚬᚢᚾᛏᛅᛁᚾ ᛒᚱᛂᛅᚦᛋ", english: "The mountain breathes with the ages." },
-            { runic: "ᚢᚱ ᚬᚠᚠᛂᚱᛁᚾᚵ ᛋᚢᛋᛏᛅᛁᚾᛋ ᚦᛁᛋ ᚢᛅᛁᛚ", english: "Your offering sustains this veil." },
-            { runic: "ᛅ ᛚᛁᚵᚦ ᚬᚠ ᛘᛅᚾᛃ ᛋᛏᚱᛅᛁᚾᚵᚦᛋ ᚦᛁᛋ ᛒᚬᛏᛅᛚ", english: "A light from many strengthens this portal." }
+            { runic: "ᛞᚱᛁᛗ ᛞᛖᛈᛖᚱ", english: "Dream deeper." }, { runic: "ᛋᛏᚨᚱᛋ ᚹᚨᛏᚲᚺ", english: "The stars watch." }, { runic: "ᛖᚲᚺᛟ ᛟᚠ ᛏᛁᛗᛖ", english: "Listen to time's echo." }, { runic: "ᚦᛅ ᛋᛏᛟᚾᛋ ᛋᛒᛂᛅᚴ", english: "The stones speak to those who listen." }, { runic: "ᚢᛅᛁᛚ ᛁᛋ ᚦᛁᚾ", english: "Where the worlds touch, the veil is thin." }, { runic: "ᛋᛂᛅᚴ ᚦᛅ ᛏᚱᚢᚦ", english: "Seek the truth, not the comfort of answers." }, { runic: "ᛒᛅᛚᛅᚾᛋ ᛁᛋ ᚴᛅᛁ", english: "Balance is the key to unlocking potential." }, { runic: "ᛂᚾᛅᚱᚵᛁ ᚠᛚᚬᚢᛋ", english: "Energy flows where intention goes." }, { runic: "ᚦᛅ ᛒᛅᚦ ᛁᛋ ᚢᛁᚦᛁᚾ", english: "The path you seek is found within." }, { runic: "ᚦᛅ ᛘᚬᚢᚾᛏᛅᛁᚾ ᛒᚱᛂᛅᚦᛋ", english: "The mountain breathes with the ages." }, { runic: "ᚢᚱ ᚬᚠᚠᛂᚱᛁᚾᚵ ᛋᚢᛋᛏᛅᛁᚾᛋ ᚦᛁᛋ ᚢᛅᛁᛚ", english: "Your offering sustains this veil." }, { runic: "ᛅ ᛚᛁᚵᚦ ᚬᚠ ᛘᛅᚾᛃ ᛋᛏᚱᛅᛁᚵᚦᛋ ᚦᛁᛋ ᛒᚬᛏᛅᛚ", english: "A light from many strengthens this portal." }
         ];
-        const keeperResponses = [
-            "Your whisper has been received. A keeper will attend to it in due course.",
-            "Your query has echoed through the veil. We have heard you.",
-        ];
-        const runeReadings = [
-            { runes: "ᚠᛉᛟ", interpretation: "Protected wealth and inheritance. Your foundations are strong. Do not fear loss, for your prosperity is watched over by ancestral spirits." },
-            { runes: "ᚢᚱᚨ", interpretation: "A journey of strength and wisdom is ahead. Primal power fuels your movement, and divine messages will guide your way." },
-            { runes: "ᚦᛖᛚ", interpretation: "A gateway of change lies before you. Do not force the path; let the flow guide you through the thorns to the other side." },
-            { runes: "ᚹᛗᛒ", interpretation: "Joy in community and new beginnings. This is a time for connection, celebrating the self, and nurturing growth." }
-        ];
-        const elderFuthark = [
-            { char: 'ᚠ', name: 'Fehu', meaning: 'Wealth, cattle, new beginnings.' },
-            { char: 'ᚢ', name: 'Uruz', meaning: 'Strength, primal force, courage.' },
-            { char: 'ᚦ', name: 'Thurisaz', meaning: 'Thorn, change, directed force.' },
-            { char: 'ᚨ', name: 'Ansuz', meaning: 'Communication, wisdom, insight.' },
-            { char: 'ᚱ', name: 'Raido', meaning: 'Journey, movement, life path.' },
-            { char: 'ᚲ', name: 'Kenaz', meaning: 'Torch, illumination, creativity.' },
-            { char: 'ᚷ', name: 'Gebo', meaning: 'Gift, partnership, generosity.' },
-            { char: 'ᚹ', name: 'Wunjo', meaning: 'Joy, harmony, fellowship.' },
-            { char: 'ᚺ', name: 'Hagalaz', meaning: 'Hail, disruption, uncontrollable forces.' },
-            { char: 'ᚾ', name: 'Nauthiz', meaning: 'Need, delay, resistance.' },
-            { char: 'ᛁ', name: 'Isa', meaning: 'Ice, stillness, psychological block.' },
-            { char: 'ᛃ', name: 'Jera', meaning: 'Harvest, cycles, success from effort.' },
-            { char: 'ᛇ', name: 'Eihwaz', meaning: 'Yew, endurance, a bridge between worlds.' },
-            { char: 'ᛈ', name: 'Perthro', meaning: 'Lot-cup, mystery, fate, hidden knowledge.' },
-            { char: 'ᛉ', name: 'Algiz', meaning: 'Protection, defense, connection with the divine.' },
-            { char: 'ᛋ', name: 'Sowilo', meaning: 'Sun, wholeness, power, success.' },
-            { char: 'ᛏ', name: 'Tiwaz', meaning: 'Tyr, justice, sacrifice, leadership.' },
-            { char: 'ᛒ', name: 'Berkano', meaning: 'Birch, fertility, new growth, nurture.' },
-            { char: 'ᛖ', name: 'Ehwaz', meaning: 'Horse, teamwork, trust, movement.' },
-            { char: 'ᛗ', name: 'Mannaz', meaning: 'Man, humanity, the self.' },
-            { char: 'ᛚ', name: 'Laguz', meaning: 'Water, intuition, emotion, flow.' },
-            { char: 'ᛜ', name: 'Ingwaz', meaning: 'Ing, potential, home, retreat.' },
-            { char: 'ᛟ', name: 'Othala', meaning: 'Inheritance, home, ancestry.' },
-            { char: 'ᛞ', name: 'Dagaz', meaning: 'Dawn, breakthrough, a new day.' }
+        
+        const keeperAnswers = [
+            "The answer lies not in the stars, but in the silence between your thoughts. Listen to it.", "A river cannot be pushed. Your path will reveal itself when the time is right, not a moment sooner.", "The shadow you cast is proof of the light within you. Do not fear the darkness you create.", "To find what you seek, you must first lose your way. The destination is not a place, but a new perspective.", "The heaviest stone is the one you refuse to put down. What burden do you carry that is not yours?", "Look for the echo. The first sound is the question, but the truth is in how it returns to you.", "A seed does not know it is a tree until it breaks through the earth. Your potential is buried; have the courage to grow.", "The veil is thinnest where you least expect it. Pay attention to the whispers in the mundane.", "You ask for a map, but the journey changes the land itself. Walk with faith, not with sight."
         ];
 
-        // --- Build Runic Alphabet ---
+        const runeReadings = [
+            { runes: "ᚠᛉᛟ", interpretation: "Protected wealth and inheritance. Your foundations are strong. Do not fear loss, for your prosperity is watched over by ancestral spirits." }, { runes: "ᚢᚱᚨ", interpretation: "A journey of strength and wisdom is ahead. Primal power fuels your movement, and divine messages will guide your way." }, { runes: "ᚦᛖᛚ", interpretation: "A gateway of change lies before you. Do not force the path; let the flow guide you through the thorns to the other side." }, { runes: "ᚹᛗᛒ", interpretation: "Joy in community and new beginnings. This is a time for connection, celebrating the self, and nurturing growth." }
+        ];
+        
+        const elderFuthark = [
+            { char: 'ᚠ', name: 'Fehu', meaning: 'Wealth, cattle, new beginnings.' }, { char: 'ᚢ', name: 'Uruz', meaning: 'Strength, primal force, courage.' }, { char: 'ᚦ', name: 'Thurisaz', meaning: 'Thorn, change, directed force.' }, { char: 'ᚨ', name: 'Ansuz', meaning: 'Communication, wisdom, insight.' }, { char: 'ᚱ', name: 'Raido', meaning: 'Journey, movement, life path.' }, { char: 'ᚲ', name: 'Kenaz', meaning: 'Torch, illumination, creativity.' }, { char: 'ᚷ', name: 'Gebo', meaning: 'Gift, partnership, generosity.' }, { char: 'ᚹ', name: 'Wunjo', meaning: 'Joy, harmony, fellowship.' }, { char: 'ᚺ', name: 'Hagalaz', meaning: 'Hail, disruption, uncontrollable forces.' }, { char: 'ᚾ', name: 'Nauthiz', meaning: 'Need, delay, resistance.' }, { char: 'ᛁ', name: 'Isa', meaning: 'Ice, stillness, psychological block.' }, { char: 'ᛃ', name: 'Jera', meaning: 'Harvest, cycles, success from effort.' }, { char: 'ᛇ', name: 'Eihwaz', meaning: 'Yew, endurance, a bridge between worlds.' }, { char: 'ᛈ', name: 'Perthro', meaning: 'Lot-cup, mystery, fate, hidden knowledge.' }, { char: 'ᛉ', name: 'Algiz', meaning: 'Protection, defense, connection with the divine.' }, { char: 'ᛋ', name: 'Sowilo', meaning: 'Sun, wholeness, power, success.' }, { char: 'ᛏ', name: 'Tiwaz', meaning: 'Tyr, justice, sacrifice, leadership.' }, { char: 'ᛒ', name: 'Berkano', meaning: 'Birch, fertility, new growth, nurture.' }, { char: 'ᛖ', name: 'Ehwaz', meaning: 'Horse, teamwork, trust, movement.' }, { char: 'ᛗ', name: 'Mannaz', meaning: 'Man, humanity, the self.' }, { char: 'ᛚ', name: 'Laguz', meaning: 'Water, intuition, emotion, flow.' }, { char: 'ᛜ', name: 'Ingwaz', meaning: 'Ing, potential, home, retreat.' }, { char: 'ᛟ', name: 'Othala', meaning: 'Inheritance, home, ancestry.' }, { char: 'ᛞ', name: 'Dagaz', meaning: 'Dawn, breakthrough, a new day.' }
+        ];
+
+        const runeReflections = {
+            'ᚠ': ["You have shared a story of abundance. The veil recognizes this gift and echoes its prosperity back to you.", "Your tale of beginnings plants a seed in the timeless soil. May it grow into a mighty tree."],
+            'ᚢ': ["The strength in your story fortifies the veil itself. The echoes of your power will resonate for ages.", "You speak of primal force, and the ancient stones listen, recognizing a power as old as their own."],
+            'ᚦ': ["Your story of change is a gateway. In telling it, you have passed through, leaving the path clearer for others.", "The thorn you described has been offered to the veil. Its sharpness is now a tool of protection for this sacred space."],
+            'ᚨ': ["A story of wisdom is a drink from the deepest well. Thank you for sharing this sacred knowledge.", "Your words carry the breath of the ancients. The message has been heard and understood."],
+            'ᚱ': ["The veil has received your echo. By sharing your journey, you have charted a path for others to follow.", "Every journey is a circle. Your story has returned to its source, richer for the telling."],
+            'ᚲ': ["Your tale of illumination is a torch in the darkness. It will light the way for those who are lost.", "Creativity is the language of the cosmos. Your story is a verse in its endless song."],
+            'ᚷ': ["To give a story is the greatest gift. It has been received with gratitude.", "You speak of partnership, and in doing so, have strengthened the bond between this world and the veil."],
+            'ᚹ': ["Your joy has been woven into the fabric of this place. It is a light that will warm other seekers who pass this way.", "Harmony shared is harmony multiplied. Your story brings balance to the echoes."],
+            'ᚺ': ["You have given form to chaos, and in doing so, have shown its purpose. The storm you described now nourishes the ground for new growth.", "Disruption is the mother of change. Your story is a testament to the strength found in breaking."],
+            'ᚾ': ["By giving voice to your need, you have begun the process of fulfillment. The veil acknowledges your patience.", "Your story of resistance is a shield. It will lend strength to others in their own trials."],
+            'ᛁ': ["In describing stillness, you have revealed the universe of motion it contains. A profound and subtle truth.", "Your tale of ice is a mirror. It reflects a hidden truth, now clear for all to see."],
+            'ᛃ': ["You have shared a tale of the harvest. The seeds of your experience will feed the wisdom of the community.", "The cycle turns, and your story marks its passage. What was sown has been reaped and understood."],
+            'ᛇ': ["Your story bridges worlds, connecting the above and the below. It is a powerful work of magic.", "Endurance is the theme of your tale, and it has been etched into the memory of this place forever."],
+            'ᛈ': ["You have shared a mystery, adding to the great enigma. The veil does not offer an answer, but a deeper question.", "Fate is a thread, and your story has shown its pattern. Others will see their own threads reflected in yours."],
+            'ᛉ': ["A story of protection is a ward against darkness. Thank you for strengthening the defenses of this sacred space.", "Your words are a shield. The divine connection you described has been felt and amplified."],
+            'ᛋ': ["Your tale of triumph radiates like the sun. It has become a beacon within the veil, a testament to the power of a focused will.", "Wholeness is the goal, and your story is a step upon that path. It shines brightly."],
+            'ᛏ': ["You speak of justice and sacrifice, the cornerstones of cosmic law. Your story honors this ancient balance.", "The leadership shown in your tale inspires the echoes of heroes past. It is a worthy chronicle."],
+            'ᛒ': ["A story of new growth is a promise of the future. The veil nurtures this promise and will help it bloom.", "You have shared a tale of nurturing, and in doing so, have tended to the roots of the world tree."],
+            'ᛖ': ["Your story of teamwork shows the power of the herd. It is a reminder that no soul journeys alone.", "Trust is the bond that holds the worlds together. Your tale strengthens that bond."],
+            'ᛗ': ["In sharing a story of the self, you have shared a story of all humanity. It is a profound reflection.", "Your tale is a mirror in which others will see themselves. This is the great power of the chronicle."],
+            'ᛚ': ["Your story flows like water, finding its own path to the great sea of shared consciousness.", "Intuition is the whisper of the veil. Thank you for amplifying its voice with your tale."],
+            'ᛜ': ["A story of inner work and potential is a sacred thing. The seed you have described will be protected here.", "You have shared a tale of home, and in doing so, have made this place more of a home for all."],
+            'ᛟ': ["Your tale of inheritance honors all who came before. The ancestors listen and are pleased.", "By sharing a piece of your ancestry, you have enriched the lineage of all who seek wisdom here."],
+            'ᛞ': ["You have chronicled your night, and in doing so, have helped manifest the dawn. The veil recognizes your breakthrough.", "A new day is not given, but made. Your story is an act of creation, and it is beautiful."]
+        };
+
+
         function buildRuneAlphabet() {
+            if (!runeAlphabetGrid) return;
             runeAlphabetGrid.innerHTML = '';
             elderFuthark.forEach(rune => {
                 const item = document.createElement('div');
                 item.className = 'rune-alphabet-item';
-                const charDiv = document.createElement('div');
-                charDiv.className = 'rune-alphabet-char';
-                charDiv.textContent = rune.char;
-                const nameDiv = document.createElement('div');
-                nameDiv.className = 'rune-alphabet-name';
-                nameDiv.textContent = rune.name;
-                item.appendChild(charDiv);
-                item.appendChild(nameDiv);
+                item.innerHTML = `<div class="rune-alphabet-char">${rune.char}</div><div class="rune-alphabet-name">${rune.name}</div>`;
                 runeAlphabetGrid.appendChild(item);
             });
         }
         buildRuneAlphabet();
 
-        // --- Text-to-Speech (TTS) Functionality ---
         function speak(text) {
             if (!('speechSynthesis' in window)) return;
             speechSynthesis.cancel();
@@ -1246,33 +1004,20 @@
 
         toggleMeditationVoiceButton.addEventListener('click', () => {
             isMeditationTTSActive = !isMeditationTTSActive;
-            if (isMeditationTTSActive) {
-                toggleMeditationVoiceButton.textContent = "Disable Meditation Voice";
-                toggleMeditationVoiceButton.classList.add('active');
-                speak(meditationStatus.textContent);
-            } else {
-                speechSynthesis.cancel();
-                toggleMeditationVoiceButton.textContent = "Enable Meditation Voice";
-                toggleMeditationVoiceButton.classList.remove('active');
-            }
+            toggleMeditationVoiceButton.textContent = isMeditationTTSActive ? "Disable Meditation Voice" : "Enable Meditation Voice";
+            toggleMeditationVoiceButton.classList.toggle('active', isMeditationTTSActive);
+            if (isMeditationTTSActive) speak(meditationStatus.textContent);
+            else speechSynthesis.cancel();
         });
 
         toggleRuneVoiceButton.addEventListener('click', () => {
             isRuneTTSActive = !isRuneTTSActive;
-            if (isRuneTTSActive) {
-                toggleRuneVoiceButton.textContent = "Disable Reading Voice";
-                toggleRuneVoiceButton.classList.add('active');
-                if (runeInterpretation.textContent) {
-                    speak(runeInterpretation.textContent);
-                }
-            } else {
-                speechSynthesis.cancel();
-                toggleRuneVoiceButton.textContent = "Enable Reading Voice";
-                toggleRuneVoiceButton.classList.remove('active');
-            }
+            toggleRuneVoiceButton.textContent = isRuneTTSActive ? "Disable Reading Voice" : "Enable Reading Voice";
+            toggleRuneVoiceButton.classList.toggle('active', isRuneTTSActive);
+            if (isRuneTTSActive && runeInterpretation.textContent) speak(runeInterpretation.textContent);
+            else speechSynthesis.cancel();
         });
 
-        // --- Main Counsel & Rune Reading Functions ---
         function getAncientCounsel() {
             if (isGenerating) return;
             isGenerating = true;
@@ -1311,16 +1056,12 @@
                 runeInterpretation.textContent = reading.interpretation;
                 toggleRuneVoiceButton.classList.remove('hidden');
                 postReadingMessage.style.display = 'block';
-                if (isRuneTTSActive) {
-                    speak(reading.interpretation);
-                }
+                if (isRuneTTSActive) speak(reading.interpretation);
                 isGenerating = false;
             }, 2500);
         }
 
-        // --- Runic Storyteller Functions (NEW) ---
         function initializeStoryteller() {
-            // Pick a random rune for the storyteller prompt
             const randomRune = elderFuthark[Math.floor(Math.random() * elderFuthark.length)];
             storytellerRune.textContent = randomRune.char;
             storytellerMeaning.textContent = `${randomRune.name}: ${randomRune.meaning}`;
@@ -1330,28 +1071,16 @@
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
                 const storiesCollectionRef = collection(db, `artifacts/${appId}/public/data/runic_stories`);
                 
-                // Set up real-time listener for stories
-                onSnapshot(storiesCollectionRef, (querySnapshot) => {
+                onSnapshot(query(storiesCollectionRef, orderBy('timestamp', 'desc'), limit(20)), (querySnapshot) => {
                     const stories = [];
-                    querySnapshot.forEach((doc) => {
-                        const storyData = doc.data();
-                        stories.push({ id: doc.id, ...storyData });
-                    });
-                    
-                    // Sort stories by timestamp descending
-                    stories.sort((a, b) => {
-                         // Fallback for stories that may not have a timestamp yet
-                        const aTimestamp = a.timestamp && a.timestamp.seconds ? a.timestamp.seconds : 0;
-                        const bTimestamp = b.timestamp && b.timestamp.seconds ? b.timestamp.seconds : 0;
-                        return bTimestamp - aTimestamp;
-                    });
+                    querySnapshot.forEach((doc) => stories.push({ id: doc.id, ...doc.data() }));
                     displayStories(stories);
                 }, (error) => {
                     console.error("Error listening to stories:", error);
                     storiesContainer.innerHTML = `<p class="text-red-400 text-center">Error loading stories.</p>`;
                 });
             } else {
-                storiesContainer.innerHTML = `<p class="text-red-400 text-center">Cannot connect to the chronicle. Check console for details.</p>`;
+                storiesContainer.innerHTML = `<p class="text-red-400 text-center">Cannot connect to the chronicle.</p>`;
             }
         }
 
@@ -1371,7 +1100,7 @@
             }
 
             submitStoryButton.disabled = true;
-            storytellerStatusMessage.textContent = "Submitting your story...";
+            storytellerStatusMessage.textContent = "Submitting your echo to the veil...";
 
             try {
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -1382,25 +1111,35 @@
                     userId: userId,
                     timestamp: serverTimestamp(),
                 });
-                storytellerInput.value = '';
-                storytellerStatusMessage.textContent = "Story submitted! Look for it in the chronicle below.";
+                
+                storytellerInput.classList.add('hidden');
+                storytellerStatusMessage.textContent = ''; 
+
+                const reflections = runeReflections[currentStorytellerRune.char] || ["Your story has been received and woven into the great tapestry."];
+                const reflection = reflections[Math.floor(Math.random() * reflections.length)];
+
+                storytellerSuccessMessage.textContent = reflection;
                 storytellerSuccessMessage.classList.remove('hidden');
+
                 setTimeout(() => {
                     storytellerSuccessMessage.classList.add('hidden');
+                    storytellerInput.value = ''; 
+                    storytellerInput.classList.remove('hidden'); 
                     storytellerStatusMessage.textContent = "Tell your tale, keeper.";
-                }, 5000);
+                    submitStoryButton.disabled = false;
+                }, 10000);
+
             } catch (e) {
                 console.error("Error adding document: ", e);
                 storytellerErrorMessage.textContent = "Failed to submit story. Please try again.";
                 storytellerErrorMessage.classList.remove('hidden');
                 setTimeout(() => storytellerErrorMessage.classList.add('hidden'), 5000);
-            } finally {
                 submitStoryButton.disabled = false;
             }
         }
 
         function displayStories(stories) {
-            storiesContainer.innerHTML = ''; // Clear old stories
+            storiesContainer.innerHTML = '';
             if (stories.length === 0) {
                 storiesContainer.innerHTML = `<p class="text-gray-500 text-center italic">No stories have been written yet. Be the first!</p>`;
                 return;
@@ -1408,61 +1147,23 @@
             stories.forEach(story => {
                 const storyCard = document.createElement('div');
                 storyCard.className = 'story-card';
-
-                const storyRune = document.createElement('div');
-                storyRune.className = 'story-rune';
-                storyRune.textContent = story.rune;
-                storyCard.appendChild(storyRune);
-
-                const storyText = document.createElement('p');
-                storyText.className = 'story-text';
-                storyText.textContent = story.story;
-                storyCard.appendChild(storyText);
-
-                const storyMeta = document.createElement('div');
-                storyMeta.className = 'story-meta';
-                const storyUserId = document.createElement('span');
-                storyUserId.className = 'story-user-id';
-                storyUserId.textContent = `By: ${story.userId}`;
-                storyMeta.appendChild(storyUserId);
-                const storyTimestamp = document.createElement('span');
-                storyTimestamp.className = 'story-timestamp';
-                if (story.timestamp) {
-                    const date = story.timestamp.toDate();
-                    storyTimestamp.textContent = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-                } else {
-                    storyTimestamp.textContent = 'Just now...';
-                }
-                storyMeta.appendChild(storyTimestamp);
-                storyCard.appendChild(storyMeta);
-
+                const timestamp = story.timestamp ? story.timestamp.toDate().toLocaleString() : 'Just now...';
+                storyCard.innerHTML = `
+                    <div class="story-rune">${story.rune}</div>
+                    <p class="story-text">${story.story}</p>
+                    <div class="story-meta">
+                        <span class="story-user-id" title="${story.userId}">By: ${story.userId.substring(0, 8)}...</span>
+                        <span class="story-timestamp">${timestamp}</span>
+                    </div>`;
                 storiesContainer.appendChild(storyCard);
             });
         }
         
-        // --- Sound Engine (Tone.js) ---
         const panner = new Tone.Panner().toDestination();
-        const reverb = new Tone.Reverb({
-            decay: 10,
-            preDelay: 0.1,
-            wet: 0.3
-        }).toDestination();
-        const limiter = new Tone.Limiter(-10).toDestination();
-
-        const piano = new Tone.FMSynth({
-            oscillator: { type: "sine" },
-            envelope: { attack: 2, decay: 0.5, sustain: 0.8, release: 4 },
-            modulation: { type: "square" },
-            modulationIndex: 10
-        }).connect(reverb).connect(panner);
+        const reverb = new Tone.Reverb({ decay: 10, preDelay: 0.1, wet: 0.3 }).toDestination();
+        const piano = new Tone.FMSynth({ oscillator: { type: "sine" }, envelope: { attack: 2, decay: 0.5, sustain: 0.8, release: 4 }, modulation: { type: "square" }, modulationIndex: 10 }).connect(reverb).connect(panner);
         piano.volume.value = -12;
-
-        const violin = new Tone.Synth({
-            oscillator: { type: "sawtooth" },
-            envelope: { attack: 2, decay: 1, sustain: 1, release: 3 },
-            filter: { Q: 2, frequency: 1500 },
-            filterEnvelope: { attack: 2, decay: 1, sustain: 0.5, release: 2, baseFrequency: 500 }
-        }).connect(reverb).connect(panner);
+        const violin = new Tone.Synth({ oscillator: { type: "sawtooth" }, envelope: { attack: 2, decay: 1, sustain: 1, release: 3 }, filter: { Q: 2, frequency: 1500 }, filterEnvelope: { attack: 2, decay: 1, sustain: 0.5, release: 2, baseFrequency: 500 } }).connect(reverb).connect(panner);
         violin.volume.value = -14;
         
         let ambientMelody = null;
@@ -1472,65 +1173,23 @@
                     piano.triggerAttackRelease(note.piano, "4n", time);
                     violin.triggerAttackRelease(note.violin, "2n", time);
                     panner.pan.value = (Math.random() - 0.5) * 0.5;
-                }, [
-                    { piano: ["C3"], violin: ["G4"] },
-                    { piano: ["E3"], violin: ["A4"] },
-                    { piano: ["G3"], violin: ["B4"] },
-                    { piano: ["F3"], violin: ["A4"] },
-                    null,
-                    { piano: ["C3"], violin: ["G4"] },
-                    { piano: ["E3"], violin: ["F4"] },
-                    null,
-                    { piano: ["D3"], violin: ["E4"] }
-                ], "2n").start(0);
+                }, [ { piano: ["C3"], violin: ["G4"] }, { piano: ["E3"], violin: ["A4"] }, { piano: ["G3"], violin: ["B4"] }, { piano: ["F3"], violin: ["A4"] }, null, { piano: ["C3"], violin: ["G4"] }, { piano: ["E3"], violin: ["F4"] }, null, { piano: ["D3"], violin: ["E4"] } ], "2n").start(0);
                 ambientMelody.loop = true;
                 ambientMelody.loopEnd = "8m";
             }
             Tone.Transport.start();
-            panner.pan.value = 0;
         }
         
-        function stopAmbientMelody() {
-            if (ambientMelody) {
-                Tone.Transport.stop();
-            }
-        }
+        function stopAmbientMelody() { if (ambientMelody) Tone.Transport.stop(); }
 
         const counselWhisperSynth = new Tone.NoiseSynth({ noise: { type: "pink" }, envelope: { attack: 0.1, decay: 1.0, release: 1.5 } }).toDestination();
-        
-        const menuToggleReverb = new Tone.Reverb({
-            decay: 3.5,
-            preDelay: 0.05,
-            wet: 0.8
-        }).toDestination();
-        const menuToggleSynth = new Tone.PolySynth(Tone.Synth, {
-            oscillator: { type: "sine" },
-            envelope: {
-                attack: 1,
-                decay: 0.1,
-                sustain: 0.5,
-                release: 2
-            }
-        }).toDestination().connect(menuToggleReverb);
-
+        const menuToggleSynth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: "sine" }, envelope: { attack: 1, decay: 0.1, sustain: 0.5, release: 2 } }).toDestination().connect(new Tone.Reverb(3.5).toDestination());
         function playCounselWhisper() { try { counselWhisperSynth.triggerAttackRelease("1.5s"); } catch(e){} }
-        function playMenuSound() {
-            try {
-                const now = Tone.now();
-                const chord = ["C4", "E4", "G4"];
-                menuToggleSynth.triggerAttackRelease(chord, "4n", now);
-            } catch(e) {}
-        }
+        function playMenuSound() { try { menuToggleSynth.triggerAttackRelease(["C4", "E4", "G4"], "4n", Tone.now()); } catch(e) {} }
 
-        // --- Volume control logic ---
-        masterVolumeSlider.addEventListener('input', (e) => {
-            Tone.Destination.volume.value = parseFloat(e.target.value);
-        });
-
+        masterVolumeSlider.addEventListener('input', (e) => Tone.Destination.volume.value = parseFloat(e.target.value));
         Tone.Destination.volume.value = parseFloat(masterVolumeSlider.value);
 
-
-        // --- UI & Page Navigation ---
         initialEntryOverlay.addEventListener('click', () => {
             initialEntryOverlay.classList.add('hidden');
             mainContentArea.classList.add('active');
@@ -1538,18 +1197,11 @@
         }, { once: true });
 
         audioToggleButton.addEventListener('click', () => {
-            if (isAmbientPlaying) {
-                stopAmbientMelody();
-                audioToggleButton.textContent = "Play Ambient Melodies";
-                audioToggleButton.classList.remove('active');
-            } else {
-                Tone.start().then(() => {
-                    playAmbientMelody();
-                    audioToggleButton.textContent = "Stop Ambient Melodies";
-                    audioToggleButton.classList.add('active');
-                });
-            }
             isAmbientPlaying = !isAmbientPlaying;
+            audioToggleButton.textContent = isAmbientPlaying ? "Stop Ambient Melodies" : "Play Ambient Melodies";
+            audioToggleButton.classList.toggle('active', isAmbientPlaying);
+            if (isAmbientPlaying) Tone.start().then(playAmbientMelody);
+            else stopAmbientMelody();
         });
 
         document.getElementById('pyramidGroup').addEventListener('click', (e) => {
@@ -1558,48 +1210,26 @@
                 const beam = pyramidButton.querySelector('.beam');
                 if (beam) {
                     beam.style.opacity = '1';
-                    setTimeout(() => beam.style.opacity = '0', 2000); // Hide beam after 2 seconds
+                    setTimeout(() => beam.style.opacity = '0', 2000);
                 }
                 getAncientCounsel();
             }
         });
 
-        toggleTranslationButton.addEventListener('click', () => {
-            englishOutput.classList.toggle('visible');
-        });
-
+        toggleTranslationButton.addEventListener('click', () => englishOutput.classList.toggle('visible'));
         drawRunesButton.addEventListener('click', getRuneReading);
-
         submitStoryButton.addEventListener('click', submitStory);
-
-        menuButton.addEventListener('click', () => {
-            playMenuSound();
-            overlayMenu.classList.add('active');
-        });
-
-        closeMenuButton.addEventListener('click', () => {
-            playMenuSound();
-            overlayMenu.classList.remove('active');
-        });
+        menuButton.addEventListener('click', () => { playMenuSound(); overlayMenu.classList.add('active'); });
+        closeMenuButton.addEventListener('click', () => { playMenuSound(); overlayMenu.classList.remove('active'); });
 
         function showPage(pageId) {
             window.scrollTo(0, 0);
             speechSynthesis.cancel();
-            allPages.forEach(page => {
-                page.classList.remove('active');
-            });
+            allPages.forEach(page => page.classList.remove('active'));
             const targetPage = document.getElementById(pageId);
             if (targetPage) {
                 targetPage.classList.add('active');
-                if (pageId === 'storytellerPage') {
-                    // Only initialize storyteller if Firebase is ready.
-                    // The onAuthStateChanged listener handles UI for disabled buttons etc.
-                    if (db) {
-                        initializeStoryteller();
-                    } else {
-                        storiesContainer.innerHTML = `<p class="text-red-400 text-center">Cannot connect to the chronicle. Please check your connection and try again.</p>`;
-                    }
-                }
+                if (pageId === 'storytellerPage' && db) initializeStoryteller();
             }
         }
 
@@ -1607,7 +1237,7 @@
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 playMenuSound();
-                const pageId = e.target.dataset.page + 'Page';
+                const pageId = e.currentTarget.dataset.page + 'Page';
                 showPage(pageId);
                 overlayMenu.classList.remove('active');
             });
@@ -1623,44 +1253,31 @@
             });
         });
 
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            document.body.dataset.theme = savedTheme;
-            themeButtons.forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.themeName === savedTheme) {
-                    btn.classList.add('active');
-                }
-            });
-        }
+        const savedTheme = localStorage.getItem('theme') || 'night';
+        document.body.dataset.theme = savedTheme;
+        themeButtons.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.themeName === savedTheme);
+        });
 
-        // --- Simulated Contact Form ---
         contactForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const message = keeperMessage.value.trim();
             if (!message) {
-                messageFeedback.textContent = 'You must scribe a message to receive a reply.';
+                messageFeedback.textContent = 'You must scribe a question for the keeper to answer.';
                 setTimeout(() => { messageFeedback.textContent = ''; }, 4000);
                 return;
             }
-            messageFeedback.textContent = 'Your whisper has been received. A keeper will attend to it in due course. Your offerings help us keep this connection open.';
+            const answer = keeperAnswers[Math.floor(Math.random() * keeperAnswers.length)];
+            messageFeedback.textContent = answer;
             playCounselWhisper();
             setTimeout(() => {
                 contactForm.reset();
                 messageFeedback.textContent = '';
-            }, 5000);
+            }, 8000); 
         });
 
-        // --- Simulated Meditation ---
         const meditationScripts = {
-            'ᛗ': "Focus on the self. Feel the connection to all of humanity.",
-            'ᛟ': "Think of your heritage, your ancestors. Feel their strength.",
-            'ᛞ': "Embrace the dawn of a new understanding. A breakthrough is near.",
-            'ᚲ': "Open yourself to illumination and creativity. Knowledge flows to you.",
-            'ᛋ': "Feel wholeness and success. The sun's energy empowers you.",
-            'ᛁ': "Find stillness within. Be calm and centered, like ice.",
-            'ᚹ': "Allow joy and harmony to fill your spirit.",
-            'ᛚ': "Go with the flow. Trust your intuition, like water."
+            'ᛗ': "Focus on the self. Feel the connection to all of humanity.", 'ᛟ': "Think of your heritage, your ancestors. Feel their strength.", 'ᛞ': "Embrace the dawn of a new understanding. A breakthrough is near.", 'ᚲ': "Open yourself to illumination and creativity. Knowledge flows to you.", 'ᛋ': "Feel wholeness and success. The sun's energy empowers you.", 'ᛁ': "Find stillness within. Be calm and centered, like ice.", 'ᚹ': "Allow joy and harmony to fill your spirit.", 'ᛚ': "Go with the flow. Trust your intuition, like water."
         };
         const meditationRunes = Object.keys(meditationScripts);
         let runeIndex = 0;
@@ -1672,57 +1289,28 @@
             meditationRune.textContent = currentRune;
             const script = meditationScripts[currentRune];
             meditationStatus.textContent = script;
-            if (isMeditationTTSActive) {
-                speak(script);
-            }
+            if (isMeditationTTSActive) speak(script);
         }, 8000);
 
-        // --- Visitor Counter Logic ---
         function updateCounter() {
-            if (isGenerating) return;
-            let count = localStorage.getItem('visitCount');
-            if (count === null) {
-                count = 1;
-            } else {
-                count = parseInt(count) + 1;
-            }
+            let count = parseInt(localStorage.getItem('visitCount') || '0') + 1;
             localStorage.setItem('visitCount', count);
-            
-            let currentCount = parseInt(visitCounterElement.textContent) || 0;
-            const step = Math.ceil((count - currentCount) / 50);
-            const interval = setInterval(() => {
-                if (currentCount < count) {
-                    currentCount += step;
-                    if (currentCount > count) currentCount = count;
-                    visitCounterElement.textContent = currentCount;
-                } else {
-                    clearInterval(interval);
-                }
-            }, 20);
+            visitCounterElement.textContent = count;
         }
         
-        // Initial display before the click
-        let initialCount = localStorage.getItem('visitCount');
-        if (initialCount === null) {
-            visitCounterElement.textContent = '0';
-        } else {
-            visitCounterElement.textContent = initialCount;
-        }
+        let initialCount = localStorage.getItem('visitCount') || '0';
+        visitCounterElement.textContent = initialCount;
 
-        // --- Donation Progress Bar Logic ---
         function updateDonationProgress() {
             const goal = 1200;
-            const currentAmount = parseInt(localStorage.getItem('donationAmount')) || 450; 
-            
-            const percentage = (currentAmount / goal) * 100;
-            donationProgress.style.width = `${Math.min(percentage, 100)}%`;
+            const currentAmount = parseInt(localStorage.getItem('donationAmount')) || 450;
+            const percentage = Math.min((currentAmount / goal) * 100, 100);
+            donationProgress.style.width = `${percentage}%`;
             currentDonations.textContent = currentAmount;
         }
 
-        // Initial calls
         updateDonationProgress();
         
-        // Initialize Firebase after the DOM is loaded
         if (typeof window.firebaseInit === 'function') {
             window.firebaseInit();
         }
