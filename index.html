@@ -479,6 +479,11 @@
         .rune-alphabet-item {
             display: flex; flex-direction: column; align-items: center;
             background-color: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 0.5rem;
+            cursor: pointer; /* Make it look clickable */
+            transition: background-color 0.3s ease;
+        }
+        .rune-alphabet-item:hover {
+            background-color: rgba(255, 215, 0, 0.1); /* Add a hover effect */
         }
         .rune-alphabet-char { font-family: 'Spectral', serif; font-size: 2rem; color: var(--primary-night); }
         .rune-alphabet-name { font-size: 0.8rem; color: #a0aec0; margin-top: 0.25rem; }
@@ -1370,7 +1375,7 @@
         
         window.addEventListener('resize', () => {
              if (particleAnimationId) {
-                handleResize();
+                 handleResize();
             }
         });
 
@@ -1385,11 +1390,29 @@
             elderFuthark.forEach(rune => {
                 const item = document.createElement('div');
                 item.className = 'rune-alphabet-item';
-                item.innerHTML = `<div class="rune-alphabet-char">${rune.char}</div><div class="rune-alphabet-name">${rune.name}</div>`;
+                item.dataset.rune = rune.char; // Add data attribute for the rune character
+                // Add pointer-events: none to children to ensure click is on the parent
+                item.innerHTML = `<div class="rune-alphabet-char" style="pointer-events: none;">${rune.char}</div><div class="rune-alphabet-name" style="pointer-events: none;">${rune.name}</div>`;
                 runeAlphabetGrid.appendChild(item);
             });
         }
         buildRuneAlphabet();
+
+        // Add event listener for the now-interactive alphabet grid
+        runeAlphabetGrid.addEventListener('click', (e) => {
+            const runeItem = e.target.closest('.rune-alphabet-item');
+            if (runeItem) {
+                const runeChar = runeItem.dataset.rune;
+                const artifact = runeArtifacts[runeChar];
+                if (artifact) {
+                    loreTitle.textContent = artifact.title;
+                    loreText.textContent = artifact.description;
+                    loreImage.src = artifact.image;
+                    loreImage.classList.remove('hidden');
+                    loreModal.classList.add('visible');
+                }
+            }
+        });
 
         function speak(text) {
             if (!('speechSynthesis' in window)) return;
@@ -1458,15 +1481,14 @@
                 const runes = reading.runes.split('');
                 runes.forEach(runeChar => {
                     const runeSpan = document.createElement('span');
-                    runeSpan.className = 'rune-link';
+                    // This class is no longer used for click events here, but kept for styling
+                    runeSpan.className = 'rune-link'; 
                     runeSpan.textContent = runeChar;
                     runeSpan.dataset.rune = runeChar;
                     runeDisplay.appendChild(runeSpan);
                 });
 
-                runeInterpretation.innerHTML = reading.interpretation + 
-                  '<p class="mt-4 text-sm text-yellow-400/70 italic">Click a rune above to reveal its artifact.</p>';
-
+                runeInterpretation.innerHTML = reading.interpretation;
                 toggleRuneVoiceButton.classList.remove('hidden');
                 postReadingMessage.style.display = 'block';
                 if (isRuneTTSActive) speak(reading.interpretation);
@@ -1674,8 +1696,12 @@
             const goal = 1200;
             const currentAmount = parseInt(localStorage.getItem('donationAmount')) || 450;
             const percentage = Math.min((currentAmount / goal) * 100, 100);
-            donationProgress.style.width = `${percentage}%`;
-            currentDonations.textContent = currentAmount;
+            if (donationProgress) {
+                donationProgress.style.width = `${percentage}%`;
+            }
+            if (currentDonations) {
+                currentDonations.textContent = currentAmount;
+            }
         }
         updateDonationProgress();
 
@@ -1727,6 +1753,7 @@
             }
         });
 
+        /* This is the event listener for the rune reading result. It has been commented out as requested.
         runeDisplay.addEventListener('click', (e) => {
             if (e.target.classList.contains('rune-link')) {
                 const runeChar = e.target.dataset.rune;
@@ -1742,6 +1769,7 @@
                 }
             }
         });
+        */
 
         const closeLoreModal = () => loreModal.classList.remove('visible');
         loreCloseButton.addEventListener('click', closeLoreModal);
