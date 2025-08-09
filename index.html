@@ -1213,15 +1213,15 @@
         function fireRunicBeam(pyramidName) {
             const now = Date.now();
             if (now < beamCooldowns[pyramidName]) return;
-            
-            const moonEl = document.getElementById('menuButton');
-            const pyramidEl = document.querySelector(`.pyramid[data-pyramid="${pyramidName}"]`);
-            const beamEl = document.getElementById(`beam-from-moon-${pyramidName}`);
 
-            if (!moonEl || !pyramidEl || !beamEl) return;
+            const pyramidShapeEl = document.querySelector(`.pyramid[data-pyramid="${pyramidName}"] .pyramid-shape`);
+            const beamEl = document.getElementById(`beam-from-moon-${pyramidName}`);
+            const moonEl = document.getElementById('menuButton');
+
+            if (!moonEl || !pyramidShapeEl || !beamEl) return;
 
             const moonRect = moonEl.getBoundingClientRect();
-            const pyramidRect = pyramidEl.getBoundingClientRect();
+            const pyramidRect = pyramidShapeEl.getBoundingClientRect();
 
             const beamStartX = moonRect.left + moonRect.width / 2;
             const beamStartY = moonRect.bottom;
