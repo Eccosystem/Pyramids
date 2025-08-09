@@ -114,6 +114,10 @@
             font-size: 2rem;
             color: var(--primary-night);
             transition: all 0.3s ease;
+            flex-shrink: 0; /* Prevents icon from shrinking */
+        }
+        .menu-text {
+            flex-grow: 1; /* Allows text to take available space */
         }
         .overlay-menu nav ul li a:hover .runic-icon {
             transform: scale(1.2);
@@ -384,8 +388,8 @@
             animation: subtle-pulse 5s infinite ease-in-out;
         }
         @keyframes subtle-pulse {
-            0%, 100% { box-shadow: 0 0 15px 3px rgba(255, 255, 255, 0.5), 0 0 35px 10px rgba(255, 215, 0, 0.2); }
-            50% { box-shadow: 0 0 20px 6px rgba(255, 255, 255, 0.6), 0 0 40px 12px rgba(255, 215, 0, 0.25); }
+            0%, 100% { box-shadow: 0 0 15px 3px rgba(255, 255, 255, 0.5), 0 0 35px 10px rgba(255, 215, 0, 0.2); transform: scale(1); }
+            50% { box-shadow: 0 0 20px 6px rgba(255, 255, 255, 0.6), 0 0 40px 12px rgba(255, 215, 0, 0.25); transform: scale(1.03); }
         }
         .celestial-body:hover {
             box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.7), 0 0 45px 15px rgba(255, 215, 0, 0.3);
@@ -396,9 +400,11 @@
             color: white;
             font-family: 'Spectral', serif;
             font-size: 1rem;
+            font-weight: bold;
+            letter-spacing: 0.1em;
             text-shadow: 0 0 8px black;
             pointer-events: none;
-            transition: opacity 1.5s ease-in-out 1s;
+            transition: opacity 1.5s ease-in-out 1s; /* Fade out after 1s delay */
         }
 
         .downward-beam {
@@ -678,15 +684,15 @@
         </button>
         <nav aria-label="Main navigation">
             <ul>
-                <li><a href="#" data-page="home"><span class="runic-icon">ᚷ</span> Ancient Echoes</a></li>
-                <li><a href="#" data-page="visoko"><span class="runic-icon">ᚱ</span> The Visoko Valley</a></li>
-                <li><a href="#" data-page="meditation"><span class="runic-icon">ᛃ</span> The Inner Well</a></li>
-                <li><a href="#" data-page="runeReading"><span class="runic-icon">ᛈ</span> The Seer's Whisper</a></li>
-                <li><a href="#" data-page="storyteller"><span class="runic-icon">ᚹ</span> The Runic Chronicle</a></li>
-                <li><a href="#" data-page="guardians"><span class="runic-icon">ᛉ</span> The Keepers' Circle</a></li>
-                <li><a href="#" data-page="about"><span class="runic-icon">ᛇ</span> On the Veil</a></li>
-                <li><a href="#" data-page="donate"><span class="runic-icon">ᚠ</span> Make an Offering</a></li>
-                <li><a href="#" data-page="contact"><span class="runic-icon">ᚦ</span> Commune with a Keeper</a></li>
+                <li><a href="#" data-page="home"><span class="runic-icon">ᚷ</span><span class="menu-text">Ancient Echoes</span></a></li>
+                <li><a href="#" data-page="visoko"><span class="runic-icon">ᚱ</span><span class="menu-text">The Visoko Valley</span></a></li>
+                <li><a href="#" data-page="meditation"><span class="runic-icon">ᛃ</span><span class="menu-text">The Inner Well</span></a></li>
+                <li><a href="#" data-page="runeReading"><span class="runic-icon">ᛈ</span><span class="menu-text">The Seer's Whisper</span></a></li>
+                <li><a href="#" data-page="storyteller"><span class="runic-icon">ᚹ</span><span class="menu-text">The Runic Chronicle</span></a></li>
+                <li><a href="#" data-page="guardians"><span class="runic-icon">ᛉ</span><span class="menu-text">The Keepers' Circle</span></a></li>
+                <li><a href="#" data-page="about"><span class="runic-icon">ᛇ</span><span class="menu-text">On the Veil</span></a></li>
+                <li><a href="#" data-page="donate"><span class="runic-icon">ᚠ</span><span class="menu-text">Make an Offering</span></a></li>
+                <li><a href="#" data-page="contact"><span class="runic-icon">ᚦ</span><span class="menu-text">Commune with a Keeper</span></a></li>
             </ul>
         </nav>
     </div>
@@ -871,7 +877,7 @@
                     <p class="mt-4">
                         Join the circle and help keep the echoes alive for all who seek them.
                     </p>
-                    <a href="#" data-page="donate" class="donate-button mt-4 page-link">Make an Offering</a>
+                    <a href="#" data-page="donate" class="donate-button mt-4 page-link">Make Your Offering</a>
                 </div>
             </div>
         </section>
@@ -1642,7 +1648,7 @@
         });
 
         const meditationScripts = {
-            'ᛗ': "Focus on the self. Feel the connection to all of humanity.", 'ᛟ': "Think of your heritage, your ancestors. Feel their strength.", 'ᛞ': "Embrace the dawn of a new understanding. A breakthrough is near.", 'ᚲ': "Open yourself to illumination and creativity. Knowledge flows to you.", 'ᛋ': "Feel wholeness and success. The sun's energy empowers you.", 'ᛁ': "Find stillness within. Be calm and centered, like ice.", 'ᚹ': "Allow joy and harmony to fill your spirit.", 'ᛚ': "Go with the flow. Trust your intuition, like water."
+            'ᛗ': "Focus on the self. Feel the connection to all of humanity.", 'ᛟ': "Think of your heritage, your ancestors. Feel their strength.", 'ᛞ': "Embrace the dawn of a new understanding. A breakthrough is near.", '': "Open yourself to illumination and creativity. Knowledge flows to you.", 'ᛋ': "Feel wholeness and success. The sun's energy empowers you.", 'ᛁ': "Find stillness within. Be calm and centered, like ice.", 'ᚹ': "Allow joy and harmony to fill your spirit.", 'ᛚ': "Go with the flow. Trust your intuition, like water."
         };
         const meditationRunes = Object.keys(meditationScripts);
         let runeIndex = 0;
