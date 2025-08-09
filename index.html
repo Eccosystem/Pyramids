@@ -28,15 +28,12 @@
             font-family: 'Inter', sans-serif;
             display: flex; flex-direction: column; justify-content: flex-start;
             align-items: center; margin: 0; overflow-x: hidden; position: relative;
-            
-            /* --- NEW BACKGROUND --- */
             background-image: url('http://googleusercontent.com/image_collection/image_retrieval/17785352670780738534_0');
             background-color: #000000; /* Fallback color */
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            /* --- END NEW BACKGROUND --- */
         }
         #interactive-background {
             position: fixed;
@@ -136,7 +133,7 @@
             margin-top: 2rem; min-height: 350px;
         }
         .pyramid-container {
-            display: flex; justify-content: center; align-items: flex-end; gap: 1.5rem;
+            display: flex; justify-content: center; align-items: flex-end; gap: 1rem;
         }
         .pyramid {
             position: relative; cursor: pointer; transition: transform 0.3s ease;
@@ -193,10 +190,14 @@
             margin-top: 0.75rem; font-family: 'Spectral', serif;
             color: var(--primary-night); text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
         }
-        .pyramid.center { width: 250px; }
+        .pyramid.center { width: 220px; }
         .pyramid.center .pyramid-shape { background: linear-gradient(45deg, #DAA520, #B8860B); }
-        .pyramid.side { width: 90px; transform: translateY(30px); }
+        .pyramid.side { width: 80px; transform: translateY(30px); }
         .pyramid.side:hover { transform: translateY(25px); }
+        .pyramid.night .pyramid-shape {
+             background: linear-gradient(45deg, #191970, #000080);
+        }
+
         .beam {
             position: absolute; bottom: 95%; left: 50%; width: 15px; height: 100vh;
             transform-origin: bottom center; background: linear-gradient(to top, var(--beam-color-start), var(--beam-color-end));
@@ -205,6 +206,11 @@
         .beam.red { --beam-color-start: rgba(255, 60, 60, 0.8); --beam-color-end: rgba(255, 120, 120, 0); animation-delay: 1s; }
         .beam.green { --beam-color-start: rgba(80, 255, 80, 0.8); --beam-color-end: rgba(120, 255, 120, 0); animation-delay: 0s; }
         .beam.gold { --beam-color-start: rgba(255, 215, 0, 0.8); --beam-color-end: rgba(255, 225, 50, 0); animation-delay: 0.5s; }
+        .beam.blue { 
+            --beam-color-start: rgba(80, 80, 255, 0.8); 
+            --beam-color-end: rgba(120, 120, 255, 0); 
+            animation-delay: 1.5s;
+        }
         @keyframes beam-flicker {
             0%, 100% { transform: translateX(-50%) scaleY(0.95); opacity: 0.7; }
             10% { transform: translateX(-50%) scaleY(1); opacity: 0.9; }
@@ -361,45 +367,40 @@
             pointer-events: none;
         }
         @keyframes move-across { from { transform: translateX(0); } to { transform: translateX(100%); } }
+        
         .celestial-body {
             width: 80px; height: 80px; border-radius: 50%;
-            transition: all 2s ease-in-out; background-size: cover; background-position: center;
-            display: flex; justify-content: center; align-items: center;
-            font-family: 'Spectral', serif; font-weight: bold; font-size: 2rem;
-            cursor: pointer; user-select: none; pointer-events: auto;
-            color: var(--primary-night); text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
-            position: relative;
-            background-color: #f4f1c9;
-            background-image: none;
-            box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.7), 0 0 20px 8px rgba(255, 215, 0, 0.3), inset 0 0 15px rgba(255,255,255,0.3);
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
+            transition: all 0.3s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            user-select: none;
+            pointer-events: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url('https://i.imgur.com/k6x3YQh.jpeg');
+            box-shadow: 0 0 15px 3px rgba(255, 255, 255, 0.5), 0 0 35px 10px rgba(255, 215, 0, 0.2);
+            animation: subtle-pulse 5s infinite ease-in-out;
         }
-
-        .celestial-body::after {
-            content: '';
+        @keyframes subtle-pulse {
+            0%, 100% { box-shadow: 0 0 15px 3px rgba(255, 255, 255, 0.5), 0 0 35px 10px rgba(255, 215, 0, 0.2); }
+            50% { box-shadow: 0 0 20px 6px rgba(255, 255, 255, 0.6), 0 0 40px 12px rgba(255, 215, 0, 0.25); }
+        }
+        .celestial-body:hover {
+            box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.7), 0 0 45px 15px rgba(255, 215, 0, 0.3);
+            transform: scale(1.05);
+        }
+        .menu-hint-label {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--night-bg-start);
-            border-radius: 50%;
-            transform: translateX(var(--moon-phase-x, 0%));
-            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            color: white;
+            font-family: 'Spectral', serif;
+            font-size: 1rem;
+            text-shadow: 0 0 8px black;
+            pointer-events: none;
+            transition: opacity 1.5s ease-in-out 1s;
         }
 
-        .celestial-body-rune { transition: opacity 0.3s ease; }
-        .celestial-body-label {
-            position: absolute; opacity: 0; font-size: 1rem; font-weight: normal;
-            transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(150%);
-            pointer-events: none; text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-            background-color: rgba(0, 0, 0, 0.6); padding: 0.25rem 0.75rem;
-            border-radius: 9999px; border: 1px solid var(--primary-night);
-        }
-        .celestial-body:hover .celestial-body-rune { opacity: 0; }
-        .celestial-body:hover .celestial-body-label { opacity: 1; transform: translateY(150%); }
-        
         .downward-beam {
             position: fixed;
             z-index: 15;
@@ -667,8 +668,7 @@
 
     <div class="moon-orbit">
         <button class="celestial-body" id="menuButton" aria-label="Open portal navigation">
-            <span class="celestial-body-rune">ᛗ</span>
-            <span class="celestial-body-label">MENU</span>
+             <span id="menuHint" class="menu-hint-label">MENU</span>
         </button>
     </div>
 
@@ -695,6 +695,7 @@
         <div class="downward-beam" id="beam-from-moon-sun"></div>
         <div class="downward-beam" id="beam-from-moon-moon"></div>
         <div class="downward-beam" id="beam-from-moon-dragon"></div>
+        <div class="downward-beam" id="beam-from-moon-night"></div>
 
         <header class="app-header">
             <div class="title-container">
@@ -719,20 +720,25 @@
 
             <div class="pyramids-visual-group" id="pyramidGroup">
                 <div class="pyramid-container">
-                    <button class="pyramid side" data-pyramid="dragon" aria-label="Touch the Dragon Pyramid to receive a new whisper">
+                    <button class="pyramid side" data-pyramid="dragon" aria-label="Touch the Dragon Pyramid">
                         <div class="beam red"></div>
                         <div class="pyramid-shape"></div>
                         <h3 class="pyramid-name">Dragon</h3>
                     </button>
-                    <button class="pyramid center" data-pyramid="sun" aria-label="Touch the Sun Pyramid to receive a new whisper">
+                    <button class="pyramid center" data-pyramid="sun" aria-label="Touch the Sun Pyramid">
                         <div class="beam green"></div>
                         <div class="pyramid-shape"></div>
                         <h3 class="pyramid-name">Sun</h3>
                     </button>
-                    <button class="pyramid side" data-pyramid="moon" aria-label="Touch the Moon Pyramid to receive a new whisper">
+                    <button class="pyramid side" data-pyramid="moon" aria-label="Touch the Moon Pyramid">
                         <div class="beam gold"></div>
                         <div class="pyramid-shape"></div>
                         <h3 class="pyramid-name">Moon</h3>
+                    </button>
+                    <button class="pyramid side night" data-pyramid="night" aria-label="Touch the Night Pyramid">
+                        <div class="beam blue"></div>
+                        <div class="pyramid-shape"></div>
+                        <h3 class="pyramid-name">Night</h3>
                     </button>
                 </div>
             </div>
@@ -865,7 +871,7 @@
                     <p class="mt-4">
                         Join the circle and help keep the echoes alive for all who seek them.
                     </p>
-                    <a href="#" data-page="donate" class="donate-button mt-4 page-link">Make Your Offering</a>
+                    <a href="#" data-page="donate" class="donate-button mt-4 page-link">Make an Offering</a>
                 </div>
             </div>
         </section>
@@ -1168,7 +1174,7 @@
             celestialBody.style.setProperty('--moon-phase-x', `${translateX}%`);
         }
 
-        const beamCooldowns = { sun: 0, moon: 0, dragon: 0 };
+        const beamCooldowns = { sun: 0, moon: 0, dragon: 0, night: 0 };
         const COOLDOWN_PERIOD = 5000; 
 
         function fireRunicBeam(pyramidName) {
@@ -1222,12 +1228,12 @@
             const moonRect = moonEl.getBoundingClientRect();
             const moonCenterX = moonRect.left + moonRect.width / 2;
 
-            ['sun', 'moon', 'dragon'].forEach(name => {
+            ['sun', 'moon', 'dragon', 'night'].forEach(name => {
                 const pyramidEl = document.querySelector(`.pyramid[data-pyramid="${name}"]`);
                 if(pyramidEl) {
                     const pyramidRect = pyramidEl.getBoundingClientRect();
                     const pyramidCenterX = pyramidRect.left + pyramidRect.width / 2;
-                    if (Math.abs(moonCenterX - pyramidCenterX) < 5) { 
+                    if (Math.abs(moonCenterX - pyramidCenterX) < 20) { 
                         fireRunicBeam(name);
                     }
                 }
@@ -1430,7 +1436,9 @@
                     runeDisplay.appendChild(runeSpan);
                 });
 
-                runeInterpretation.textContent = reading.interpretation;
+                runeInterpretation.innerHTML = reading.interpretation + 
+                   '<p class="mt-4 text-sm text-yellow-400/70 italic">Click a rune above to reveal its artifact.</p>';
+
                 toggleRuneVoiceButton.classList.remove('hidden');
                 postReadingMessage.style.display = 'block';
                 if (isRuneTTSActive) speak(reading.interpretation);
@@ -1522,6 +1530,13 @@
         initialEntryOverlay.addEventListener('click', () => {
             initialEntryOverlay.classList.add('hidden');
             mainContentArea.classList.add('active');
+
+            const menuHint = document.getElementById('menuHint');
+            if (menuHint) {
+                setTimeout(() => {
+                    menuHint.style.opacity = '0';
+                }, 4000);
+            }
 
             const unlockAudio = (audioElement) => {
                 if (audioElement) {
