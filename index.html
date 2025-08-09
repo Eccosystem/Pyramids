@@ -8,13 +8,21 @@
     <meta name="keywords" content="Bosnian Pyramids, interactive art, ancient wisdom, mystical, prophecy, meditation, spiritual, energy, runes">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Spectral:wght@300;400;700&display=swap&subset=latin-ext" rel="stylesheet">    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Spectral:wght@300;400;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --night-bg-start: #020617;
             --night-bg-end: #000000;
             --primary-night: #FFD700;
             --secondary-night: #e0e0e0;
+        }
+        @font-face {
+          font-family: 'RunicFont';
+          src: url('fonts/NotoSansRunic-Regular.woff2') format('woff2');
+          font-weight: normal;
+          font-style: normal;
+          font-display: swap;
         }
         @media (prefers-reduced-motion: reduce) {
             body, .main-content-area, .pyramid, .celestial-body, .beam, #interactive-background, .hotspot {
@@ -64,7 +72,8 @@
         }
         .title-container { text-align: left; flex-grow: 1; }
         .app-header h1 {
-            font-family: 'Spectral', serif; font-size: clamp(1.5rem, 4vw, 2.2rem);
+            font-family: 'RunicFont', 'Spectral', serif;
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
             margin: 0; text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
             animation: title-glow 4s infinite alternate; color: var(--primary-night);
             letter-spacing: 0.1em;
@@ -110,6 +119,7 @@
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
         }
         .runic-icon {
+            font-family: 'RunicFont', 'Spectral', serif;
             font-size: 2rem;
             color: var(--primary-night);
             transition: all 0.3s ease;
@@ -360,7 +370,8 @@
         }
         @keyframes pulse-text { from { opacity: 0.8; transform: scale(1); } to { opacity: 1; transform: scale(1.05); } }
         .entry-runic {
-            font-family: 'Spectral', serif; font-size: clamp(2rem, 6vw, 3.5rem);
+            font-family: 'RunicFont', 'Spectral', serif;
+            font-size: clamp(2rem, 6vw, 3.5rem);
             color: var(--primary-night); text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
             letter-spacing: 0.1em; order: 1;
         }
@@ -438,31 +449,7 @@
                 text-shadow: 0 0 12px var(--primary-night);
             }
         }
-
-        .audio-controls {
-            position: fixed; bottom: 1rem; right: 1rem;
-            display: flex; flex-direction: column; align-items: flex-end;
-            gap: 0.5rem; z-index: 1000;
-        }
-        .volume-container {
-            display: flex; align-items: center; gap: 0.5rem;
-            color: #a0aec0; font-size: 0.8rem; background: rgba(0, 0, 0, 0.6);
-            padding: 0.25rem 0.75rem; border-radius: 9999px;
-            border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease;
-        }
-        .volume-container input[type=range] {
-            -webkit-appearance: none; -moz-appearance: none; appearance: none;
-            width: 100px; height: 5px; background: #d3d3d3; outline: none;
-            opacity: 0.7; -webkit-transition: .2s; transition: opacity .2s;
-        }
-        .volume-container input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; appearance: none; width: 15px; height: 15px;
-            border-radius: 50%; background: #ffcc00; cursor: pointer;
-        }
-        .volume-container input[type=range]::-moz-range-thumb {
-            width: 15px; height: 15px; border-radius: 50%;
-            background: #ffcc00; cursor: pointer;
-        }
+        
         .meditation-circle {
             width: clamp(150px, 30vw, 250px); height: clamp(150px, 30vw, 250px);
             background: radial-gradient(circle, rgba(255, 215, 0, 0.4), transparent);
@@ -656,13 +643,6 @@
     
     <canvas id="interactive-background"></canvas>
     
-    <audio id="ambientAudio" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2022/08/25/audio_51c1bce14b.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="runicBeamSound">
-        <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_24525d8b89.mp3" type="audio/mpeg">
-    </audio>
-
     <div id="initialEntryOverlay" aria-label="Click to awaken the veil and start the experience.">
         <div style="display: flex; flex-direction: column; align-items: center;">
             <p class="entry-runic">ᛅᚾᛋᛁᛅᚾᛏ ᛂᚴᚬᛋ ᚬᚠ ᚦᛅ ᛒᚬᛋᚾᛁᛅᚾ ᛬ ᛒᚢᚱᛅᛘᛁᛏᛋ</p>
@@ -721,6 +701,10 @@
                 </p>
             </div>
             
+            <p class="text-gray-300 text-center mb-6 italic max-w-2xl mt-4">
+                This interactive experience is a labor of love, free for all to explore. Become a Keeper to help us expand the mystery.
+            </p>
+
             <p class="text-yellow-400 mb-4 text-center">Touch a pyramid to listen to the ancient echoes.</p>
 
             <div class="pyramids-visual-group" id="pyramidGroup">
@@ -753,7 +737,27 @@
                 <button class="runic-toggle" id="toggleTranslation">Show Translation</button>
             </div>
             <div id="homePageDonationPrompt" class="post-reading-message"></div>
-             <div class="echo-counter mt-8">
+            
+            <div class="flex flex-col sm:flex-row gap-4 mt-8 w-full max-w-md">
+                <a href="#pyramidGroup" class="flex-1 whisper-button p-4 text-center">Awaken the Echoes</a>
+                <a href="#" data-page="donate" class="flex-1 donate-button p-4 text-center page-link">Become a Keeper</a>
+            </div>
+
+            <div class="mt-8 text-center">
+                <p class="text-gray-300">
+                    Join the <strong id="frontPageKeepersCount" class="text-yellow-400">...</strong> Keepers who made an offering this moon cycle.
+                </p>
+            </div>
+
+            <div class="w-full max-w-2xl bg-black/30 border border-yellow-400/20 rounded-lg p-4 mt-12 text-center">
+                <h3 class="text-yellow-400 font-bold text-lg mb-2 font-spectral">Help Us Reveal the Secrets</h3>
+                <p class="text-gray-300 text-sm mb-4">
+                    This portal is more than an art project—it's a living investigation. With your support, we are able to continue our research into the Bosnian Pyramids. We believe an ancient intelligence left us messages to read, and secrets are waiting to be revealed. Your offering directly funds that journey of discovery.
+                </p>
+                <a href="#" data-page="donate" class="donate-button-small page-link">Support the Research</a>
+            </div>
+
+            <div class="echo-counter mt-8">
                 <span class="echo-counter-label">Echoes Heard</span>
                 <span class="echo-counter-value" id="visitCounter">...</span>
             </div>
@@ -1000,13 +1004,6 @@
 
     </div>
 
-    <div class="audio-controls">
-        <div class="volume-container">
-            <span>🔊</span>
-            <input type="range" id="masterVolumeSlider" min="0" max="1" value="0.5" step="0.01" aria-label="Master volume control">
-        </div>
-    </div>
-
     <div id="lore-modal">
         <div class="lore-content">
             <button class="lore-close-button">&times;</button>
@@ -1045,7 +1042,6 @@
         const runeAlphabetGrid = document.querySelector('.rune-alphabet-grid');
         const visitCounterElement = document.getElementById('visitCounter');
         const postReadingMessage = document.getElementById('postReadingMessage');
-        const masterVolumeSlider = document.getElementById('masterVolumeSlider');
         const storytellerRune = document.getElementById('storytellerRune');
         const storytellerMeaning = document.getElementById('storytellerMeaning');
         const storytellerInput = document.getElementById('storytellerInput');
@@ -1055,13 +1051,12 @@
         const storytellerSuccessMessage = document.getElementById('storytellerSuccessMessage');
         const donationProgress = document.getElementById('donation-progress');
         const currentDonations = document.getElementById('current-donations');
-        const ambientAudio = document.getElementById('ambientAudio');
-        const runicBeamSound = document.getElementById('runicBeamSound');
         const homePageDonationPrompt = document.getElementById('homePageDonationPrompt');
         const storytellerDonationPrompt = document.getElementById('storytellerDonationPrompt');
         const pageLinks = document.querySelectorAll('.page-link');
         const keepersGrid = document.getElementById('keepersGrid');
         const keepersCount = document.getElementById('keepersCount');
+        const frontPageKeepersCount = document.getElementById('frontPageKeepersCount');
         const sanctumContent = document.getElementById('sanctumContent');
         const sanctumAccessDenied = document.getElementById('sanctumAccessDenied');
         const canvas = document.getElementById('interactive-background');
@@ -1185,12 +1180,7 @@
         function fireRunicBeam(pyramidName) {
             const now = Date.now();
             if (now < beamCooldowns[pyramidName]) return;
-
-            if (runicBeamSound) {
-                runicBeamSound.currentTime = 0;
-                runicBeamSound.play().catch(error => console.error("Runic beam sound failed to play:", error));
-            }
-
+            
             const moonEl = document.getElementById('menuButton');
             const pyramidEl = document.querySelector(`.pyramid[data-pyramid="${pyramidName}"]`);
             const beamEl = document.getElementById(`beam-from-moon-${pyramidName}`);
@@ -1523,15 +1513,6 @@
             });
         }
         
-        ambientAudio.volume = masterVolumeSlider.value;
-        if(runicBeamSound) runicBeamSound.volume = masterVolumeSlider.value;
-
-        masterVolumeSlider.addEventListener('input', (e) => {
-            const volume = parseFloat(e.target.value);
-            ambientAudio.volume = volume;
-            if(runicBeamSound) runicBeamSound.volume = volume;
-        });
-
         initialEntryOverlay.addEventListener('click', () => {
             initialEntryOverlay.classList.add('hidden');
             mainContentArea.classList.add('active');
@@ -1542,23 +1523,6 @@
                     menuHint.style.opacity = '0';
                 }, 4000);
             }
-
-            const unlockAudio = (audioElement) => {
-                if (audioElement) {
-                    const playPromise = audioElement.play();
-                    if (playPromise !== undefined) {
-                        playPromise.then(() => {
-                            audioElement.pause();
-                        }).catch(error => {
-                            console.info("Audio unlock failed for an element, this is often okay.", error);
-                        });
-                    }
-                }
-            };
-
-            unlockAudio(ambientAudio);
-            unlockAudio(runicBeamSound);
-
             updateCounter();
         }, { once: true });
         
@@ -1682,12 +1646,18 @@
         }
         updateDonationProgress();
 
+        function updateKeepersCount() {
+            const date = new Date();
+            const keeperCount = 17 + (date.getDate() % 10);
+            if (keepersCount) keepersCount.textContent = keeperCount;
+            if (frontPageKeepersCount) frontPageKeepersCount.textContent = keeperCount;
+            return keeperCount;
+        }
+
         function generateKeepersGrid() {
             if (!keepersGrid) return;
             keepersGrid.innerHTML = '';
-            const date = new Date();
-            const keeperCount = 17 + (date.getDate() % 10);
-            keepersCount.textContent = keeperCount;
+            const keeperCount = updateKeepersCount();
             for (let i = 0; i < keeperCount; i++) {
                 const rune = elderFuthark[Math.floor(Math.random() * elderFuthark.length)];
                 const runeEl = document.createElement('span');
@@ -1782,6 +1752,7 @@
         startParticleAnimation();
         startAlignmentCheck();
         updateMoonVisual(calculateMoonPhase());
+        updateKeepersCount();
 
     });
 </script>
