@@ -14,12 +14,8 @@
         :root {
             --night-bg-start: #020617;
             --night-bg-end: #000000;
-            --day-bg-start: #87CEEB;
-            --day-bg-end: #f0f8ff;
             --primary-night: #FFD700;
-            --primary-day: #1e3a8a;
             --secondary-night: #e0e0e0;
-            --secondary-day: #4a5568;
         }
         @media (prefers-reduced-motion: reduce) {
             body, .main-content-area, .pyramid, .celestial-body, .beam, #interactive-background, .hotspot {
@@ -32,20 +28,15 @@
             font-family: 'Inter', sans-serif;
             display: flex; flex-direction: column; justify-content: flex-start;
             align-items: center; margin: 0; overflow-x: hidden; position: relative;
-            background: radial-gradient(circle at center, var(--night-bg-start) 0%, var(--night-bg-end) 100%);
-            animation: background-pulse 20s ease-in-out infinite alternate;
-            transition: background 2s ease-in-out;
-        }
-        body[data-theme="day"] {
-            background: linear-gradient(to bottom, var(--day-bg-start) 0%, #c1e1f2 70%, var(--day-bg-end) 100%);
-            animation: none;
-        }
-        body[data-theme="night"] {
-            background: radial-gradient(circle at center, var(--night-bg-start) 0%, var(--night-bg-end) 100%);
-        }
-        @keyframes background-pulse {
-            0% { background-color: var(--night-bg-start); }
-            100% { background-color: #151a25; }
+            
+            /* --- NEW BACKGROUND --- */
+            background-image: url('http://googleusercontent.com/image_collection/image_retrieval/17785352670780738534_0');
+            background-color: #000000; /* Fallback color */
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            /* --- END NEW BACKGROUND --- */
         }
         #interactive-background {
             position: fixed;
@@ -57,35 +48,13 @@
             transition: opacity 2s ease-in-out;
             pointer-events: none;
         }
-        body[data-theme="day"] #interactive-background {
-            opacity: 0;
-        }
-        body[data-theme="night"] #interactive-background {
-            opacity: 1;
-        }
         .main-content-area { z-index: 10; }
         .moon-orbit { z-index: 20; }
         
-        body::before, body::after {
+        body::before {
             content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             transition: opacity 2s ease-in-out; background-attachment: fixed; z-index: 0;
-        }
-        body[data-theme="night"]::before {
             background-image: none; /* Replaced by canvas */
-        }
-        body[data-theme="day"]::before { opacity: 0; }
-        body[data-theme="day"]::after {
-            background-image: url('https://www.transparenttextures.com/patterns/clouds.png'), url('https://www.transparenttextures.com/patterns/soft-wallpaper.png');
-            background-repeat: repeat; opacity: 0.1; animation: drift-slow 180s linear infinite;
-        }
-        body[data-theme="night"]::after { opacity: 0; }
-        @keyframes drift {
-            from { background-position: 0 0; }
-            to { background-position: 200% 200%; }
-        }
-        @keyframes drift-slow {
-            from { background-position: 0 0; }
-            to { background-position: 400px 0; }
         }
         .main-content-area {
             width: 95%; max-width: 900px; display: flex; flex-direction: column;
@@ -108,12 +77,6 @@
             font-family: 'Spectral', serif; font-size: clamp(0.8rem, 2vw, 1rem);
             color: #b8860b; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
             margin: 0.25rem 0 0 0; letter-spacing: normal;
-        }
-        body[data-theme="day"] .app-header h1 {
-            color: var(--primary-day); animation: none; text-shadow: 0 1px 3px rgba(255, 255, 255, 0.7);
-        }
-        body[data-theme="day"] .runic-subtitle {
-            color: var(--secondary-day); text-shadow: none;
         }
         @keyframes title-glow {
             from { text-shadow: 0 0 15px rgba(255, 215, 0, 0.6); color: var(--primary-night); }
@@ -184,6 +147,8 @@
             background: linear-gradient(45deg, #4a4a4a, #1a1a1a);
             width: 100%; aspect-ratio: 2 / 1; clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
             position: relative;
+            animation: pyramid-base-glow 8s ease-in-out infinite alternate;
+            transition: filter 0.3s ease-in-out;
         }
         .pyramid-shape::before {
             content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0;
@@ -195,14 +160,38 @@
             background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 30%);
             clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
         }
+        
+        @keyframes pyramid-base-glow {
+            from { filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.2)); }
+            to { filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4)); }
+        }
+        .pyramid.center .pyramid-shape {
+            animation-name: pyramid-base-glow-gold;
+        }
+        @keyframes pyramid-base-glow-gold {
+            from { filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4)); }
+            to { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.7)); }
+        }
+        .pyramid-shape.charging {
+            animation: pyramid-charge-glow 1s ease-out;
+        }
+        @keyframes pyramid-charge-glow {
+            0% { filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4)); }
+            50% { filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.8)); }
+            100% { filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4)); }
+        }
+        .pyramid.center .pyramid-shape.charging {
+            animation-name: pyramid-charge-glow-gold;
+        }
+        @keyframes pyramid-charge-glow-gold {
+            0% { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.7)); }
+            50% { filter: drop-shadow(0 0 50px rgba(255, 215, 0, 1)); }
+            100% { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.7)); }
+        }
+
         .pyramid-name {
             margin-top: 0.75rem; font-family: 'Spectral', serif;
-        }
-        body[data-theme="night"] .pyramid-name {
             color: var(--primary-night); text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
-        }
-        body[data-theme="day"] .pyramid-name {
-            color: var(--primary-day); text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
         }
         .pyramid.center { width: 250px; }
         .pyramid.center .pyramid-shape { background: linear-gradient(45deg, #DAA520, #B8860B); }
@@ -234,23 +223,15 @@
             border-radius: 10px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
             text-align: center; transition: all 0.5s ease-in-out;
         }
-        body[data-theme="day"] .echo-counter {
-            background-color: rgba(30, 58, 138, 0.05); border: 1px solid var(--primary-day);
-            box-shadow: 0 0 15px rgba(30, 58, 138, 0.3);
-        }
         .echo-counter-label {
             font-family: 'Spectral', serif; color: var(--primary-night); font-size: clamp(0.9rem, 1.5vw, 1.1rem);
             text-transform: uppercase; letter-spacing: 0.1em; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
             transition: color 0.5s, text-shadow 0.5s;
         }
-        body[data-theme="day"] .echo-counter-label { color: var(--primary-day); text-shadow: 0 1px 3px rgba(255, 255, 255, 0.7); }
         .echo-counter-value {
             font-family: 'Spectral', serif; font-size: clamp(2rem, 5vw, 3rem); color: var(--primary-night);
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.7); margin-top: 0.5rem;
             animation: text-glow 3s infinite alternate; transition: color 0.5s, text-shadow 0.5s;
-        }
-        body[data-theme="day"] .echo-counter-value {
-            color: var(--primary-day); text-shadow: 0 1px 3px rgba(255, 255, 255, 0.7); animation: none;
         }
         @keyframes text-glow {
             from { text-shadow: 0 0 10px rgba(255, 215, 0, 0.7); }
@@ -308,14 +289,22 @@
             width: 100%; max-width: 900px; background-color: rgba(0,0,0,0.6);
             border: 1px solid #4a5568; border-radius: 1rem; padding: 2rem; margin-top: 1.5rem;
         }
-        body[data-theme="day"] .page-content-container {
-            background-color: rgba(255, 255, 255, 0.6); border: 1px solid rgba(0,0,0,0.1);
-        }
         #messageFeedback { color: var(--primary-night); font-style: italic; margin-top: 1rem; min-height: 4em; }
         #runeDisplay {
             font-family: 'Spectral', serif; font-size: 3rem; letter-spacing: 0.5rem;
             color: var(--primary-night); text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
             margin-top: 1.5rem; min-height: 1.5em;
+        }
+        .rune-link {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            display: inline-block;
+            padding: 0 0.25rem;
+        }
+        .rune-link:hover {
+            transform: scale(1.2);
+            color: #fff8e1;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 1);
         }
         #runeInterpretation { color: var(--secondary-night); font-style: italic; margin-top: 1rem; min-height: 3em; line-height: 1.6; }
         .storyteller-runes {
@@ -347,19 +336,7 @@
         .story-card .story-meta .story-author { font-style: normal; }
         .story-card .story-meta .story-timestamp { font-style: normal; }
         #homePage { position: relative; }
-        .theme-switcher { display: flex; gap: 0.5rem; margin-block: 1.5rem; }
-        .theme-button {
-            background: rgba(0,0,0,0.4); color: #fff; padding: 0.5rem 1rem;
-            border-radius: 2rem; cursor: pointer; transition: all 0.3s ease;
-            font-weight: bold; border: 1px solid rgba(255,255,255,0.2);
-            display: flex; align-items: center; gap: 0.5rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        .theme-button:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
-        .theme-button.active {
-            background: var(--primary-night); color: #333; box-shadow: 0 0 10px rgba(255,215,0,0.5);
-        }
-        .theme-button svg { width: 1.2em; height: 1.2em; fill: currentColor; }
+        
         #initialEntryOverlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; display: flex; justify-content: center; align-items: center; text-align: center;
@@ -392,7 +369,26 @@
             cursor: pointer; user-select: none; pointer-events: auto;
             color: var(--primary-night); text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
             position: relative;
+            background-color: #f4f1c9;
+            background-image: none;
+            box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.7), 0 0 20px 8px rgba(255, 215, 0, 0.3), inset 0 0 15px rgba(255,255,255,0.3);
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
         }
+
+        .celestial-body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--night-bg-start);
+            border-radius: 50%;
+            transform: translateX(var(--moon-phase-x, 0%));
+            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         .celestial-body-rune { transition: opacity 0.3s ease; }
         .celestial-body-label {
             position: absolute; opacity: 0; font-size: 1rem; font-weight: normal;
@@ -404,46 +400,44 @@
         .celestial-body:hover .celestial-body-rune { opacity: 0; }
         .celestial-body:hover .celestial-body-label { opacity: 1; transform: translateY(150%); }
         
-        /* --- MOON REALISM UPDATE --- */
-        body[data-theme="night"] .celestial-body {
-            background-color: #f4f1c9;
-            background-image: none;
-            box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.7), 0 0 20px 8px rgba(255, 215, 0, 0.3), inset 0 0 15px rgba(255,255,255,0.3);
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-            overflow: hidden; /* This is crucial */
+        .downward-beam {
+            position: fixed;
+            z-index: 15;
+            width: 25px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s ease-out;
+            color: var(--primary-night);
+            font-family: 'Spectral', serif;
+            font-size: 1rem;
+            text-shadow: 0 0 8px var(--primary-night);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        body[data-theme="night"] .celestial-body::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--night-bg-start);
-            border-radius: 50%;
-            transform: translateX(var(--moon-phase-x, 0%)); /* JS will set this variable */
-            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        .downward-beam span {
+            display: block;
+            padding-bottom: 0.25rem;
+            animation: rune-shimmer 2s infinite alternate;
         }
-        
-        body[data-theme="day"] .celestial-body {
-            background-color: var(--primary-night); background-image: none;
-            box-shadow: 0 0 50px var(--primary-night), 0 0 100px #FFA500;
-            animation: sun-glow 4s infinite alternate; color: var(--primary-night);
-            text-shadow: 0 0 8px rgba(100, 50, 0, 0.6);
+
+        @keyframes rune-shimmer {
+            from {
+                opacity: 0.4;
+                text-shadow: 0 0 4px var(--primary-night);
+            }
+            to {
+                opacity: 1;
+                text-shadow: 0 0 12px var(--primary-night);
+            }
         }
-        @keyframes sun-glow { from { box-shadow: 0 0 50px var(--primary-night), 0 0 100px #FFA500; } to { box-shadow: 0 0 70px #FFFF00, 0 0 120px var(--primary-night); } }
+
         .audio-controls {
             position: fixed; bottom: 1rem; right: 1rem;
             display: flex; flex-direction: column; align-items: flex-end;
             gap: 0.5rem; z-index: 1000;
         }
-        .audio-toggle-button {
-            background: #5a6578; color: #ffcc00; padding: 0.5rem 1rem;
-            border-radius: 0.5rem; font-weight: bold; cursor: pointer;
-            z-index: 1000; transition: all 0.3s ease;
-        }
-        .audio-toggle-button.active { background: linear-gradient(to bottom, #ffcc00, #b8860b); color: #333; }
         .volume-container {
             display: flex; align-items: center; gap: 0.5rem;
             color: #a0aec0; font-size: 0.8rem; background: rgba(0, 0, 0, 0.6);
@@ -543,7 +537,6 @@
             to { opacity: 0.6; transform: scale(1); }
         }
         
-        /* Interactive Map Styles */
         #map-container {
             position: relative;
             width: 100%;
@@ -615,7 +608,6 @@
             cursor: pointer;
         }
 
-        /* Footer Styles */
         .app-footer {
             width: 100%;
             max-width: 900px;
@@ -649,19 +641,20 @@
             transition: opacity 0.5s ease;
         }
 
-
         @media (max-width: 768px) {
             .celestial-body { width: 60px; height: 60px; font-size: 0.9rem; }
         }
     </style>
 </head>
-<body data-theme="night">
+<body>
     
     <canvas id="interactive-background"></canvas>
     
     <audio id="ambientAudio" loop>
         <source src="https://cdn.pixabay.com/download/audio/2022/08/25/audio_51c1bce14b.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
+    </audio>
+    <audio id="runicBeamSound">
+        <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_24525d8b89.mp3" type="audio/mpeg">
     </audio>
 
     <div id="initialEntryOverlay" aria-label="Click to awaken the veil and start the experience.">
@@ -699,6 +692,10 @@
     </div>
 
     <div class="main-content-area" id="mainContentArea">
+        <div class="downward-beam" id="beam-from-moon-sun"></div>
+        <div class="downward-beam" id="beam-from-moon-moon"></div>
+        <div class="downward-beam" id="beam-from-moon-dragon"></div>
+
         <header class="app-header">
             <div class="title-container">
                 <h1>ᛅᚾᛋᛁᛅᚾᛏ ᛂᚴᚬᛋ ᚬ᠀ ᚦᛅ ᛒᚬᛋᚾᛁᛅᚾ ᛬ ᛒᚢᚱᛅᛘᛁᛏᛋ</h1>
@@ -716,17 +713,6 @@
                 <p class="text-gray-300 text-sm">
                     This portal is an <strong>interactive art project</strong> designed to evoke the mystery and wonder of ancient power. The wisdom, readings, and responses are generated for inspirational and entertainment purposes, encouraging a deeper connection to the enigmatic past.
                 </p>
-            </div>
-
-            <div class="theme-switcher">
-                <button class="theme-button active" data-theme-name="night" aria-label="Switch to night theme">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="1.2em" height="1.2em"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69a.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-3.818 2.04-7.174 5.168-8.972a.75.75 0 01.818.162z" clip-rule="evenodd"></path></svg>
-                    <span>Night</span>
-                </button>
-                <button class="theme-button" data-theme-name="day" aria-label="Switch to day theme">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="1.2em" height="1.2em"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.106a.75.75 0 010 1.06l-1.591 1.59a.75.75 0 11-1.06-1.06l1.59-1.591a.75.75 0 011.06 0zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.894 17.894a.75.75 0 011.06 0l1.591 1.591a.75.75 0 11-1.06 1.06l-1.591-1.59a.75.75 0 010-1.061zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM5.106 17.894a.75.75 0 010-1.06l1.591-1.591a.75.75 0 111.06 1.06l-1.59 1.591a.75.75 0 01-1.06 0zM4.5 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zM6.106 5.106a.75.75 0 011.06 0l1.591 1.591a.75.75 0 01-1.06 1.06L5.106 6.167a.75.75 0 010-1.06z"></path></svg>
-                    <span>Day</span>
-                </button>
             </div>
             
             <p class="text-yellow-400 mb-4 text-center">Touch a pyramid to listen to the ancient echoes.</p>
@@ -827,16 +813,6 @@
                 </div>
 
                 <div class="rune-image-gallery">
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
                 </div>
 
                 <div class="rune-history">
@@ -1014,18 +990,17 @@
     </div>
 
     <div class="audio-controls">
-        <p id="audioStatus" class="text-red-400 text-xs italic text-right mb-1" style="display: none;"></p>
         <div class="volume-container">
             <span>🔊</span>
             <input type="range" id="masterVolumeSlider" min="0" max="1" value="0.5" step="0.01" aria-label="Master volume control">
         </div>
-        <button class="audio-toggle-button" id="audioToggleButton" aria-label="Toggle ambient audio">Play Ambient Melodies</button>
     </div>
 
-    <div id="lore-modal" class="hidden">
+    <div id="lore-modal">
         <div class="lore-content">
             <button class="lore-close-button">&times;</button>
             <h3 id="lore-title" class="text-2xl font-bold text-yellow-400 mb-4 font-spectral"></h3>
+            <img id="lore-image" src="" alt="Artifact Image" class="w-full h-auto rounded-lg mb-4 border border-gray-600 hidden">
             <p id="lore-text" class="text-gray-300"></p>
         </div>
     </div>
@@ -1042,10 +1017,8 @@
         const overlayMenu = document.getElementById('overlayMenu');
         const closeMenuButton = document.getElementById('closeMenuButton');
         const navLinks = document.querySelectorAll('.overlay-menu nav ul li a');
-        const themeButtons = document.querySelectorAll('.theme-button');
         const initialEntryOverlay = document.getElementById('initialEntryOverlay');
         const mainContentArea = document.getElementById('mainContentArea');
-        const audioToggleButton = document.getElementById('audioToggleButton');
         const meditationCircle = document.getElementById('meditationCircle');
         const meditationRune = document.getElementById('meditationRune');
         const meditationStatus = document.getElementById('meditationStatus');
@@ -1072,7 +1045,7 @@
         const donationProgress = document.getElementById('donation-progress');
         const currentDonations = document.getElementById('current-donations');
         const ambientAudio = document.getElementById('ambientAudio');
-        const audioStatus = document.getElementById('audioStatus');
+        const runicBeamSound = document.getElementById('runicBeamSound');
         const homePageDonationPrompt = document.getElementById('homePageDonationPrompt');
         const storytellerDonationPrompt = document.getElementById('storytellerDonationPrompt');
         const pageLinks = document.querySelectorAll('.page-link');
@@ -1084,6 +1057,7 @@
         const ctx = canvas.getContext('2d');
         const loreModal = document.getElementById('lore-modal');
         const loreTitle = document.getElementById('lore-title');
+        const loreImage = document.getElementById('lore-image');
         const loreText = document.getElementById('lore-text');
         const loreCloseButton = document.querySelector('.lore-close-button');
         const mapContainer = document.getElementById('map-container');
@@ -1092,6 +1066,7 @@
         let isMeditationTTSActive = false;
         let isRuneTTSActive = false;
         let currentStorytellerRune = null;
+        let alignmentAnimationId = null;
 
         const ancientWisdoms = [
             { runic: "ᛞᚱᛁᛗ ᛞᛖᛈᛖᚱ", english: "Dream deeper." }, { runic: "ᛋᛏᚨᚱᛋ ᚹᚨᛏᚲᚺ", english: "The stars watch." }, { runic: "ᛖᚲᚺᛟ ᛟᚠ ᛏᛁᛗᛖ", english: "Listen to time's echo." }, { runic: "ᚦᛅ ᛋᛏᛟᚾᛋ ᛋᛒᛂᛅᚴ", english: "The stones speak to those who listen." }, { runic: "ᚢᛅᛁᛚ ᛁᛋ ᚦᛁᚾ", english: "Where the worlds touch, the veil is thin." }, { runic: "ᛋᛂᛅᚴ ᚦᛅ ᛏᚱᚢᚦ", english: "Seek the truth, not the comfort of answers." }, { runic: "ᛒᛅᛚᛅᚾᛋ ᛁᛋ ᚴᛅᛁ", english: "Balance is the key to unlocking potential." }, { runic: "ᛂᚾᛅᚱᚵᛁ ᚠᛚᚬᚢᛋ", english: "Energy flows where intention goes." }, { runic: "ᚦᛅ ᛒᛅᚦ ᛁᛋ ᚢᛁᚦᛁᚾ", english: "The path you seek is found within." }, { runic: "ᚦᛅ ᛘᚬᚢᚾᛏᛅᛁᚾ ᛒᚱᛂᛅᚦᛋ", english: "The mountain breathes with the ages." }, { runic: "ᚢᚱ ᚬᚠᚠᛂᚱᛁᚾᚵ ᛋᚢᛋᛏᛅᛁᚾᛋ ᚦᛁᛋ ᚢᛅᛁᛚ", english: "Your offering sustains this veil." }, { runic: "ᛅ ᛚᛁᚵᚦ ᚬᚠ ᛘᛅᚾᛃ ᛋᚱᛅᛁᚵᚦᛋ ᚦᛁᛋ ᛒᚬᛏᛅᛚ", english: "A light from many strengthens this portal." }
@@ -1108,6 +1083,18 @@
         const elderFuthark = [
             { char: 'ᚠ', name: 'Fehu', meaning: 'Wealth, cattle, new beginnings.' }, { char: 'ᚢ', name: 'Uruz', meaning: 'Strength, primal force, courage.' }, { char: 'ᚦ', name: 'Thurisaz', meaning: 'Thorn, change, directed force.' }, { char: 'ᚨ', name: 'Ansuz', meaning: 'Communication, wisdom, insight.' }, { char: 'ᚱ', name: 'Raido', meaning: 'Journey, movement, life path.' }, { char: 'ᚲ', name: 'Kenaz', meaning: 'Torch, illumination, creativity.' }, { char: 'ᚷ', name: 'Gebo', meaning: 'Gift, partnership, generosity.' }, { char: 'ᚹ', name: 'Wunjo', meaning: 'Joy, harmony, fellowship.' }, { char: 'ᚺ', name: 'Hagalaz', meaning: 'Hail, disruption, uncontrollable forces.' }, { char: 'ᚾ', name: 'Nauthiz', meaning: 'Need, delay, resistance.' }, { char: 'ᛁ', name: 'Isa', meaning: 'Ice, stillness, psychological block.' }, { char: 'ᛃ', name: 'Jera', meaning: 'Harvest, cycles, success from effort.' }, { char: 'ᛇ', name: 'Eihwaz', meaning: 'Yew, endurance, a bridge between worlds.' }, { char: 'ᛈ', name: 'Perthro', meaning: 'Lot-cup, mystery, fate, hidden knowledge.' }, { char: 'ᛉ', name: 'Algiz', meaning: 'Protection, defense, connection with the divine.' }, { char: 'ᛋ', name: 'Sowilo', meaning: 'Sun, wholeness, power, success.' }, { char: 'ᛏ', name: 'Tiwaz', meaning: 'Tyr, justice, sacrifice, leadership.' }, { char: 'ᛒ', name: 'Berkano', meaning: 'Birch, fertility, new growth, nurture.' }, { char: 'ᛖ', name: 'Ehwaz', meaning: 'Horse, teamwork, trust, movement.' }, { char: 'ᛗ', name: 'Mannaz', meaning: 'Man, humanity, the self.' }, { char: 'ᛚ', name: 'Laguz', meaning: 'Water, intuition, emotion, flow.' }, { char: 'ᛜ', name: 'Ingwaz', meaning: 'Ing, potential, home, retreat.' }, { char: 'ᛟ', name: 'Othala', meaning: 'Inheritance, home, ancestry.' }, { char: 'ᛞ', name: 'Dagaz', meaning: 'Dawn, breakthrough, a new day.' }
         ];
+
+        const artifactData = [
+            { image: 'images/runic2.webp', title: 'The Ravne Megalith', description: 'This large stone, discovered in the Ravne tunnel network, features complex carvings believed to be an ancient runic script.' },
+            { image: 'images/runic11.webp', title: 'Ancient Pavement', description: 'Excavations on the Pyramid of the Sun have uncovered these large, precisely fitted stone blocks, forming what appears to be an ancient paved terrace.' },
+            { image: 'images/runic7.webp', title: 'Pyramid of the Sun', description: 'An aerial view of the largest of the Bosnian pyramids, Visočica Hill, which is covered by soil and vegetation.' },
+            { image: 'images/runic4.webp', title: 'Inscribed Pyramid Artifact', description: 'A small, pyramid-shaped artifact found during excavations, featuring layers of inscribed symbols that are yet to be fully deciphered.' }
+        ];
+        
+        const runeArtifacts = {};
+        elderFuthark.forEach((rune, index) => {
+            runeArtifacts[rune.char] = artifactData[index % artifactData.length];
+        });
 
         const runeReflections = {
             'ᚠ': ["You have shared a story of abundance. The veil recognizes this gift and echoes its prosperity back to you.", "Your tale of beginnings plants a seed in the timeless soil. May it grow into a mighty tree."],
@@ -1157,46 +1144,112 @@
 
         let particlesArray = [];
         let mouse = { x: null, y: null, radius: 100 };
-        let animationFrameId;
+        let particleAnimationId;
 
-        // --- MOON REALISM FUNCTIONS ---
-        /**
-         * Calculates the moon's phase (0-1) based on the current date.
-         * 0 = New Moon, 0.5 = Full Moon.
-         */
         function calculateMoonPhase(date = new Date()) {
             const LUNAR_MONTH = 29.530588853;
             const getJulianDate = (d) => (d.getTime() / 86400000) - (d.getTimezoneOffset() / 1440) + 2440587.5;
-            
-            // Known new moon: 2000-01-06 18:14 UTC
             const knownNewMoon = getJulianDate(new Date(Date.UTC(2000, 0, 6, 18, 14, 0)));
             const julianDate = getJulianDate(date);
             const age = (julianDate - knownNewMoon) % LUNAR_MONTH;
             return age / LUNAR_MONTH;
         }
 
-        /**
-         * Updates the CSS custom property to visually represent the moon's phase.
-         * @param {number} phase - The moon phase from 0 to 1.
-         */
         function updateMoonVisual(phase) {
             const celestialBody = document.querySelector('.celestial-body');
             if (!celestialBody) return;
             
             let translateX;
-            // Phase 0-0.5 is waxing (new to full)
-            // The shadow moves from 0% (covering) to -100% (off to the left)
             if (phase <= 0.5) {
                 translateX = -phase * 200;
             } else {
-            // Phase 0.5-1 is waning (full to new)
-            // The shadow comes back from the right, from 100% to 0%
                 translateX = (1 - phase) * 200;
             }
-            
             celestialBody.style.setProperty('--moon-phase-x', `${translateX}%`);
         }
-        // --- END MOON FUNCTIONS ---
+
+        const beamCooldowns = { sun: 0, moon: 0, dragon: 0 };
+        const COOLDOWN_PERIOD = 5000; 
+
+        function fireRunicBeam(pyramidName) {
+            const now = Date.now();
+            if (now < beamCooldowns[pyramidName]) return;
+
+            if (runicBeamSound) {
+                runicBeamSound.currentTime = 0;
+                runicBeamSound.play().catch(error => console.error("Runic beam sound failed to play:", error));
+            }
+
+            const moonEl = document.getElementById('menuButton');
+            const pyramidEl = document.querySelector(`.pyramid[data-pyramid="${pyramidName}"]`);
+            const beamEl = document.getElementById(`beam-from-moon-${pyramidName}`);
+
+            if (!moonEl || !pyramidEl || !beamEl) return;
+
+            const moonRect = moonEl.getBoundingClientRect();
+            const pyramidRect = pyramidEl.getBoundingClientRect();
+
+            const beamStartX = moonRect.left + moonRect.width / 2;
+            const beamStartY = moonRect.bottom;
+            const beamEndY = pyramidRect.top;
+            const height = beamEndY - beamStartY;
+
+            if (height <= 0) return;
+
+            beamEl.style.top = `${beamStartY}px`;
+            beamEl.style.left = `${beamStartX - beamEl.offsetWidth / 2}px`;
+            beamEl.style.height = `${height}px`;
+
+            const runeCount = Math.floor(height / 18);
+            let runesHTML = '';
+            for (let i = 0; i < runeCount; i++) {
+                const rune = elderFuthark[Math.floor(Math.random() * elderFuthark.length)];
+                runesHTML += `<span style="animation-delay: ${i * 0.05}s">${rune.char}</span>`;
+            }
+            beamEl.innerHTML = runesHTML;
+            beamEl.style.opacity = '1';
+
+            beamCooldowns[pyramidName] = now + COOLDOWN_PERIOD;
+
+            setTimeout(() => {
+                beamEl.style.opacity = '0';
+            }, 2500);
+        }
+
+        function checkMoonPyramidAlignment() {
+            const moonEl = document.getElementById('menuButton');
+            if (!moonEl) return;
+            const moonRect = moonEl.getBoundingClientRect();
+            const moonCenterX = moonRect.left + moonRect.width / 2;
+
+            ['sun', 'moon', 'dragon'].forEach(name => {
+                const pyramidEl = document.querySelector(`.pyramid[data-pyramid="${name}"]`);
+                if(pyramidEl) {
+                    const pyramidRect = pyramidEl.getBoundingClientRect();
+                    const pyramidCenterX = pyramidRect.left + pyramidRect.width / 2;
+                    if (Math.abs(moonCenterX - pyramidCenterX) < 5) { 
+                        fireRunicBeam(name);
+                    }
+                }
+            });
+        }
+        
+        function alignmentLoop() {
+            checkMoonPyramidAlignment();
+            alignmentAnimationId = requestAnimationFrame(alignmentLoop);
+        }
+
+        function startAlignmentCheck() {
+            if (!alignmentAnimationId) {
+                alignmentLoop();
+            }
+        }
+        function stopAlignmentCheck() {
+            if (alignmentAnimationId) {
+                cancelAnimationFrame(alignmentAnimationId);
+                alignmentAnimationId = null;
+            }
+        }
 
         function handleResize() {
             canvas.width = window.innerWidth;
@@ -1263,26 +1316,26 @@
                 particlesArray[i].draw();
                 particlesArray[i].update();
             }
-            animationFrameId = requestAnimationFrame(animateParticles);
+            particleAnimationId = requestAnimationFrame(animateParticles);
         }
 
-        function stopAnimation() {
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-                animationFrameId = null;
+        function stopParticleAnimation() {
+            if (particleAnimationId) {
+                cancelAnimationFrame(particleAnimationId);
+                particleAnimationId = null;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
             }
         }
 
-        function startAnimation() {
-            if (!animationFrameId && document.body.dataset.theme === 'night') {
+        function startParticleAnimation() {
+            if (!particleAnimationId) {
                 handleResize();
                 animateParticles();
             }
         }
         
         window.addEventListener('resize', () => {
-             if (document.body.dataset.theme === 'night' && animationFrameId) {
+             if (particleAnimationId) {
                 handleResize();
             }
         });
@@ -1359,14 +1412,24 @@
             }
             if (isGenerating) return;
             isGenerating = true;
-            runeDisplay.textContent = '';
+            runeDisplay.innerHTML = '';
             runeInterpretation.textContent = 'The runes are being cast...';
             toggleRuneVoiceButton.classList.add('hidden');
             postReadingMessage.style.display = 'none';
             
             setTimeout(() => {
                 const reading = runeReadings[Math.floor(Math.random() * runeReadings.length)];
-                runeDisplay.textContent = reading.runes;
+                
+                runeDisplay.innerHTML = ''; 
+                const runes = reading.runes.split('');
+                runes.forEach(runeChar => {
+                    const runeSpan = document.createElement('span');
+                    runeSpan.className = 'rune-link';
+                    runeSpan.textContent = runeChar;
+                    runeSpan.dataset.rune = runeChar;
+                    runeDisplay.appendChild(runeSpan);
+                });
+
                 runeInterpretation.textContent = reading.interpretation;
                 toggleRuneVoiceButton.classList.remove('hidden');
                 postReadingMessage.style.display = 'block';
@@ -1448,38 +1511,33 @@
         }
         
         ambientAudio.volume = masterVolumeSlider.value;
+        if(runicBeamSound) runicBeamSound.volume = masterVolumeSlider.value;
 
         masterVolumeSlider.addEventListener('input', (e) => {
-            ambientAudio.volume = parseFloat(e.target.value);
-        });
-
-        audioToggleButton.addEventListener('click', () => {
-            if (ambientAudio.paused) {
-                const playPromise = ambientAudio.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        audioToggleButton.textContent = "Stop Ambient Melodies";
-                        audioToggleButton.classList.add('active');
-                        audioStatus.style.display = 'none';
-                    }).catch(error => {
-                        console.error("Audio play failed:", error);
-                        audioStatus.textContent = "Audio blocked. Click again.";
-                        audioStatus.style.display = 'block';
-                    });
-                }
-            } else {
-                ambientAudio.pause();
-                audioToggleButton.textContent = "Play Ambient Melodies";
-                audioToggleButton.classList.remove('active');
-            }
+            const volume = parseFloat(e.target.value);
+            ambientAudio.volume = volume;
+            if(runicBeamSound) runicBeamSound.volume = volume;
         });
 
         initialEntryOverlay.addEventListener('click', () => {
             initialEntryOverlay.classList.add('hidden');
             mainContentArea.classList.add('active');
-            
-            ambientAudio.play().catch(() => {});
-            ambientAudio.pause();
+
+            const unlockAudio = (audioElement) => {
+                if (audioElement) {
+                    const playPromise = audioElement.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            audioElement.pause();
+                        }).catch(error => {
+                            console.info("Audio unlock failed for an element, this is often okay.", error);
+                        });
+                    }
+                }
+            };
+
+            unlockAudio(ambientAudio);
+            unlockAudio(runicBeamSound);
 
             updateCounter();
         }, { once: true });
@@ -1488,9 +1546,20 @@
             const pyramidButton = e.target.closest('.pyramid');
             if (pyramidButton) {
                 const beam = pyramidButton.querySelector('.beam');
+                const shape = pyramidButton.querySelector('.pyramid-shape');
+
+                if (shape) {
+                    shape.classList.add('charging');
+                    setTimeout(() => {
+                        shape.classList.remove('charging');
+                    }, 1000);
+                }
+
                 if (beam) {
-                    beam.style.opacity = '1';
-                    setTimeout(() => beam.style.opacity = '0', 2000);
+                    setTimeout(() => {
+                        beam.style.opacity = '1';
+                        setTimeout(() => beam.style.opacity = '0', 2000);
+                    }, 200);
                 }
                 getAncientCounsel();
             }
@@ -1539,29 +1608,6 @@
                 const targetLink = event.target.closest('.page-link');
                 handlePageNavigation({ currentTarget: targetLink, preventDefault: () => {} });
             }
-        });
-
-
-        themeButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const themeName = button.dataset.themeName;
-                document.body.dataset.theme = themeName;
-                themeButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                localStorage.setItem('theme', themeName);
-                if (themeName === 'night') {
-                    startAnimation();
-                    updateMoonVisual(calculateMoonPhase()); // Update moon on theme switch
-                } else {
-                    stopAnimation();
-                }
-            });
-        });
-
-        const savedTheme = localStorage.getItem('theme') || 'night';
-        document.body.dataset.theme = savedTheme;
-        themeButtons.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.themeName === savedTheme);
         });
         
         contactForm.addEventListener('submit', (e) => {
@@ -1651,6 +1697,24 @@
                 if (data) {
                     loreTitle.textContent = data.title;
                     loreText.textContent = data.text;
+                    loreImage.src = '';
+                    loreImage.classList.add('hidden');
+                    loreModal.classList.add('visible');
+                }
+            }
+        });
+
+        runeDisplay.addEventListener('click', (e) => {
+            if (e.target.classList.contains('rune-link')) {
+                const runeChar = e.target.dataset.rune;
+                const artifact = runeArtifacts[runeChar];
+
+                if (artifact) {
+                    loreTitle.textContent = artifact.title;
+                    loreText.textContent = artifact.description;
+                    loreImage.src = artifact.image;
+                    loreImage.classList.remove('hidden');
+                    
                     loreModal.classList.add('visible');
                 }
             }
@@ -1695,9 +1759,8 @@
         });
 
         // --- INITIALIZE ---
-        if (savedTheme === 'night') {
-            startAnimation();
-        }
+        startParticleAnimation();
+        startAlignmentCheck();
         updateMoonVisual(calculateMoonPhase());
 
     });
