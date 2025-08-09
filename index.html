@@ -1538,14 +1538,15 @@
                 const runes = reading.runes.split('');
                 runes.forEach(runeChar => {
                     const runeSpan = document.createElement('span');
-                    // This class is no longer used for click events here, but kept for styling
                     runeSpan.className = 'rune-link'; 
                     runeSpan.textContent = runeChar;
                     runeSpan.dataset.rune = runeChar;
                     runeDisplay.appendChild(runeSpan);
                 });
 
-                runeInterpretation.innerHTML = reading.interpretation;
+                runeInterpretation.innerHTML = reading.interpretation +  
+                 '<p class="mt-4 text-sm text-yellow-400/70 italic">Click a rune above to reveal its artifact.</p>';
+
                 toggleRuneVoiceButton.classList.remove('hidden');
                 postReadingMessage.style.display = 'block';
                 if (isRuneTTSActive) speak(reading.interpretation);
@@ -1810,7 +1811,7 @@
             }
         });
 
-        /* This is the event listener for the rune reading result. It has been commented out as requested.
+        // This event listener makes the runes from a reading clickable.
         runeDisplay.addEventListener('click', (e) => {
             if (e.target.classList.contains('rune-link')) {
                 const runeChar = e.target.dataset.rune;
@@ -1826,7 +1827,6 @@
                 }
             }
         });
-        */
 
         const closeLoreModal = () => loreModal.classList.remove('visible');
         loreCloseButton.addEventListener('click', closeLoreModal);
