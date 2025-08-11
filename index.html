@@ -177,10 +177,53 @@
         .pyramid-container { display: flex; justify-content: center; align-items: flex-end; gap: 1rem; }
         .pyramid { position: relative; cursor: pointer; transition: transform 0.3s ease; display: flex; flex-direction: column; align-items: center; }
         .pyramid:hover { transform: translateY(-5px); }
-        .pyramid-shape { background: linear-gradient(45deg, #4a4a4a, #1a1a1a); width: 100%; aspect-ratio: 2 / 1; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); position: relative; }
-        .pyramid.center { width: 220px; }
-        .pyramid.center .pyramid-shape { background: linear-gradient(45deg, #DAA520, #B8860B); }
-        .pyramid.side { width: 80px; transform: translateY(30px); }
+        
+        /* OPTION A: EARTHY AND ROOTED (Default Look) */
+        .pyramid-shape {
+            background: linear-gradient(135deg, #5c6c49, #4a5c37, #3b4d2c);
+            width: 100%;
+            aspect-ratio: 2 / 1;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            position: relative;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4), inset 0 0 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.5s ease-in-out; /* Smooth transition */
+        }
+        .pyramid.center .pyramid-shape {
+            background: linear-gradient(135deg, #c4a13e, #8f7932, #5e4c25);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4), inset 0 0 8px rgba(0, 0, 0, 0.2);
+        }
+        .pyramid.center { 
+            width: 450px;
+        }
+        .pyramid.side {
+            width: 150px;
+            transform: translateY(30px);
+        }
+        .pyramid::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150%;
+            height: 20px;
+            background: radial-gradient(ellipse at center, rgba(39, 52, 28, 0.7), transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(8px);
+        }
+        
+        /* OPTION C: ETHEREAL AND GLOWING (Temporary State) */
+        .pyramid-glowing .pyramid-shape {
+            background: linear-gradient(135deg, rgba(74, 85, 104, 0.8), rgba(26, 26, 26, 0.8));
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8), inset 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        .pyramid-glowing.center .pyramid-shape {
+            background: linear-gradient(135deg, #DAA520, #B8860B);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8), inset 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
         .pyramid-name { margin-top: 0.75rem; font-family: 'Spectral', serif; color: var(--primary-night); text-shadow: 0 0 8px rgba(255, 215, 0, 0.7); }
         .whisper-box { min-height: 80px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-style: italic; font-size: clamp(0.9rem, 1.5vw, 1.1rem); max-width: 90%; width: 100%; position: relative; }
         .whisper-box.loading::after { content: '...'; animation: blinking-dots 1.5s infinite; position: absolute; color: var(--primary-night); font-size: 2rem;}
@@ -253,33 +296,43 @@
         .shooting-beam {
             position: fixed;
             z-index: 999;
-            transform-origin: top center;
+            transform-origin: bottom center;
             width: 25px;
             overflow: hidden;
             transition: height 1s cubic-bezier(0.25, 1, 0.5, 1);
             pointer-events: none;
-            background: linear-gradient(to bottom, rgba(255, 215, 0, 0), rgba(255, 215, 0, 0.7), rgba(255, 215, 0, 0));
-            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.7));
-            border-radius: 50%;
+            background: transparent; /* Changed to transparent to get rid of the "flashlight" effect */
         }
         .shooting-beam.is-hiding {
             opacity: 0 !important;
             transition: opacity 1.5s ease-out;
         }
+        /* Beam Color Variations */
+        .shooting-beam.gold .shooting-beam-inner {
+            color: #FFD700;
+            text-shadow: 0 0 12px #FFD700, 0 0 20px #FFD700;
+        }
+        .shooting-beam.green .shooting-beam-inner {
+            color: #00FF00;
+            text-shadow: 0 0 12px #00FF00, 0 0 20px #00FF00;
+        }
+        .shooting-beam.red .shooting-beam-inner {
+            color: #FF0000;
+            text-shadow: 0 0 12px #FF0000, 0 0 20px #FF0000;
+        }
+
         .shooting-beam-inner {
             width: 100%;
             height: 100%;
             font-family: 'RunicFont', 'Spectral', serif;
-            font-size: 16px;
-            color: #fff;
-            text-shadow: 0 0 4px #FFD700, 0 0 8px #FFD700;
-            animation: scroll-runes 4s linear infinite;
+            font-size: 30px; /* Made runes much bigger */
+            animation: scroll-runes 6s linear infinite; /* Slower scroll */
             text-align: center;
             line-height: 1.5;
         }
         @keyframes scroll-runes {
             from { transform: translateY(0%); }
-            to { transform: translateY(-30%); }
+            to { transform: translateY(-70%); }
         }
 
         #runic-translation-output {
@@ -314,7 +367,6 @@
     </div>
 
     <div class="menu-container">
-        <!-- Replaced the moon button with a tri-dash (hamburger) icon -->
         <button id="menuButton" aria-label="Open portal navigation">
             <div class="hamburger-menu" id="hamburgerMenu">
                 <span></span>
@@ -353,7 +405,22 @@
                     <p class="text-gray-300 text-sm">Until the last meteor falls this week, the veil is thin. All new Keepers will have their offering rune etched in starlight.</p>
                 </div>
                 <p class="text-yellow-400 mb-4 text-center">Touch a pyramid to listen to the ancient echoes.</p>
-                <div class="pyramids-visual-group" id="pyramidGroup"><div class="pyramid-container"><button class="pyramid side" data-pyramid="dragon" aria-label="Touch the Dragon Pyramid"><div class="pyramid-shape"></div><h3 class="pyramid-name">Dragon</h3></button><button class="pyramid center" data-pyramid="sun" aria-label="Touch the Sun Pyramid"><div class="pyramid-shape"></div><h3 class="pyramid-name">Sun</h3></button><button class="pyramid side" data-pyramid="moon" aria-label="Touch the Moon Pyramid"><div class="pyramid-shape"></div><h3 class="pyramid-name">Moon</h3></button></div></div>
+                <div class="pyramids-visual-group" id="pyramidGroup">
+                    <div class="pyramid-container">
+                        <button class="pyramid side" data-pyramid="dragon" aria-label="Touch the Dragon Pyramid">
+                            <div class="pyramid-shape"></div>
+                            <h3 class="pyramid-name">Dragon</h3>
+                        </button>
+                        <button class="pyramid center" data-pyramid="sun" aria-label="Touch the Sun Pyramid">
+                            <div class="pyramid-shape"></div>
+                            <h3 class="pyramid-name">Sun</h3>
+                        </button>
+                        <button class="pyramid side" data-pyramid="moon" aria-label="Touch the Moon Pyramid">
+                            <div class="pyramid-shape"></div>
+                            <h3 class="pyramid-name">Moon</h3>
+                        </button>
+                    </div>
+                </div>
                 <div class="whisper-box content-box" id="whisperBox"><div class="runic-text" id="runicOutput">Click a pyramid to begin...</div><div class="english-translation" id="englishOutput"></div><button class="runic-toggle hidden" id="toggleTranslation">Show Translation</button></div>
                 <div id="guidance-prompt" class="hidden text-center mt-4 opacity-0">
                     <a href="#visoko" data-page="visoko" class="page-link text-yellow-400/80 hover:text-yellow-400 font-spectral italic text-lg">You've heard the echo. Discover its source in the Valley Map...</a>
@@ -370,19 +437,18 @@
                     <h2 class="page-title">Explore the Valley</h2>
                     <p class="page-intro">Each location in the valley has its own unique energy, its own secret to share. Click a hotspot on the map to discover its lore and attune to its runic frequency.</p>
                     <div id="map-container">
-                        <img src="map.png?text=Map+of+Visoko+Valley" alt="Map of the Visoko Valley">
+                        <img src="https://placehold.co/600x400/1F2937/FCD34D?text=Map+of+Visoko+Valley" alt="Map of the Visoko Valley">
                         <div class="hotspot" style="top: 35%; left: 45%;" data-point="sun"></div>
                         <div class="hotspot" style="top: 55%; left: 20%;" data-point="moon"></div>
                         <div class="hotspot" style="top: 58%; left: 70%;" data-point="dragon"></div>
                         <div class="hotspot" style="top: 75%; left: 48%;" data-point="tunnels"></div>
                     </div>
-                    <!-- Updated section for ancient artifacts with working placeholder images -->
                     <div class="mt-12 border-t border-gray-600 pt-6">
                         <h3 class="text-2xl font-bold text-yellow-400 mb-2 font-spectral">Ancient Artifacts</h3>
                         <p class="mb-4">The expedition has uncovered more than just colossal structures. Fragments of a forgotten civilization echo in the artifacts they left behind. These discoveries hint at a profound spiritual and technological understanding.</p>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
-                                <img src="runic11.png?text=Megalithic+Stone" alt="Megalithic Stones with symbols" class="rounded-xl shadow-lg mb-4 w-full h-auto">
+                                <img src="https://placehold.co/400x250/1F2937/FCD34D?text=Megalithic+Stone" alt="Megalithic Stones with symbols" class="rounded-xl shadow-lg mb-4 w-full h-auto">
                                 <div class="space-y-2">
                                     <div class="flex items-center space-x-2">
                                         <span class="runic-icon text-3xl">ᛟ</span>
@@ -392,7 +458,7 @@
                                 </div>
                             </div>
                             <div>
-                                <img src="runic2.png?text=Runic+Carvings" alt="The Ravne Megalith with runic carvings" class="rounded-xl shadow-lg mb-4 w-full h-auto">
+                                <img src="https://placehold.co/400x250/1F2937/FCD34D?text=Runic+Carvings" alt="The Ravne Megalith with runic carvings" class="rounded-xl shadow-lg mb-4 w-full h-auto">
                                 <div class="space-y-2">
                                     <div class="flex items-center space-x-2">
                                         <span class="runic-icon text-3xl">ᚷ</span>
@@ -402,7 +468,7 @@
                                 </div>
                             </div>
                             <div>
-                                <img src="runic7.png?text=Organic+Materials" alt="Aerial view of the Pyramid of the Sun" class="rounded-xl shadow-lg mb-4 w-full h-auto">
+                                <img src="https://placehold.co/400x250/1F2937/FCD34D?text=Organic+Materials" alt="Aerial view of the Pyramid of the Sun" class="rounded-xl shadow-lg mb-4 w-full h-auto">
                                 <div class="space-y-2">
                                     <div class="flex items-center space-x-2">
                                         <span class="runic-icon text-3xl">ᛋ</span>
@@ -421,13 +487,31 @@
                                     <p class="text-gray-400">Unusual crystal structures, often with sharp, pyramid-like facets, have been discovered in the tunnels. It is believed that these formations act as a natural technology, amplifying the surrounding energy fields for a purpose we are yet to understand.</p>
                                 </div>
                             </div>
+                            <div>
+                                <img src="https://placehold.co/400x250/1F2937/FCD34D?text=Ancient+Compass" alt="Ancient magnetic compass" class="rounded-xl shadow-lg mb-4 w-full h-auto">
+                                <div class="space-y-2">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="runic-icon text-3xl">ᛗ</span>
+                                        <h4 class="font-semibold text-lg text-yellow-300">Ancient Compass</h4>
+                                    </div>
+                                    <p class="text-gray-400">A mysterious circular stone, found near the tunnel entrance, appears to be a form of ancient compass. It doesn't point north, but seems to be drawn to the strongest energy source within the tunnels.</p>
+                                </div>
+                            </div>
+                            <div>
+                                <img src="https://placehold.co/400x250/1F2937/FCD34D?text=Resonance+Crystal" alt="Crystal with intricate pattern" class="rounded-xl shadow-lg mb-4 w-full h-auto">
+                                <div class="space-y-2">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="runic-icon text-3xl">ᛏ</span>
+                                        <h4 class="font-semibold text-lg text-yellow-300">Resonance Crystal</h4>
+                                    </div>
+                                    <p class="text-gray-400">Uniquely faceted crystals that hum with a low frequency when placed near the pyramid's core. These crystals are believed to have been used to amplify and focus the natural energy fields of the area.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <!-- Full Runic Alphabet -->
                     <div class="mt-12 border-t border-gray-600 pt-6">
                         <h3 class="text-2xl font-bold text-yellow-400 mb-2 font-spectral">The Elder Futhark</h3>
                         <p class="mb-4 text-center">The full runic alphabet, the foundation of the ancient script, is divided into three groups known as Aettir.</p>
-                        <!-- Freyja's Aett -->
                         <div class="bg-gray-900/50 p-6 rounded-lg mb-8">
                             <h4 class="text-xl font-bold text-yellow-300 mb-4 font-spectral">Freyja's Aett (ᚠᚢᚦᚨᚱᚲᚷᚹ)</h4>
                             <p class="text-gray-400 mb-4">This aett governs creation, physical reality, and prosperity.</p>
@@ -443,7 +527,6 @@
                             </div>
                         </div>
 
-                        <!-- Heimdall's Aett -->
                         <div class="bg-gray-900/50 p-6 rounded-lg mb-8">
                             <h4 class="text-xl font-bold text-yellow-300 mb-4 font-spectral">Heimdall's Aett (ᚺᚾᛁᛃᛇᛈᛉᛋ)</h4>
                             <p class="text-gray-400 mb-4">This aett deals with challenges, fate, and the forces of nature.</p>
@@ -459,7 +542,6 @@
                             </div>
                         </div>
 
-                        <!-- Tyr's Aett -->
                         <div class="bg-gray-900/50 p-6 rounded-lg">
                             <h4 class="text-xl font-bold text-yellow-300 mb-4 font-spectral">Tyr's Aett (ᛏᛒᛖᛗᛚᛜᛟᛞ)</h4>
                             <p class="text-gray-400 mb-4">This aett represents spiritual evolution and destiny.</p>
@@ -671,7 +753,7 @@ document.addEventListener('DOMContentLoaded', () => {
             isGenerating = false;
         }, 1500);
     }
-
+    
     function showLoreModal(point) {
         const data = mapLore[point];
         if (data && loreModal) {
@@ -710,39 +792,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function fireRunicBeam(targetElement) {
+    function fireRunicBeam(pyramidElement, color) {
         if (isBeamActive) return;
         isBeamActive = true;
-        beamElement.classList.remove('is-hidden');
-    
-        const menuBtn = document.getElementById('menuButton');
-        if (!menuBtn || !targetElement) { isBeamActive = false; return; }
-    
-        const menuRect = menuBtn.getBoundingClientRect();
-        const targetRect = targetElement.getBoundingClientRect();
-        const menuX = menuRect.left + menuRect.width / 2;
-        const menuY = menuRect.top + menuRect.height / 2;
-        const targetX = targetRect.left + targetRect.width / 2;
-        const targetY = targetRect.top;
-    
-        const deltaX = targetX - menuX;
-        const deltaY = targetY - menuY;
-        const distance = Math.hypot(deltaX, deltaY);
-        const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
         
-        const runeChars = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛋᛏᛒᛖᛗᛚᛜᛟᛞ';
-        beamInner.innerHTML = (runeChars.repeat(6)).split('').sort(() => 0.5 - Math.random()).join('<br>');
+        const pyramidRect = pyramidElement.querySelector('.pyramid-shape').getBoundingClientRect();
+        const beamElement = document.getElementById('runicBeam');
+        const beamInner = beamElement.querySelector('.shooting-beam-inner');
+
+        // Remove old color classes and add the new one
+        beamElement.classList.remove('is-hidden', 'gold', 'green', 'red');
+        beamElement.classList.add(color);
+
+        // Position the beam at the top center of the pyramid shape
+        const pyramidX = pyramidRect.left + pyramidRect.width / 2;
+        const pyramidY = pyramidRect.top;
         
         beamElement.style.height = '0px';
-        beamElement.style.left = `${menuX - 12.5}px`; // Center beam
-        beamElement.style.top = `${menuY}px`;
-        beamElement.style.transform = `rotate(${angle + 90}deg)`;
+        beamElement.style.left = `${pyramidX - 12.5}px`; // Center beam (beam width is 25px)
+        beamElement.style.top = `${pyramidY}px`;
+        beamElement.style.transform = `rotate(0deg)`; // Ensure it shoots straight up
         
         beamElement.classList.remove('is-hiding');
         beamElement.style.opacity = '1';
     
+        // Animate the beam's height to extend into the sky
         requestAnimationFrame(() => {
-            beamElement.style.height = `${distance}px`;
+            const viewportHeight = window.innerHeight;
+            const beamHeight = viewportHeight - pyramidY;
+            beamElement.style.height = `${beamHeight}px`;
         });
     
         setTimeout(() => {
@@ -763,7 +841,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initialEntryOverlay.addEventListener('click', () => {
         initialEntryOverlay.classList.add('hidden');
         mainContentArea.classList.add('active');
-        // The original menu hint is not needed with the hamburger menu.
+        showPage('home'); 
+
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         initParticles();
@@ -802,7 +881,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const pyramidElement = e.target.closest('.pyramid');
         if (pyramidElement) {
             getAncientCounsel();
-            fireRunicBeam(pyramidElement);
+            
+            let beamColor = 'gold'; // Default color for the sun pyramid
+            if (pyramidElement.dataset.pyramid === 'moon') {
+                beamColor = 'green';
+            } else if (pyramidElement.dataset.pyramid === 'dragon') {
+                beamColor = 'red';
+            }
+            fireRunicBeam(pyramidElement, beamColor);
+            
+            // NEW CODE: Adds glowing effect
+            pyramidElement.classList.add('pyramid-glowing');
+            setTimeout(() => {
+                pyramidElement.classList.remove('pyramid-glowing');
+            }, 4000); // Resets after 4 seconds
         }
     });
 
@@ -876,7 +968,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
-
-
-
-
