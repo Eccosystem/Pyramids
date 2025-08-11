@@ -12,71 +12,47 @@
     
     <style>
         :root {
-            --night-bg-start: #020617;
-            --night-bg-end: #000000;
-            --primary-night: #FFD700;
-            --secondary-night: #e0e0e0;
+            --night-bg-start: #020617; --night-bg-end: #000000;
+            --primary-night: #FFD700; --secondary-night: #e0e0e0;
         }
         @font-face {
-          font-family: 'RunicFont';
-          src: url('fonts/NotoSansRunic-Regular.woff2') format('woff2');
-          font-weight: normal;
-          font-style: normal;
-          font-display: swap;
+            font-family: 'RunicFont'; src: url('fonts/NotoSansRunic-Regular.woff2') format('woff2');
+            font-weight: normal; font-style: normal; font-display: swap;
         }
         @media (prefers-reduced-motion: reduce) {
             body, .main-content-area, .pyramid, .celestial-body, .beam, #interactive-background, .hotspot {
-                animation: none !important;
-                transition: none !important;
+                animation: none !important; transition: none !important;
             }
         }
         html { scroll-behavior: smooth; }
         body {
-            font-family: 'Inter', sans-serif;
-            display: flex; flex-direction: column; justify-content: flex-start;
-            align-items: center; margin: 0; overflow-x: hidden; position: relative;
+            font-family: 'Inter', sans-serif; display: flex; flex-direction: column;
+            justify-content: flex-start; align-items: center; margin: 0; overflow-x: hidden; position: relative;
             background-image: url('https://images.pexels.com/photos/1252890/pexels-photo-1252890.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
-            background-color: #000000; /* Fallback color */
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+            background-color: #000000; background-size: cover; background-position: center center;
+            background-repeat: no-repeat; background-attachment: fixed;
         }
         #interactive-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1; 
-            transition: opacity 2s ease-in-out;
-            pointer-events: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; transition: opacity 2s ease-in-out; pointer-events: none;
         }
-        .main-content-area { z-index: 10; }
-        .moon-orbit { z-index: 20; }
-        
-        body::before {
-            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            transition: opacity 2s ease-in-out; background-attachment: fixed; z-index: 0;
-            background-image: none; /* Replaced by canvas */
-        }
+        .hidden { display: none !important; }
         .main-content-area {
-            width: 95%; max-width: 900px; display: flex; flex-direction: column;
-            align-items: center; padding: 1rem; box-sizing: border-box;
-            opacity: 0; transition: opacity 1.5s ease-in-out;
+            z-index: 10; width: 95%; max-width: 900px; display: flex;
+            flex-direction: column; align-items: center; padding: 1rem; box-sizing: border-box;
+            opacity: 0; transition: opacity 1.5s ease-in-out; min-height: 100vh;
         }
         .main-content-area.active { opacity: 1; }
+        main { flex-grow: 1; width: 100%; display: flex; flex-direction: column; align-items: center;}
         .app-header {
             width: 100%; display: flex; justify-content: space-between;
             align-items: center; padding: 1rem 0; z-index: 20;
         }
         .title-container { text-align: left; flex-grow: 1; }
         .app-header h1 {
-            font-family: 'RunicFont', 'Spectral', serif;
-            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            font-family: 'RunicFont', 'Spectral', serif; font-size: clamp(1.5rem, 4vw, 2.2rem);
             margin: 0; text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-            animation: title-glow 4s infinite alternate; color: var(--primary-night);
-            letter-spacing: 0.1em;
+            animation: title-glow 4s infinite alternate; color: var(--primary-night); letter-spacing: 0.1em;
         }
         .runic-subtitle {
             font-family: 'Spectral', serif; font-size: clamp(0.8rem, 2vw, 1rem);
@@ -87,7 +63,26 @@
             from { text-shadow: 0 0 15px rgba(255, 215, 0, 0.6); color: var(--primary-night); }
             to { text-shadow: 0 0 20px rgba(255, 180, 0, 0.9); color: #fff8e1; }
         }
-        .menu-button { display: none; }
+        .menu-container {
+            position: fixed; top: 1rem; right: 1rem; z-index: 1001;
+        }
+        .celestial-body {
+            width: 60px; height: 60px; border-radius: 50%;
+            background-size: cover; background-position: center; cursor: pointer;
+            user-select: none; pointer-events: auto; display: flex; justify-content: center;
+            align-items: center; background-image: url('menu-moon.png');
+            box-shadow: 0 0 15px 3px rgba(255, 255, 255, 0.5), 0 0 35px 10px rgba(255, 215, 0, 0.2);
+            animation: subtle-pulse 5s infinite ease-in-out; transition: all 0.3s ease-in-out;
+        }
+        @keyframes subtle-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+        .celestial-body:hover { transform: scale(1.05); }
+        .menu-hint-label {
+            color: white; font-family: 'Spectral', serif; font-size: 1rem; font-weight: bold;
+            letter-spacing: 0.1em; text-shadow: 0 0 8px black; pointer-events: none;
+        }
         .overlay-menu {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(10, 0, 20, 0.95); display: flex; flex-direction: column;
@@ -100,1813 +95,500 @@
             color: var(--primary-night); font-size: 2rem; cursor: pointer; transition: transform 0.3s ease;
         }
         .overlay-menu-close:hover { transform: rotate(90deg); }
-
-        /* --- Styles for the two-column grid menu --- */
-        .overlay-menu nav {
-            width: 100%;
-            max-width: 700px; /* Wider for two columns */
-            padding: 0 1rem;
-        }
-
+        .overlay-menu nav { width: 100%; max-width: 700px; padding: 0 1rem; }
         .overlay-menu nav ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* The two-column magic */
-            gap: 1.5rem 2.5rem; /* Row gap and Column gap */
+            list-style: none; padding: 0; margin: 0; display: grid;
+            grid-template-columns: 1fr 1fr; gap: 1.5rem 2.5rem;
         }
-
+        .overlay-menu nav ul li { position: relative; }
+        .menu-divider::after {
+            content: ''; position: absolute; bottom: -0.75rem; left: 10%;
+            width: 80%; height: 1px; background-color: rgba(255, 215, 0, 0.2);
+        }
         .overlay-menu nav ul li a {
-            color: var(--secondary-night);
-            font-size: clamp(1rem, 2.5vw, 1.3rem); /* Slightly smaller to fit nicely */
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: all 0.3s ease;
-            font-family: 'Spectral', serif;
-            text-shadow: none;
+            color: var(--secondary-night); text-decoration: none;
+            display: flex; align-items: center; gap: 1rem;
+            transition: all 0.3s ease; font-family: 'Spectral', serif; text-shadow: none; padding: 0.5rem 0;
         }
-
         .overlay-menu nav ul li a:hover {
-            color: var(--primary-night);
-            transform: translateX(10px);
+            color: var(--primary-night); transform: translateX(10px);
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
         }
-
         .runic-icon {
-            font-family: 'RunicFont', 'Spectral', serif;
-            font-size: 2rem;
-            color: var(--primary-night);
-            transition: all 0.3s ease;
-            flex-shrink: 0;
+            font-family: 'RunicFont', 'Spectral', serif; font-size: 2rem;
+            color: var(--primary-night); transition: all 0.3s ease; flex-shrink: 0;
         }
-
-        .menu-text {
-            text-align: left;
-        }
-
+        .menu-text-group { display: flex; flex-direction: column; text-align: left; }
+        .menu-title { font-size: clamp(1rem, 2.5vw, 1.3rem); }
+        .menu-subtitle { font-size: 0.75rem; color: #a0aec0; transition: color 0.3s ease; opacity: 0.8; }
+        .overlay-menu nav ul li a:hover .menu-subtitle { color: var(--primary-night); }
         .overlay-menu nav ul li a:hover .runic-icon {
-            transform: scale(1.2);
-            filter: drop-shadow(0 0 8px var(--primary-night));
+            transform: scale(1.2); filter: drop-shadow(0 0 8px var(--primary-night));
         }
-
-        .overlay-menu-close svg {
-            color: var(--primary-night);
-            transition: transform 0.3s ease, filter 0.3s ease;
-            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
-        }
-
-        .overlay-menu-close:hover svg {
-            transform: rotate(90deg);
-            filter: drop-shadow(0 0 10px var(--primary-night));
-        }
-        /* --- End of menu styles --- */
-
-        .pyramids-visual-group {
-            position: relative; width: 100%; display: flex; justify-content: center; align-items: flex-end;
-            margin-top: 2rem; min-height: 350px;
-        }
-        .pyramid-container {
-            display: flex; justify-content: center; align-items: flex-end; gap: 1rem;
-        }
-        .pyramid {
-            position: relative; cursor: pointer; transition: transform 0.3s ease;
-            display: flex; flex-direction: column; align-items: center;
-        }
-        .pyramid:hover { transform: translateY(-5px); }
-        .pyramid-shape {
-            background: linear-gradient(45deg, #4a4a4a, #1a1a1a);
-            width: 100%; aspect-ratio: 2 / 1; clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-            position: relative;
-            animation: pyramid-base-glow 8s ease-in-out infinite alternate;
-            transition: filter 0.3s ease-in-out;
-        }
-        .pyramid-shape::before {
-            content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 50%);
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%); opacity: 0.7;
-        }
-        .pyramid-shape::after {
-            content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 30%);
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-        }
-        
-        @keyframes pyramid-base-glow {
-            from { filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.2)); }
-            to { filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4)); }
-        }
-        .pyramid.center .pyramid-shape {
-            animation-name: pyramid-base-glow-gold;
-        }
-        @keyframes pyramid-base-glow-gold {
-            from { filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4)); }
-            to { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.7)); }
-        }
-        .pyramid-shape.charging {
-            animation: pyramid-charge-glow 1s ease-out;
-        }
-        @keyframes pyramid-charge-glow {
-            0% { filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4)); }
-            50% { filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.8)); }
-            100% { filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4)); }
-        }
-        .pyramid.center .pyramid-shape.charging {
-            animation-name: pyramid-charge-glow-gold;
-        }
-        @keyframes pyramid-charge-glow-gold {
-            0% { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.7)); }
-            50% { filter: drop-shadow(0 0 50px rgba(255, 215, 0, 1)); }
-            100% { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.7)); }
-        }
-
-        .pyramid-name {
-            margin-top: 0.75rem; font-family: 'Spectral', serif;
-            color: var(--primary-night); text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
-        }
-        .pyramid.center { width: 220px; }
-        .pyramid.center .pyramid-shape { background: linear-gradient(45deg, #DAA520, #B8860B); }
-        .pyramid.side { width: 80px; transform: translateY(30px); }
-        .pyramid.side:hover { transform: translateY(25px); }
-        .pyramid.night .pyramid-shape {
-             background: linear-gradient(45deg, #191970, #000080);
-        }
-
-        .beam {
-            position: absolute; bottom: 95%; left: 50%; width: 15px; height: 100vh;
-            transform-origin: bottom center; background: linear-gradient(to top, var(--beam-color-start), var(--beam-color-end));
-            opacity: 0; filter: blur(8px); animation: beam-flicker 4s ease-in-out infinite;
-        }
-        .beam.red { --beam-color-start: rgba(255, 60, 60, 0.8); --beam-color-end: rgba(255, 120, 120, 0); animation-delay: 1s; }
-        .beam.green { --beam-color-start: rgba(80, 255, 80, 0.8); --beam-color-end: rgba(120, 255, 120, 0); animation-delay: 0s; }
-        .beam.gold { --beam-color-start: rgba(255, 215, 0, 0.8); --beam-color-end: rgba(255, 225, 50, 0); animation-delay: 0.5s; }
-        .beam.blue { 
-            --beam-color-start: rgba(80, 80, 255, 0.8); 
-            --beam-color-end: rgba(120, 120, 255, 0); 
-            animation-delay: 1.5s;
-        }
-        @keyframes beam-flicker {
-            0%, 100% { transform: translateX(-50%) scaleY(0.95); opacity: 0.7; }
-            10% { transform: translateX(-50%) scaleY(1); opacity: 0.9; }
-            20% { transform: translateX(-50%) scaleY(0.98); opacity: 0.8; }
-            30% { transform: translateX(-50%) scaleY(1.02); opacity: 0.95; }
-            40%, 60% { transform: translateX(-50%) scaleY(1); opacity: 0.85; }
-            50% { transform: translateX(-50%) scaleY(0.95); opacity: 0.7; }
-            70% { transform: translateX(-50%) scaleY(1); opacity: 0.9; }
-            80% { transform: translateX(-50%) scaleY(0.97); opacity: 0.75; }
-            90% { transform: translateX(-50%) scaleY(1); opacity: 0.9; }
-        }
-        .echo-counter {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            margin-top: 1rem; padding: 1rem; width: 100%; max-width: 250px;
-            background-color: rgba(255, 215, 0, 0.05); border: 1px solid var(--primary-night);
-            border-radius: 10px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-            text-align: center; transition: all 0.5s ease-in-out;
-        }
-        .echo-counter-label {
-            font-family: 'Spectral', serif; color: var(--primary-night); font-size: clamp(0.9rem, 1.5vw, 1.1rem);
-            text-transform: uppercase; letter-spacing: 0.1em; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-            transition: color 0.5s, text-shadow 0.5s;
-        }
-        .echo-counter-value {
-            font-family: 'Spectral', serif; font-size: clamp(2rem, 5vw, 3rem); color: var(--primary-night);
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7); margin-top: 0.5rem;
-            animation: text-glow 3s infinite alternate; transition: color 0.5s, text-shadow 0.5s;
-        }
-        @keyframes text-glow {
-            from { text-shadow: 0 0 10px rgba(255, 215, 0, 0.7); }
-            to { text-shadow: 0 0 20px rgba(255, 215, 0, 0.9); }
-        }
-        .whisper-box {
-            background-color: rgba(0, 0, 0, 0.5); border: 1px solid #4A5568;
-            border-radius: 0.75rem; padding: 1.2rem; margin-top: 1.5rem;
-            min-height: 80px; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; text-align: center;
-            font-style: italic; font-size: clamp(0.9rem, 1.5vw, 1.1rem); max-width: 90%;
-            width: 100%; position: relative;
-        }
-        .whisper-box.loading::after { content: '...'; animation: blinking-dots 1.5s infinite; position: absolute; }
-        @keyframes blinking-dots { 0%{opacity: 0;} 50%{opacity: 1;} 100%{opacity: 0;} }
-        .runic-text {
-            font-family: 'Spectral', serif; font-size: clamp(1.5rem, 3vw, 2.2rem);
-            color: var(--primary-night); text-shadow: 0 0 10px rgba(255, 215, 0, 0.6); min-height: 1.5em;
-        }
-        .english-translation {
-            color: var(--secondary-night); opacity: 0; max-height: 0; overflow: hidden;
-            transition: opacity 0.5s ease, max-height 0.5s ease;
-        }
-        .english-translation.visible { opacity: 1; max-height: 500px; margin-top: 0.5rem; }
-        .runic-toggle {
-            background: none; border: 1px solid var(--primary-night); color: var(--primary-night); cursor: pointer;
-            padding: 0.25rem 0.5rem; border-radius: 0.25rem; transition: all 0.3s;
-            margin-top: 1rem; display: none;
-        }
-        .runic-toggle:hover { background-color: rgba(255,215,0,0.1); }
-        .post-reading-message {
-            margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #4a5568;
-            text-align: center; color: #a0aec0; font-style: italic; display: none;
-        }
-        .post-reading-message .donate-button-small {
-            margin-top: 1rem; display: inline-block; background: #5a6578; color: #ffcc00;
-            padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: bold; transition: all 0.3s ease;
-        }
-        .post-reading-message .donate-button-small:hover { background: #6a7588; transform: translateY(-2px); }
-        .user-input-section {
-            display: flex; flex-direction: column; align-items: center; width: 90%; max-width: 500px;
-            margin-top: 1.5rem; gap: 0.75rem;
-        }
-        .whisper-button {
-            background: linear-gradient(to bottom right, #5a6578, #3d4758); color: #ffcc00;
-            padding: 0.6rem 1.2rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer;
-            transition: all 0.3s ease; border: none; width: 100%;
-        }
-        .whisper-button:hover { background: linear-gradient(to bottom right, #6a7588, #4d5768); transform: translateY(-2px); }
-        .whisper-button:disabled { background: #3d4758; color: #a0aec0; cursor: not-allowed; }
         .page { display: none; width: 100%; }
-        .page.active { display: flex; flex-direction: column; align-items: center; animation: fadeIn 1s ease; }
+        .page.active { display: flex; flex-direction: column; align-items: center; animation: fadeIn 1s ease; width: 100%;}
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .page-content-container {
             width: 100%; max-width: 900px; background-color: rgba(0,0,0,0.6);
             border: 1px solid #4a5568; border-radius: 1rem; padding: 2rem; margin-top: 1.5rem;
         }
-        #messageFeedback { color: var(--primary-night); font-style: italic; margin-top: 1rem; min-height: 4em; }
-        #runeDisplay {
-            font-family: 'Spectral', serif; font-size: 3rem; letter-spacing: 0.5rem;
-            color: var(--primary-night); text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-            margin-top: 1.5rem; min-height: 1.5em;
+        h2.page-title { text-align: center; font-size: clamp(2rem, 5vw, 2.5rem); font-family: 'Spectral', serif; color: var(--primary-night); text-shadow: 0 0 10px var(--primary-night); margin-bottom: 1.5rem; }
+        p.page-intro { text-align: center; color: var(--secondary-night); font-style: italic; max-width: 650px; margin: 0 auto 2rem; line-height: 1.6; }
+        .content-box { background-color: rgba(0,0,0,0.5); border: 1px solid #4A5568; border-radius: 0.75rem; padding: 1.2rem; margin-top: 1.5rem; }
+        .pyramids-visual-group { position: relative; width: 100%; display: flex; justify-content: center; align-items: flex-end; margin-top: 2rem; min-height: 350px; }
+        .pyramid-container { display: flex; justify-content: center; align-items: flex-end; gap: 1rem; }
+        .pyramid { position: relative; cursor: pointer; transition: transform 0.3s ease; display: flex; flex-direction: column; align-items: center; }
+        .pyramid:hover { transform: translateY(-5px); }
+        .pyramid-shape { background: linear-gradient(45deg, #4a4a4a, #1a1a1a); width: 100%; aspect-ratio: 2 / 1; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); position: relative; }
+        .pyramid.center { width: 220px; }
+        .pyramid.center .pyramid-shape { background: linear-gradient(45deg, #DAA520, #B8860B); }
+        .pyramid.side { width: 80px; transform: translateY(30px); }
+        .pyramid-name { margin-top: 0.75rem; font-family: 'Spectral', serif; color: var(--primary-night); text-shadow: 0 0 8px rgba(255, 215, 0, 0.7); }
+        .whisper-box { min-height: 80px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-style: italic; font-size: clamp(0.9rem, 1.5vw, 1.1rem); max-width: 90%; width: 100%; position: relative; }
+        .whisper-box.loading::after { content: '...'; animation: blinking-dots 1.5s infinite; position: absolute; color: var(--primary-night); font-size: 2rem;}
+        @keyframes blinking-dots { 0%{opacity: 0;} 50%{opacity: 1;} 100%{opacity: 0;} }
+        .runic-text {
+            font-family: 'Spectral', serif; font-size: clamp(1.5rem, 3vw, 2.2rem);
+            color: var(--primary-night); text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+            min-height: 1.5em;
+            transition: opacity 0.5s ease-in-out;
         }
-        .rune-link {
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            display: inline-block;
-            padding: 0 0.25rem;
+        .english-translation { color: var(--secondary-night); opacity: 0; max-height: 0; overflow: hidden; transition: opacity 0.5s ease, max-height 0.5s ease; }
+        .english-translation.visible { opacity: 1; max-height: 500px; margin-top: 0.5rem; }
+        .bio-accordion-item { border-bottom: 1px solid #4a5568; }
+        .bio-accordion-header {
+            background: none; border: none; width: 100%; text-align: left; padding: 1rem;
+            color: var(--primary-night); font-family: 'Spectral', serif; font-size: 1.25rem;
+            cursor: pointer; display: flex; justify-content: space-between; align-items: center;
         }
-        .rune-link:hover {
-            transform: scale(1.2);
-            color: #fff8e1;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 1);
+        .bio-accordion-header::after { content: '+'; font-size: 1.5rem; transition: transform 0.3s ease; }
+        .bio-accordion-header.active::after { transform: rotate(45deg); }
+        .bio-accordion-content {
+            max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out;
+            padding: 0 1rem; line-height: 1.7; color: #a0aec0;
         }
-        #runeInterpretation { color: var(--secondary-night); font-style: italic; margin-top: 1rem; min-height: 3em; line-height: 1.6; }
-        .storyteller-runes {
-            font-family: 'Spectral', serif; font-size: clamp(2rem, 5vw, 3rem); color: var(--primary-night);
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-        }
-        .storyteller-meaning {
-            font-family: 'Spectral', serif; font-style: italic; color: #a0aec0;
-            font-size: clamp(1rem, 2vw, 1.2rem); margin-top: 0.5rem;
-        }
-        .storyteller-stories { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #4a5568; }
-        .storyteller-stories h3 {
-            font-family: 'Spectral', serif; font-size: 1.5rem; color: var(--primary-night);
-            text-align: center; margin-bottom: 1rem;
-        }
-        .story-card {
-            background-color: rgba(0,0,0,0.3); border: 1px solid #4a5568;
-            border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;
-        }
-        .story-card .story-rune {
-            font-family: 'Spectral', serif; font-size: 2rem; color: var(--primary-night);
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
-        }
+        .bio-accordion-content.active { max-height: 1500px; padding: 0 1rem 1rem; }
+        .bio-accordion-content p { margin-bottom: 1rem; }
+        .bio-accordion-content ul { list-style: disc; list-style-position: inside; margin-left: 1rem; margin-bottom: 1rem; }
+        .bio-accordion-content img { width: 100%; max-width: 300px; height: auto; border-radius: 0.5rem; margin: 1rem auto; display: block; }
+        .donate-button { background: linear-gradient(to bottom right, #DAA520, #B8860B); color: #1a1a1a; padding: 0.8rem 2rem; border-radius: 0.5rem; font-weight: bold; font-size: 1.1rem; text-decoration: none; display: inline-block; transition: all 0.3s ease; }
+        .donate-button:hover { transform: translateY(-2px); box-shadow: 5px 5px 15px rgba(255, 215, 0, 0.3); }
+        .whisper-button { background: linear-gradient(to bottom right, #5a6578, #3d4758); color: #ffcc00; padding: 0.6rem 1.2rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; border: none; width: 100%; }
+        .whisper-button:hover { background: linear-gradient(to bottom right, #6a7588, #4d5768); transform: translateY(-2px); }
+        .app-footer { width: 100%; max-width: 900px; padding: 2rem 1rem 1rem; text-align: center; border-top: 1px solid rgba(255, 215, 0, 0.2); margin-top: auto; }
+        .social-share-buttons { display: flex; justify-content: center; gap: 1rem; }
+        .social-share-button { color: #a0aec0; transition: color 0.3s ease, transform 0.3s ease; }
+        .social-share-button:hover { color: var(--primary-night); transform: scale(1.1); }
+        .social-share-button svg { width: 24px; height: 24px; }
+        .keepers-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin: 1.5rem auto; }
+        .keeper-rune { font-family: 'Spectral', serif; font-size: 2rem; color: var(--primary-night); opacity: 0.6; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        #map-container { position: relative; width: 100%; max-width: 600px; margin: 2rem auto; }
+        #map-container img { width: 100%; height: auto; border-radius: 0.5rem; }
+        .hotspot { position: absolute; width: 25px; height: 25px; background-color: rgba(255, 215, 0, 0.7); border: 2px solid white; border-radius: 50%; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); animation: pulseHotspot 2s infinite; }
+        .hotspot:hover { transform: scale(1.2); background-color: rgba(255, 215, 0, 1); }
+        @keyframes pulseHotspot { 0% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); } 50% { box-shadow: 0 0 25px rgba(255, 215, 0, 1); } 100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); } }
+        #lore-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index: 1100; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        #lore-modal.visible { opacity: 1; pointer-events: auto; }
+        .lore-content { background-color: #10141c; border: 1px solid var(--primary-night); padding: 2rem; border-radius: 1rem; width: 90%; max-width: 500px; position: relative; }
+        .lore-close-button { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--primary-night); font-size: 1.5rem; cursor: pointer; }
+        .story-card { background-color: rgba(0,0,0,0.3); border: 1px solid #4a5568; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; }
+        .story-card .story-rune { font-family: 'Spectral', serif; font-size: 2rem; color: var(--primary-night); }
         .story-card .story-text { color: #e0e0e0; margin-top: 0.5rem; font-style: italic; }
-        .story-card .story-meta {
-            color: #a0aec0; font-size: 0.8rem; margin-top: 0.5rem; display: flex;
-            justify-content: space-between; align-items: center;
+        .story-card .story-meta { color: #a0aec0; font-size: 0.8rem; margin-top: 0.5rem; display: flex; justify-content: space-between; align-items: center; }
+        #enterButton {
+            background-color: transparent; border: 1px solid var(--primary-night);
+            color: var(--primary-night); padding: 0.75rem 1.5rem; border-radius: 0.5rem;
+            font-family: 'Spectral', serif; font-size: clamp(1rem, 2vw, 1.2rem); margin-top: 2rem;
+            cursor: pointer; transition: all 0.3s ease; animation: pulse-glow 3s infinite alternate;
         }
-        .story-card .story-meta .story-author { font-style: normal; }
-        .story-card .story-meta .story-timestamp { font-style: normal; }
-        #homePage { position: relative; }
-        
-        #initialEntryOverlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #000; display: flex; justify-content: center; align-items: center; text-align: center;
-            z-index: 2000; color: var(--primary-night); transition: opacity 1.5s ease-out;
-            cursor: pointer;
-        }
-        #initialEntryOverlay.hidden { opacity: 0; pointer-events: none; }
-        .entry-title { font-size: clamp(1.5rem, 4vw, 2.5rem); font-family: 'Spectral', serif; order: 2; margin-top: 1.5rem;}
-        .entry-instruction {
-            font-size: clamp(1rem, 2vw, 1.5rem); color: var(--secondary-night); opacity: 0.8; margin-top: 1rem; order: 3;
-            animation: pulse-text 2s infinite alternate;
-        }
-        @keyframes pulse-text { from { opacity: 0.8; transform: scale(1); } to { opacity: 1; transform: scale(1.05); } }
-        .entry-runic {
-            font-family: 'RunicFont', 'Spectral', serif;
-            font-size: clamp(2rem, 6vw, 3.5rem);
-            color: var(--primary-night); text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-            letter-spacing: 0.1em; order: 1;
-        }
-        .moon-orbit {
-            position: fixed; top: 5%; left: 5%; width: calc(90% - 80px); height: 80px;
-            animation: move-across 90s linear infinite alternate;
-            pointer-events: none;
-        }
-        @keyframes move-across { from { transform: translateX(0); } to { transform: translateX(100%); } }
-        
-        .celestial-body {
-            width: 80px; height: 80px; border-radius: 50%;
-            transition: all 0.3s ease-in-out;
-            background-size: cover;
-            background-position: center;
-            cursor: pointer;
-            user-select: none;
-            pointer-events: auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-image: url('menu-moon.png');
-            box-shadow: 0 0 15px 3px rgba(255, 255, 255, 0.5), 0 0 35px 10px rgba(255, 215, 0, 0.2);
-            animation: subtle-pulse 5s infinite ease-in-out;
-        }
-        @keyframes subtle-pulse {
-            0%, 100% { box-shadow: 0 0 15px 3px rgba(255, 255, 255, 0.5), 0 0 35px 10px rgba(255, 215, 0, 0.2); transform: scale(1); }
-            50% { box-shadow: 0 0 20px 6px rgba(255, 255, 255, 0.6), 0 0 40px 12px rgba(255, 215, 0, 0.25); transform: scale(1.03); }
-        }
-        .celestial-body:hover {
-            box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.7), 0 0 45px 15px rgba(255, 215, 0, 0.3);
+        #enterButton:hover {
+            background-color: rgba(255, 215, 0, 0.1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
             transform: scale(1.05);
         }
-        .menu-hint-label {
-            position: absolute;
-            color: white;
-            font-family: 'Spectral', serif;
-            font-size: 1rem;
-            font-weight: bold;
-            letter-spacing: 0.1em;
-            text-shadow: 0 0 8px black;
-            pointer-events: none;
-            transition: opacity 1.5s ease-in-out 1s; /* Fade out after 1s delay */
+        @keyframes pulse-glow {
+            from { border-color: rgba(255, 215, 0, 0.7); text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+            to { border-color: rgba(255, 215, 0, 1); text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); }
         }
-
-        .downward-beam {
-            position: fixed;
-            z-index: 15;
-            width: 25px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 1.5s ease-out;
-            color: var(--primary-night);
-            font-family: 'Spectral', serif;
-            font-size: 1rem;
-            text-shadow: 0 0 8px var(--primary-night);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .downward-beam span {
-            display: block;
-            padding-bottom: 0.25rem;
-            animation: rune-shimmer 2s infinite alternate;
-        }
-
-        @keyframes rune-shimmer {
-            from {
-                opacity: 0.4;
-                text-shadow: 0 0 4px var(--primary-night);
-            }
-            to {
-                opacity: 1;
-                text-shadow: 0 0 12px var(--primary-night);
-            }
-        }
-        
-        .meditation-circle {
-            width: clamp(150px, 30vw, 250px); height: clamp(150px, 30vw, 250px);
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.4), transparent);
-            border-radius: 50%; margin: 2rem auto; display: flex;
-            justify-content: center; align-items: center; transition: all 1s ease-in-out;
-        }
-        .meditation-circle.pulsing { animation: pulse-meditation 4s infinite alternate ease-in-out; }
-        @keyframes pulse-meditation {
-            from { transform: scale(1); box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
-            to { transform: scale(1.05); box-shadow: 0 0 50px rgba(255, 215, 0, 0.8); }
-        }
-        .meditation-circle .rune-symbol { font-size: clamp(4rem, 8vw, 6rem); color: var(--primary-night); }
-        .meditation-button {
-            background: #5a6578; color: #ffcc00; padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease;
-        }
-        .meditation-button.active { background: linear-gradient(to bottom, #ffcc00, #b8860b); color: #333; }
-        .meditation-call-to-action {
-            margin-top: 1.5rem; text-align: center;
-            color: #a0aec0; font-style: italic;
-        }
-        .rune-alphabet-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-            gap: 1rem; margin-top: 2rem; padding-top: 1.5rem;
-            border-top: 1px solid #4a5568; width: 100%;
-        }
-        .rune-alphabet-item {
-            display: flex; flex-direction: column; align-items: center;
-            background-color: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 0.5rem;
-            cursor: pointer; /* Make it look clickable */
-            transition: background-color 0.3s ease;
-        }
-        .rune-alphabet-item:hover {
-            background-color: rgba(255, 215, 0, 0.1); /* Add a hover effect */
-        }
-        .rune-alphabet-char { font-family: 'Spectral', serif; font-size: 2rem; color: var(--primary-night); }
-        .rune-alphabet-name { font-size: 0.8rem; color: #a0aec0; margin-top: 0.25rem; }
-        .rune-history {
-            margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #4a5568;
-            width: 100%; text-align: left; line-height: 1.7; color: #a0aec0;
-        }
-        .rune-history h3 {
-            font-family: 'Spectral', serif; font-size: 1.5rem; color: var(--primary-night);
-            text-align: center; margin-bottom: 1rem;
-        }
-        .rune-image-gallery {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem; margin-top: 2rem; padding-top: 1.5rem;
-            border-top: 1px solid #4a5568; width: 100%;
-        }
-        .rune-image-gallery img {
-            width: 100%; height: auto; border-radius: 0.5rem;
-            border: 1px solid #4a5568; object-fit: cover; aspect-ratio: 4 / 3;
-        }
-        .about-call-to-action {
-            margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #4a5568;
-        }
-        .about-call-to-action h3 {
-            font-family: 'Spectral', serif; font-size: 1.5rem; color: var(--primary-night);
-            margin-bottom: 0.5rem; text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
-        }
-        .donate-button {
-            background: linear-gradient(to bottom right, #DAA520, #B8860B);
-            color: #1a1a1a; padding: 0.8rem 2rem; border-radius: 0.5rem;
-            font-weight: bold; font-size: 1.1rem; text-decoration: none;
-            display: inline-block; transition: all 0.3s ease;
-        }
-        .donate-button:hover { transform: translateY(-2px); box-shadow: 5px 5px 15px rgba(255, 215, 0, 0.3); }
-        .keepers-grid {
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;
-            margin-top: 1.5rem;
-        }
-        .keeper-rune {
-            font-family: 'Spectral', serif;
-            font-size: 2rem;
-            color: var(--primary-night);
-            opacity: 0.6;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            animation: fadeInRune 2s ease-in-out;
-        }
-        @keyframes fadeInRune {
-            from { opacity: 0; transform: scale(0.5); }
-            to { opacity: 0.6; transform: scale(1); }
-        }
-        
-        #map-container {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            margin: 2rem auto;
-        }
-        #map-container img {
-            width: 100%;
-            height: auto;
-            border-radius: 0.5rem;
-        }
-        .hotspot {
-            position: absolute;
-            width: 25px;
-            height: 25px;
-            background-color: rgba(255, 215, 0, 0.7);
-            border: 2px solid white;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-            animation: pulseHotspot 2s infinite;
-        }
-        .hotspot:hover {
-            transform: scale(1.2);
-            background-color: rgba(255, 215, 0, 1);
-        }
-        @keyframes pulseHotspot {
-            0% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); }
-            50% { box-shadow: 0 0 25px rgba(255, 215, 0, 1); }
-            100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); }
-        }
-        #lore-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.8);
-            z-index: 1100;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        #lore-modal.visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .lore-content {
-            background-color: #10141c;
-            border: 1px solid var(--primary-night);
-            padding: 2rem;
-            border-radius: 1rem;
-            width: 90%;
-            max-width: 500px;
-            position: relative;
-        }
-        .lore-close-button {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            color: var(--primary-night);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .app-footer {
-            width: 100%;
-            max-width: 900px;
-            padding: 2rem 1rem 1rem;
-            text-align: center;
-            border-top: 1px solid rgba(255, 215, 0, 0.2);
-            margin-top: 2rem;
-        }
-        .social-share-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-        }
-        .social-share-button {
-            color: #a0aec0;
-            transition: color 0.3s ease, transform 0.3s ease;
-        }
-        .social-share-button:hover {
-            color: var(--primary-night);
-            transform: scale(1.1);
-        }
-        .social-share-button svg {
-            width: 24px;
-            height: 24px;
-        }
-        #copy-link-feedback {
-            font-size: 0.8rem;
-            color: var(--primary-night);
-            margin-top: 0.5rem;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        @media (max-width: 768px) {
-            .celestial-body { width: 60px; height: 60px; font-size: 0.9rem; }
-        }
-        /* Responsive override for the menu */
-        @media (max-width: 640px) {
-            .overlay-menu nav ul {
-                grid-template-columns: 1fr;
-            }
-            .overlay-menu nav {
-                max-width: 100%;
-            }
-        }
+        @media (max-width: 768px) { .celestial-body { width: 50px; height: 50px; } }
+        @media (max-width: 640px) { .overlay-menu nav ul { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
     
     <canvas id="interactive-background"></canvas>
     
-    <div id="initialEntryOverlay" aria-label="Click to awaken the veil and start the experience.">
-        <div style="display: flex; flex-direction: column; align-items: center;">
-            <p class="entry-runic">ᛅᚾᛋᛁᛅᚾᛏ ᛂᚴᚬᛋ ᚬᚠ ᚦᛅ ᛒᚬᛋᚾᛁᛅᚾ ᛬ ᛒᚢᚱᛅᛘᛁᛏᛋ</p>
-            <h2 class="entry-title">Ancient Echoes of the Bosnian Pyramids</h2>
-            <p class="entry-instruction">Click to Awaken the Veil</p>
+    <div id="initialEntryOverlay" class="flex justify-center items-center fixed inset-0 bg-black z-[2000] text-center cursor-pointer" aria-label="Click to awaken the veil and start the experience.">
+        <div class="flex flex-col items-center p-4">
+            <p class="font-[RunicFont,Spectral,serif] text-[clamp(2rem,6vw,3.5rem)] text-primary-night [text-shadow:0_0_10px_rgba(255,215,0,0.7)] tracking-[0.1em] order-1">ᛅᚾᛋᛁᛅᚾᛏ ᛂᚴᚬᛋ</p>
+            <h2 class="font-[Spectral,serif] text-[clamp(1.5rem,4vw,2.5rem)] order-2 mt-6">Ancient Echoes of the Bosnian Pyramids</h2>
+            <button id="enterButton" class="order-3">Click to Awaken the Veil</button>
         </div>
     </div>
 
-    <div class="moon-orbit">
+    <div class="menu-container">
         <button class="celestial-body" id="menuButton" aria-label="Open portal navigation">
-             <span id="menuHint" class="menu-hint-label">MENU</span>
+            <span id="menuHint" class="menu-hint-label">MENU</span>
         </button>
     </div>
 
     <div class="overlay-menu" id="overlayMenu">
-        <button class="overlay-menu-close" id="closeMenuButton" aria-label="Close portal menu">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-        </button>
+        <button class="overlay-menu-close" id="closeMenuButton" aria-label="Close portal menu"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg></button>
         <nav aria-label="Main navigation">
-            <ul class="menu-grid">
-                <li><a href="#" data-page="home"><span class="runic-icon">ᚷ</span><span class="menu-text">Ancient Echoes (Home)</span></a></li>
-                <li><a href="#" data-page="visoko"><span class="runic-icon">ᚱ</span><span class="menu-text">Explore the Valley</span></a></li>
-                <li><a href="#" data-page="runeReading"><span class="runic-icon">ᛈ</span><span class="menu-text">The Seer's Whisper</span></a></li>
-                <li><a href="#" data-page="meditation"><span class="runic-icon">ᛃ</span><span class="menu-text">The Inner Well</span></a></li>
-                <li><a href="#" data-page="storyteller"><span class="runic-icon">ᚹ</span><span class="menu-text">The Runic Chronicle</span></a></li>
-        
-                <li><a href="#" data-page="journal"><span class="runic-icon">ᛏ</span><span class="menu-text">The Seeker's Journal</span></a></li>
-                <li><a href="#" data-page="guardians"><span class="runic-icon">ᛉ</span><span class="menu-text">The Keepers' Circle</span></a></li>
-                <li><a href="#" data-page="donate"><span class="runic-icon">ᚠ</span><span class="menu-text">Make an Offering</span></a></li>
-                <li><a href="#" data-page="about"><span class="runic-icon">ᛇ</span><span class="menu-text">About the Project</span></a></li>
-                <li><a href="#" data-page="contact"><span class="runic-icon">ᚦ</span><span class="menu-text">Commune with Us</span></a></li>
+            <ul>
+                <li><a href="#home" class="page-link" data-page="home"><span class="runic-icon">ᚷ</span><div class="menu-text-group"><span class="menu-title">Home Portal</span><span class="menu-subtitle">Begin Your Journey</span></div></a></li>
+                <li class="menu-divider"><a href="#visoko" class="page-link" data-page="visoko"><span class="runic-icon">ᚱ</span><div class="menu-text-group"><span class="menu-title">Explore the Valley</span><span class="menu-subtitle">Learn the Land</span></div></a></li>
+                <li><a href="#runeReading" class="page-link" data-page="runeReading"><span class="runic-icon">ᛈ</span><div class="menu-text-group"><span class="menu-title">The Seer's Whisper</span><span class="menu-subtitle">Gain Insight</span></div></a></li>
+                <li class="menu-divider"><a href="#meditation" class="page-link" data-page="meditation"><span class="runic-icon">ᛃ</span><div class="menu-text-group"><span class="menu-title">The Inner Well</span><span class="menu-subtitle">Look Within</span></div></a></li>
+                <li><a href="#storyteller" class="page-link" data-page="storyteller"><span class="runic-icon">ᚹ</span><div class="menu-text-group"><span class="menu-title">The Runic Chronicle</span><span class="menu-subtitle">Lend Your Energy</span></div></a></li>
+                <li class="menu-divider"><a href="#expedition" class="page-link" data-page="expedition"><span class="runic-icon">ᛇ</span><div class="menu-text-group"><span class="menu-title">The Expedition</span><span class="menu-subtitle">Understand the Mission</span></div></a></li>
+                <li><a href="#keeper" class="page-link" data-page="keeper"><span class="runic-icon">ᚠ</span><div class="menu-text-group"><span class="menu-title">Become a Keeper</span><span class="menu-subtitle">Preserve the Mystery</span></div></a></li>
             </ul>
         </nav>
     </div>
 
     <div class="main-content-area" id="mainContentArea">
-        <div class="downward-beam" id="beam-from-moon-sun"></div>
-        <div class="downward-beam" id="beam-from-moon-moon"></div>
-        <div class="downward-beam" id="beam-from-moon-dragon"></div>
-        <div class="downward-beam" id="beam-from-moon-night"></div>
-
         <header class="app-header">
-            <div class="title-container">
-                <h1>ᛅᚾᛋᛁᛅᚾᛏ ᛂᚴᚬᛋ ᚬᚠ ᚦᛅ ᛒᚬᛋᚾᛁᛅᚾ ᛬ ᛒᚢᚱᛅᛘᛁᛏᛋ</h1>
-                <p class="runic-subtitle">Ancient Echoes of the Bosnian Pyramids</p>
-            </div>
+            <div class="title-container"><h1>ᛅᚾᛋᛁᛅᚾᛏ ᛂᚴᚬᛋ</h1><p class="runic-subtitle">Ancient Echoes of the Bosnian Pyramids</p></div>
         </header>
         
-        <section id="homePage" class="page active">
-            <p class="text-gray-300 text-center mb-6 italic max-w-2xl">
-                Welcome, seeker. Beneath the Bosnian soil, where myth and mountain meet, lie structures that pulse with forgotten energy. They call to those who remember a time before time.
-            </p>
+        <main>
+            <section id="homePage" class="page">
+                <h2 class="page-title">The Seeker's Journey Begins</h2>
+                <p class="page-intro">You stand at the threshold. This portal is the first step on a path into the living mystery of the Bosnian Pyramids. Listen to the echoes, consult the runes, and decide if you will help preserve this sacred space. Your journey starts now.</p>
+                <div class="w-full max-w-2xl bg-yellow-400/10 border border-yellow-400/30 rounded-lg p-4 mb-8 text-center animate-pulse">
+                    <h3 class="text-yellow-300 font-bold text-lg font-spectral">The Perseid Alignment is Active!</h3>
+                    <p class="text-gray-300 text-sm">Until the last meteor falls this week, the veil is thin. All new Keepers will have their offering rune etched in starlight.</p>
+                </div>
+                <p class="text-yellow-400 mb-4 text-center">Touch a pyramid to listen to the ancient echoes.</p>
+                <div class="pyramids-visual-group" id="pyramidGroup"><div class="pyramid-container"><button class="pyramid side" data-pyramid="dragon" aria-label="Touch the Dragon Pyramid"><div class="pyramid-shape"></div><h3 class="pyramid-name">Dragon</h3></button><button class="pyramid center" data-pyramid="sun" aria-label="Touch the Sun Pyramid"><div class="pyramid-shape"></div><h3 class="pyramid-name">Sun</h3></button><button class="pyramid side" data-pyramid="moon" aria-label="Touch the Moon Pyramid"><div class="pyramid-shape"></div><h3 class="pyramid-name">Moon</h3></button></div></div>
+                <div class="whisper-box content-box" id="whisperBox"><div class="runic-text" id="runicOutput">Click a pyramid to begin...</div><div class="english-translation" id="englishOutput"></div><button class="runic-toggle hidden" id="toggleTranslation">Show Translation</button></div>
+                <div class="mt-8 flex flex-col sm:flex-row gap-4 w-full max-w-md"><a href="#visoko" data-page="visoko" class="flex-1 whisper-button p-4 text-center page-link">Explore the Valley</a><a href="#keeper" data-page="keeper" class="flex-1 donate-button p-4 text-center page-link">Become a Keeper</a></div>
+            </section>
 
-            <div class="w-full max-w-2xl bg-yellow-400/10 border border-yellow-400/30 rounded-lg p-4 mb-8 text-center animate-pulse">
-                <h3 class="text-yellow-300 font-bold text-lg font-spectral">The Celestial Alignment is Active!</h3>
-                <p class="text-gray-300 text-sm">
-                    From now until August 15th, all new Keepers who make an offering will have their chosen runic initial permanently etched into the Guardian's Chronicle.
-                </p>
-            </div>
+            <section id="expeditionPage" class="page">
+                <div class="page-content-container text-gray-300"><h2 class="page-title">The Expedition</h2><p class="page-intro">This portal is both an interactive art project and a living investigation. Here, you can learn about our mission and the real-world research that inspires it.</p><div class="border-t border-gray-600 pt-6 mt-6"><h3 class="text-2xl font-bold text-yellow-400 mb-2 font-spectral">Our Mission</h3><p class="mb-6">Our goal is to create a space for contemplation and imagination. We use technology and storytelling not to provide definitive answers, but to evoke the profound sense of wonder that sites like the Bosnian Pyramids inspire. We believe that by engaging with the mystery, we connect with a deeper part of ourselves.</p><h3 class="text-2xl font-bold text-yellow-400 mb-2 font-spectral">The Research</h3><p class="mb-6">The theories surrounding the Bosnian Pyramids, primarily researched by Dr. Semir Osmanagić, suggest that the hills in the Visoko valley are colossal man-made structures. Key claims include the presence of high-quality, ancient concrete blocks, precise orientation to cosmic north, and measurable energy phenomena. This research challenges conventional historical timelines and suggests the existence of a highly advanced ancient civilization.</p><h3 class="text-2xl font-bold text-yellow-400 mb-2 font-spectral">The Controversy</h3><p class="mb-6">It is important to acknowledge that these claims are not accepted by mainstream archaeology and geology. Many established institutions consider the hills to be natural formations called flatirons. This project does not claim to resolve this debate, but rather to explore the power of the *idea* and the energy of the location that has drawn thousands of volunteers and researchers from around the world.</p><h3 class="text-2xl font-bold text-yellow-400 mb-2 font-spectral">Dive Deeper</h3><ul class="list-disc list-inside text-yellow-400/80"><li><a href="https://bosnian-pyramid.com/" target="_blank" rel="noopener noreferrer" class="hover:underline">Official Bosnian Pyramid of the Sun Foundation</a></li><li><a href="https://www.youtube.com/c/BosnianPyramidTV/videos" target="_blank" rel="noopener noreferrer" class="hover:underline">Dr. Osmanagić's Video Updates</a></li></ul></div></div>
+            </section>
 
-            <div class="w-full max-w-2xl bg-black/30 border border-yellow-400/20 rounded-lg p-4 mb-8 text-center">
-                <h2 class="text-yellow-400 font-bold text-lg mb-2 font-spectral">An Interactive Journey</h2>
-                <p class="text-gray-300 text-sm">
-                    This portal is an <strong>interactive art project</strong> designed to evoke the mystery and wonder of ancient power. The wisdom, readings, and responses are generated for inspirational and entertainment purposes, encouraging a deeper connection to the enigmatic past.
-                </p>
-            </div>
+            <section id="visokoPage" class="page">
+                <div class="page-content-container text-gray-300"><h2 class="page-title">Explore the Valley</h2><p class="page-intro">Each location in the valley has its own unique energy, its own secret to share. Click a hotspot on the map to discover its lore and attune to its runic frequency.</p><div id="map-container"><img src="map.png" alt="Map of the Visoko Valley"><div class="hotspot" style="top: 35%; left: 45%;" data-point="sun"></div><div class="hotspot" style="top: 55%; left: 20%;" data-point="moon"></div><div class="hotspot" style="top: 58%; left: 70%;" data-point="dragon"></div><div class="hotspot" style="top: 75%; left: 48%;" data-point="tunnels"></div></div></div>
+            </section>
+
+            <section id="runeReadingPage" class="page">
+                <div class="page-content-container"><h2 class="page-title">The Seer's Whisper</h2><p class="page-intro">Seeker, present your query to the stones. Focus your mind on a question, and the runes will offer a reflection. Not a simple answer, but a deeper truth to contemplate.</p><div class="user-input-section flex flex-col items-center w-full max-w-md mx-auto gap-3"><input type="text" id="runeQuestionInput" class="w-full p-2 rounded bg-gray-800 text-white text-center" placeholder="Ask the runes a question..." aria-label="Rune question input"><button class="whisper-button" id="drawRunesButton">Draw Runes</button></div><div class="text-center"><div id="runeDisplay" class="font-['Spectral',serif] text-5xl tracking-[0.5rem] text-primary-night [text-shadow:0_0_15px_rgba(255,215,0,0.8)] mt-6 min-h-[1.5em]"></div><div id="runeInterpretation" class="text-secondary-night italic mt-4 min-h-[3em] leading-relaxed"></div></div><div class="mt-12 border-t border-gray-600 pt-6"><h3 class="text-2xl font-bold text-yellow-400 mb-4 font-spectral text-center">The Discoverer & The Dogma</h3><div class="bio-accordion"><div class="bio-accordion-item"><button class="bio-accordion-header">Dr. Semir Osmanagić: The Scholar</button><div class="bio-accordion-content"><p>Before the world knew him as "the Bosnian pyramid man," Dr. Osmanagić had already built a formidable academic and professional career. His background is crucial to understanding the methodical approach he brings to his work. He holds a Ph.D. in the Sociology of History, with a specific focus on the Mayan civilization, and has served as a <strong>Professor of Anthropology</strong>.</p><img src="runic11.webp" alt="Ancient Pavement found on the Pyramid of the Sun"></div></div><div class="bio-accordion-item"><button class="bio-accordion-header">The Quest for Truth in Visoko</button><div class="bio-accordion-content"><p>His on-the-ground investigation began in 2005. His team, adopting a <strong>multidisciplinary approach</strong>, brought in geologists, physicists, and archaeologists. Core drilling and excavations revealed what appear to be high-quality, <strong>man-made concrete blocks</strong>, far stronger than modern concrete. Instruments have also allegedly detected an unusual, continuous <strong>electromagnetic energy beam</strong> emanating from the apex of the Pyramid of the Sun.</p><img src="runic7.webp" alt="Aerial view of the Pyramid of the Sun"></div></div><div class="bio-accordion-item"><button class="bio-accordion-header">The Fight Against Mainstream Dogma</button><div class="bio-accordion-content"><p>Dr. Osmanagić's claims were met with immediate and fierce opposition. However, he and his supporters highlight a critical point: the most vocal critics have largely been <strong>"armchair archaeologists"</strong> who have never set foot in Visoko to examine the evidence firsthand. He frames this as a battle against institutional dogma that refuses to entertain evidence challenging established historical timelines.</p><img src="runic2.webp" alt="The Ravne Megalith with runic carvings"></div></div></div></div></div>
+            </section>
             
-            <p class="text-gray-300 text-center mb-6 italic max-w-2xl mt-4">
-                This interactive experience is a labor of love, free for all to explore. Become a Keeper to help us expand the mystery.
-            </p>
-
-            <p class="text-yellow-400 mb-4 text-center">Touch a pyramid to listen to the ancient echoes.</p>
-
-            <div class="pyramids-visual-group" id="pyramidGroup">
-                <div class="pyramid-container">
-                    <button class="pyramid side" data-pyramid="dragon" aria-label="Touch the Dragon Pyramid">
-                        <div class="beam red"></div>
-                        <div class="pyramid-shape"></div>
-                        <h3 class="pyramid-name">Dragon</h3>
-                    </button>
-                    <button class="pyramid center" data-pyramid="sun" aria-label="Touch the Sun Pyramid">
-                        <div class="beam green"></div>
-                        <div class="pyramid-shape"></div>
-                        <h3 class="pyramid-name">Sun</h3>
-                    </button>
-                    <button class="pyramid side" data-pyramid="moon" aria-label="Touch the Moon Pyramid">
-                        <div class="beam gold"></div>
-                        <div class="pyramid-shape"></div>
-                        <h3 class="pyramid-name">Moon</h3>
-                    </button>
-                    <button class="pyramid side night" data-pyramid="night" aria-label="Touch the Night Pyramid">
-                        <div class="beam blue"></div>
-                        <div class="pyramid-shape"></div>
-                        <h3 class="pyramid-name">Night</h3>
-                    </button>
-                </div>
-            </div>
-            <div class="whisper-box" id="whisperBox">
-                <div class="runic-text" id="runicOutput">Click a pyramid to begin...</div>
-                <div class="english-translation" id="englishOutput"></div>
-                <button class="runic-toggle" id="toggleTranslation">Show Translation</button>
-            </div>
-            <div id="homePageDonationPrompt" class="post-reading-message"></div>
+            <section id="meditationPage" class="page">
+                 <div class="page-content-container"><h2 class="page-title">The Inner Well</h2><p class="page-intro">Still your mind and connect with the ancient energies. Focus on the pulsing rune and allow its meaning to guide your meditation. This is a journey inward.</p><div class="meditation-circle pulsing" id="meditationCircle" style="width: clamp(150px, 30vw, 250px); height: clamp(150px, 30vw, 250px); background: radial-gradient(circle, rgba(255, 215, 0, 0.4), transparent); border-radius: 50%; margin: 2rem auto; display: flex; justify-content: center; align-items: center; transition: all 1s ease-in-out; animation: pulse-meditation 4s infinite alternate ease-in-out;"><div class="rune-symbol text-7xl text-primary-night" id="meditationRune">ᛗ</div></div><p id="meditationStatus" class="text-gray-400 mt-4 text-center">Ready to begin your inner journey.</p></div>
+            </section>
             
-            <div class="flex flex-col sm:flex-row gap-4 mt-8 w-full max-w-md">
-                <a href="#pyramidGroup" class="flex-1 whisper-button p-4 text-center">Awaken the Echoes</a>
-                <a href="#" data-page="donate" class="flex-1 donate-button p-4 text-center page-link">Become a Keeper</a>
-            </div>
+            <section id="storytellerPage" class="page">
+                <div class="page-content-container"><h2 class="page-title">The Runic Chronicle</h2><p class="page-intro">To add your energy to the veil, you must first align with its frequency. Each week, the veil resonates with a new rune. Contemplate its meaning, then share a story from your life that reflects its theme.</p><div class="whisper-box content-box mb-8" id="storytellerRuneBox"><p class="text-sm uppercase tracking-widest text-yellow-400/70">This Week's Rune</p><div id="storytellerRune" class="text-7xl font-['Spectral',serif] text-primary-night [text-shadow:0_0_15px_rgba(255,215,0,0.8)]"></div><div id="storytellerMeaning" class="text-lg font-['Spectral',serif] italic text-gray-400 mt-2"></div></div><div class="mt-8 flex flex-col items-center"><p id="storytellerStatusMessage" class="text-gray-300 text-center mb-2">Tell your tale, keeper.</p><textarea id="storytellerInput" class="w-full p-4 rounded bg-gray-800 text-white h-40"></textarea><button id="submitStoryButton" class="whisper-button mt-4">Submit Your Story</button></div><div class="storyteller-stories mt-8 pt-6 border-t border-gray-600"><h3 class="text-yellow-400 text-center text-xl font-spectral">Your Personal Chronicle</h3><div id="storiesContainer" class="mt-4"></div></div></div>
+            </section>
 
-            <div class="mt-8 text-center">
-                <p class="text-gray-300">
-                    Join the <strong id="frontPageKeepersCount" class="text-yellow-400">...</strong> Keepers who made an offering this moon cycle.
-                </p>
-            </div>
-
-            <div class="w-full max-w-2xl bg-black/30 border border-yellow-400/20 rounded-lg p-4 mt-12 text-center">
-                <h3 class="text-yellow-400 font-bold text-lg mb-2 font-spectral">Help Us Reveal the Secrets</h3>
-                <p class="text-gray-300 text-sm mb-4">
-                    This portal is more than an art project—it's a living investigation. With your support, we are able to continue our research into the Bosnian Pyramids. We believe an ancient intelligence left us messages to read, and secrets are waiting to be revealed. Your offering directly funds that journey of discovery.
-                </p>
-                <a href="#" data-page="donate" class="donate-button-small page-link">Support the Research</a>
-            </div>
-
-            <div class="echo-counter mt-8">
-                <span class="echo-counter-label">Echoes Heard</span>
-                <span class="echo-counter-value" id="visitCounter">...</span>
-            </div>
-        </section>
-
-        <section id="visokoPage" class="page">
-            <div class="page-content-container text-gray-300">
-                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">The Visoko Valley</h2>
-                <p class="text-lg italic mb-6 text-center">
-                    Explore the valley by selecting a point of interest on the map below.
-                </p>
-
-                <div id="map-container">
-                    <img src="map.png" alt="Map of the Visoko Valley">
-                    
-                    <div class="hotspot" style="top: 35%; left: 45%;" data-point="sun"></div>
-                    <div class="hotspot" style="top: 55%; left: 20%;" data-point="moon"></div>
-                    <div class="hotspot" style="top: 58%; left: 70%;" data-point="dragon"></div>
-                    <div class="hotspot" style="top: 75%; left: 48%;" data-point="tunnels"></div>
-                </div>
-                
-                <p class="text-left mb-4 mt-8">
-                    Long held by some to be the oldest and largest pyramids on Earth, the Bosnian Pyramids are a source of great debate and wonder. While mainstream science remains skeptical, research into the site suggests the presence of colossal man-made structures with a complex network of tunnels and chambers.
-                </p>
-                <p class="text-left">
-                    This land is believed to be a point of immense spiritual power, an energy vortex where the veil between worlds is thin. Our portal serves as a digital echo of this place, inviting you to explore the mysteries that still lie beneath the surface.
-                </p>
-            </div>
-        </section>
-
-        <section id="meditationPage" class="page">
-            <div class="page-content-container">
-                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Guided Meditation</h2>
-                <p class="text-gray-300 text-center mb-4">Connect with the ancient energies through focused intention.</p>
-                <div class="meditation-circle" id="meditationCircle">
-                    <div class="rune-symbol" id="meditationRune">ᛗ</div>
-                </div>
-                <p id="meditationStatus" class="text-gray-400 mt-4 text-center">Ready to begin your inner journey.</p>
-                <button class="meditation-button mt-4" id="toggleMeditationVoiceButton" aria-label="Toggle meditation voice">Enable Meditation Voice</button>
-
-                <div class="meditation-call-to-action">
-                    <p class="mt-8">
-                        The journey to the self is a sacred path. Your support helps us keep this space of inner peace and reflection open to all.
-                    </p>
-                    <a href="#" data-page="donate" class="donate-button-small mt-4 page-link">Make an Offering</a>
-                </div>
-            </div>
-        </section>
-
-        <section id="runeReadingPage" class="page">
-            <div class="page-content-container">
-                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Rune Reading</h2>
-                <div class="user-input-section">
-                    <input type="text" id="runeQuestionInput" class="w-full p-2 rounded bg-gray-800 text-white text-center" placeholder="Ask the runes a question..." aria-label="Rune question input">
-                    <button class="whisper-button" id="drawRunesButton">Draw Runes</button>
-                </div>
-                <div class="text-center">
-                    <div id="runeDisplay"></div>
-                    <div id="runeInterpretation"></div>
-                    <button class="meditation-button mt-4 hidden" id="toggleRuneVoiceButton" aria-label="Toggle reading voice">Enable Reading Voice</button>
-                </div>
-                
-                <div id="postReadingMessage" class="post-reading-message">
-                    <p>The oracle's whisper requires great energy to sustain. Consider supporting the keepers of the runes.</p>
-                    <a href="#" data-page="donate" class="donate-button-small page-link">Make an Offering</a>
-                </div>
-
-                <div class="rune-alphabet-grid">
-                </div>
-
-                <div class="rune-image-gallery">
-                </div>
-
-                <div class="rune-history">
-                    <h3 class="!text-2xl">Dr. Semir Osmanagić: A Maverick's Two-Decade Quest for a Lost History</h3>
-            
-                    <h4 class="text-xl font-bold text-yellow-400/80 mt-6 mb-3 font-spectral">The Scholar Before the Pyramids</h4>
-                    <p class="mb-4">
-                        Before the world knew him as "the Bosnian pyramid man," Dr. Osmanagić had already built a formidable academic and professional career. His background is crucial to understanding the methodical approach he brings to his work.
-                    </p>
-                    <ul class="list-disc list-inside space-y-2 mb-4 text-gray-400">
-                        <li><strong>Diverse Education:</strong> He holds a Ph.D. in the Sociology of History, with a specific focus on the Mayan civilization. This gives him a unique lens through which to view ancient cultures—not just as collections of artifacts, but as complex societies. He also holds degrees in Political Science, Economics, and is a master of International Affairs.</li>
-                        <li><strong>Author and Professor:</strong> Dr. Osmanagić is a prolific author of over a dozen books on ancient civilizations, translated into multiple languages. He has served as a Professor of Anthropology at the American University in Bosnia and Herzegovina, bringing his field experience directly into the academic sphere.</li>
-                    </ul>
-                    <p>
-                        His extensive study of pyramid structures worldwide, from Central America to China, provided him with the global context to recognize the unusual, pyramid-like geometry of the hills surrounding the town of Visoko in 2005.
-                    </p>
-            
-                    <h4 class="text-xl font-bold text-yellow-400/80 mt-6 mb-3 font-spectral">The Quest for Truth in the Visoko Valley</h4>
-                    <p class="mb-4">
-                        Dr. Osmanagić's work is driven by a simple yet profound thesis: that our understanding of ancient history is incomplete. He posits that a highly advanced global civilization existed in the deep past, a fact that the Bosnian pyramid complex could prove.
-                    </p>
-                    <p class="mb-4">
-                        His on-the-ground investigation began in 2005 and quickly yielded remarkable findings. His team, adopting a <strong>multidisciplinary approach</strong>, brought in geologists, physicists, sound engineers, and archaeologists. Their collective work has put forward several key claims:
-                    </p>
-                    <ul class="list-disc list-inside space-y-2 mb-4 text-gray-400">
-                        <li><strong>Man-Made Structures:</strong> Core drilling and excavations revealed what appear to be high-quality, man-made concrete blocks covering the structures, far stronger than modern concrete.</li>
-                        <li><strong>Precise Orientation:</strong> The Pyramid of the Sun exhibits a near-perfect orientation to cosmic north, a hallmark of sophisticated ancient construction.</li>
-                        <li><strong>Energy Phenomena:</strong> Instruments have allegedly detected an unusual, continuous electromagnetic energy beam emanating from the apex of the Pyramid of the Sun.</li>
-                        <li><strong>The Ravne Tunnel Labyrinth:</strong> A vast network of underground tunnels, chambers, and megalithic blocks has been steadily excavated. This labyrinth is believed to connect the pyramids and contains air with unusually high concentrations of beneficial negative ions.</li>
-                    </ul>
-                    <p>
-                        For twenty years, Dr. Osmanagić has been a constant presence at the site, personally leading tours, overseeing excavations, and engaging with the thousands of international volunteers his project attracts annually.
-                    </p>
-            
-                    <h4 class="text-xl font-bold text-yellow-400/80 mt-6 mb-3 font-spectral">The Fight Against Distant Dogma</h4>
-                    <p class="mb-4">
-                        Dr. Osmanagić's claims were met with immediate and fierce opposition from mainstream archaeological institutions. A declaration by the European Association of Archaeologists, among others, condemned the work as a "cruel hoax" and decried the potential damage to authentic medieval sites in the area.
-                    </p>
-                    <p class="mb-4">
-                        However, Dr. Osmanagić and his supporters highlight a critical point: the most vocal critics have largely been <strong>"armchair archaeologists"</strong> who have never set foot in Visoko to examine the evidence firsthand. He frames this as a battle against institutional dogma—a rigid, protectionist mindset that refuses to entertain evidence challenging established historical timelines. His argument is that science should be about open inquiry and examining field data, not issuing condemnations from afar.
-                    </p>
-                    <p>
-                        His demeanor in the face of this resistance has been one of resolute calm and an open invitation. He consistently urges skeptics to come, to take their own samples, and to see the evidence with their own eyes. This open-door policy stands in stark contrast to the closed-door declarations of his detractors.
-                    </p>
-            
-                    <h4 class="text-xl font-bold text-yellow-400/80 mt-6 mb-3 font-spectral">A Legacy of Perseverance and Inspiration</h4>
-                    <p class="mb-4">
-                        Regardless of one's stance on the authenticity of the pyramids, Dr. Semir Osmanagić's impact is undeniable. For two decades, his relentless work ethic and personable demeanor have transformed the town of Visoko into a thriving tourist destination and a beacon for those who question conventional history.
-                    </p>
-                    <p>
-                        He has created a unique model of "archaeological tourism" where anyone can become part of the discovery by volunteering. This has fostered a global community dedicated to the project. The "Archaeological Park: Bosnian Pyramid of the Sun Foundation" is now a world-renowned organization, driven entirely by his vision and sustained by a global network of supporters. Whether he is a maverick rewriting history or a romantic chasing a grand theory, Dr. Osmanagić has proven himself to be a man of extraordinary dedication, whose 20-year quest has forced a challenging and necessary conversation about humanity's ancient past.
-                    </p>
-                </div>
-            </div>
-        </section>
-        
-        <section id="storytellerPage" class="page">
-            <div class="page-content-container">
-                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">The Runic Chronicle</h2>
-                <p class="text-gray-300 text-center mb-4">
-                    The runes whisper a new theme. Listen to the rune below and share a story from your world to add to your personal chronicle.
-                </p>
-                <div class="whisper-box" id="storytellerRuneBox">
-                    <div class="storyteller-runes" id="storytellerRune">ᛞ</div>
-                    <div class="storyteller-meaning" id="storytellerMeaning">Dagaz: Dawn, breakthrough, a new day.</div>
-                </div>
-
-                <div class="mt-8 flex flex-col items-center">
-                    <p class="text-gray-300 text-center mb-2" id="storytellerStatusMessage">Tell your tale, keeper.</p>
-                    <textarea id="storytellerInput" class="w-full p-4 rounded bg-gray-800 text-white h-40" placeholder="Write your story here..."></textarea>
-                    <button class="whisper-button mt-4" id="submitStoryButton">Submit Your Story</button>
-                    <div id="storytellerDonationPrompt" class="post-reading-message"></div>
-                    <p class="text-yellow-400 text-center font-spectral italic mt-4 hidden" id="storytellerSuccessMessage"></p>
-                </div>
-                
-                <div class="storyteller-stories">
-                    <h3 class="text-yellow-400">Your Personal Chronicle</h3>
-                    <div id="storiesContainer">
+            <section id="keeperPage" class="page">
+                <div class="page-content-container text-gray-300 text-center">
+                    <div id="keeper-offering-view">
+                        <h2 class="page-title">Become a Keeper</h2>
+                        <p class="page-intro">The Seeker's Journey leads here. To become a Keeper is to move from observer to guardian. It is a commitment to help preserve this space and support the ongoing expedition into the mystery. Your offering is the final step in your initiation.</p>
+                        <h3 class="text-2xl font-bold text-yellow-400 mb-4 font-spectral">The Keepers' Circle</h3>
+                        <p class="mb-4">Each rune below represents a Keeper who has completed their journey. Join them.</p>
+                        <div id="keepersGrid" class="keepers-grid mb-8"></div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full text-center">
+                            <div class="bg-black/30 border border-gray-700 rounded-lg p-6 flex flex-col">
+                                <h3 class="text-yellow-400 font-spectral text-2xl">Initiate</h3>
+                                <p class="font-bold text-white text-4xl my-4">$5</p>
+                                <p class="text-gray-400 text-sm min-h-[50px]">A one-time offering to show your belief in the mission.</p>
+                                <ul class="text-left text-gray-300 space-y-2 my-6 flex-grow">
+                                    <li>✅ Access to the Inner Sanctum lore.</li>
+                                    <li>✅ Your chosen runic initial added to the Keepers' Circle.</li>
+                                </ul>
+                                <a href="https://buy.stripe.com/28E6oH6t188VfGf8LN1gs00" target="_blank" rel="noopener noreferrer" class="whisper-button mt-4 p-3">Make an Offering</a>
+                            </div>
+                            <div class="bg-black/30 border-2 border-yellow-400 rounded-lg p-6 flex flex-col relative">
+                                <p class="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-black font-bold text-xs px-3 py-1 rounded-full">MOST POPULAR</p>
+                                <h3 class="text-yellow-400 font-spectral text-2xl">Keeper</h3>
+                                <p class="font-bold text-white text-4xl my-4">$15</p>
+                                <p class="text-gray-400 text-sm min-h-[50px]">Become a true guardian of the research and its secrets.</p>
+                                <ul class="text-left text-gray-300 space-y-2 my-6 flex-grow">
+                                    <li>✅ All benefits of the Initiate tier.</li>
+                                    <li>✅ A personal 3-rune reading, delivered to your email.</li>
+                                </ul>
+                                <a href="https://buy.stripe.com/8x24gz4kT74R51B9PR1gs01" target="_blank" rel="noopener noreferrer" class="donate-button mt-4 p-3">Become a Keeper</a>
+                            </div>
+                            <div class="bg-black/30 border border-gray-700 rounded-lg p-6 flex flex-col">
+                                <h3 class="text-yellow-400 font-spectral text-2xl">Whisperer's Choice</h3>
+                                <p class="font-bold text-white text-4xl my-4">Custom</p>
+                                <p class="text-gray-400 text-sm min-h-[50px]">Your offering ensures this portal continues to echo through time for new Seekers.</p>
+                                <ul class="text-left text-gray-300 space-y-2 my-6 flex-grow">
+                                    <li>✅ Access to the Inner Sanctum lore.</li>
+                                    <li>✅ Your chosen runic initial added to the Keepers' Circle.</li>
+                                </ul>
+                                <a href="https://buy.stripe.com/5kQaEX5oXbl7dy7fab1gs03" target="_blank" rel="noopener noreferrer" class="whisper-button mt-4 p-3">Choose Your Offering</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="sanctum-view" class="hidden">
+                        <h2 class="page-title">Welcome, Inner Sanctum</h2>
+                        <p class="page-intro">Your initiation is complete. Thank you for your offering, Keeper. As a guardian, you are granted access to exclusive tools to aid your journey.</p>
+                        <div class="text-left border-t border-gray-600 pt-6 mt-6">
+                            <h3 class="text-2xl font-bold text-yellow-400 mb-4 font-spectral">The Keeper's Toolkit</h3>
+                            <p class="mb-4"><strong>Deeper Lore:</strong> The secrets of the runes are now open to you. The Elder Futhark is more than an alphabet; it is a cosmological map. Each rune is a key to a specific type of energy or event in the universe. Fehu (ᚠ), seen as wealth, is truly the untamed, expansive energy of creation...</p>
+                            <p class="mb-4"><strong>The Keeper's Meditation:</strong> Access the full, extended guided meditation to better align with the valley's energy. [A link to your exclusive audio file would go here]</p>
+                            <p><strong>The Pyramid Cipher:</strong> Download this high-resolution runic cipher, a key to decoding the hidden whispers of the valley. [A link to your exclusive image file would go here]</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </main>
 
-        <section id="journalPage" class="page">
-            <div class="page-content-container text-gray-300">
-                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">The Seeker's Journal</h2>
-                <p class="text-lg italic mb-8 text-center">Chronicles from the edge of discovery. These are our field notes as we decipher the secrets of the valley.</p>
-
-                <div class="border-l-2 border-yellow-400/30 pl-6 mb-8">
-                    <p class="text-sm text-yellow-400 font-semibold">August 8, 2025 - Energy Spike</p>
-                    <p class="text-gray-400 italic mt-2">
-                        "We detected an anomalous energy spike from the Pyramid of the Sun, coinciding with the peak of the Perseid meteor shower. The energy beam appears more focused. It's as if the pyramid is reacting to the cosmos, confirming our suspicions of it being a celestial transmitter. We're recalibrating our sensors. Support from the Keepers at this time is critical."
-                    </p>
-                </div>
-
-                <div class="border-l-2 border-yellow-400/30 pl-6 mb-8">
-                    <p class="text-sm text-yellow-400 font-semibold">July 20, 2025 - A New Runic Pattern</p>
-                    <p class="text-gray-400 italic mt-2">
-                        "Deep within the Ravne Tunnels, we've uncovered a new megalith with a sequence of runes we've never seen before. It doesn't seem to be a language, but more like a circuit diagram. The pattern is complex, but one rune stands out—Algiz (ᛉ), the rune of protection. Is it a warning, or is it protecting something within?"
-                    </p>
-                </div>
-                
-                <div class="about-call-to-action text-center">
-                    <h3 class="text-center">The Expedition Needs You</h3>
-                    <p class="mt-4">
-                        Our research is ongoing and powered by the community. Become a Keeper to help us unlock the next chapter of this mystery.
-                    </p>
-                    <a href="#" data-page="donate" class="donate-button mt-4 page-link">Support the Research</a>
-                </div>
-            </div>
-        </section>
-
-        <section id="guardiansPage" class="page">
-            <div class="page-content-container text-gray-300 text-center">
-                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">The Keepers' Circle</h2>
-                <p class="mb-4">
-                    The veil is sustained by the offerings of those who value its whispers. Each rune below represents a recent offering made by a fellow seeker, a guardian of this sacred space.
-                </p>
-                <p class="text-lg">The veil is sustained by the offerings of <strong id="keepersCount" class="text-yellow-400 text-2xl">...</strong> Keepers this moon cycle.</p>
-                <div id="keepersGrid" class="keepers-grid">
-                </div>
-                <div class="about-call-to-action">
-                    <h3 class="text-center">Become a Keeper</h3>
-                    <p class="mt-4">
-                        Join the circle and help keep the echoes alive for all who seek them.
-                    </p>
-                    <a href="#" data-page="donate" class="donate-button mt-4 page-link">Make Your Offering</a>
-                </div>
-            </div>
-        </section>
-
-        <section id="sanctumPage" class="page">
-            <div class="page-content-container text-gray-300">
-                <div id="sanctumContent">
-                    <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">The Inner Sanctum</h2>
-                    <p class="text-lg italic mb-6 text-center">Welcome, Guardian. Thank you for your offering. As a keeper of the veil, you are granted access to deeper lore.</p>
-                    <div class="text-left border-t border-gray-600 pt-6 mt-6">
-                        <h3 class="text-2xl font-bold text-yellow-400 mb-4 font-spectral">Secrets of the Runes: Beyond the Veil</h3>
-                        <p class="mb-4">The Elder Futhark is more than an alphabet; it is a cosmological map. Each rune is a key to a specific type of energy or event in the universe. Fehu (ᚠ), seen as wealth, is truly the untamed, expansive energy of creation. Uruz (ᚢ) is the shaping of that energy into the primal laws of physics. Thurisaz (ᚦ) represents a reactive force, the shattering of old forms to make way for new ones—a necessary destruction.</p>
-                        <p class="mb-4">Unlike other divinatory systems that merely reflect a possible future, the runes are considered by some to be active agents of creation. To invoke a rune is to call upon its specific creative or destructive force. The chronicle you contribute to is not just a collection of stories; it is a living ritual, focusing the collective intention of its keepers and strengthening the resonance of this digital veil.</p>
-                        <p>Your contribution helps sustain this focus. Thank you, Keeper.</p>
-                    </div>
-                </div>
-                <div id="sanctumAccessDenied" class="hidden text-center">
-                     <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Access Denied</h2>
-                     <p class="text-lg italic mb-6">The Inner Sanctum is reserved for those who have made an offering to sustain the veil. It is a thank you for helping keep the echoes alive.</p>
-                     <a href="#" data-page="donate" class="donate-button mt-4 page-link">Become a Keeper</a>
-                </div>
-            </div>
-        </section>
-
-        <section id="aboutPage" class="page">
-            <div class="page-content-container text-gray-300 text-center">
-                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">On the Veil</h2>
-                <p class="mb-4">
-                    This portal is an interactive art project designed to evoke the mystery and wonder surrounding sites of ancient power, like the Bosnian Pyramids. It is an exploration of myth, energy, and the whispers of history. We are dedicated to providing a space for contemplation and imagination, allowing visitors to connect with the enigmatic past on a personal level.
-                </p>
-                <p>
-                    Using simulated interactions and browser-based technologies, we aim to create a space for contemplation and imagination. The wisdom, readings, and responses are generated for inspirational and entertainment purposes, encouraging a deeper connection to the enigmatic past.
-                </p>
-
-                <div class="about-call-to-action">
-                    <h3 class="text-center">Join the Keepers of the Echoes</h3>
-                    <p class="mt-4">
-                        This portal, a bridge between worlds, is maintained by a small group of devoted keepers. Their work ensures the whispers of the past continue to guide our present. Join us in this sacred duty.
-                    </p>
-                    <a href="#" data-page="donate" class="donate-button mt-4 page-link">Become a Keeper</a>
-                </div>
-            </div>
-        </section>
-
-        <section id="donatePage" class="page">
-            <div class="page-content-container text-gray-300 text-center">
-                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Make an Offering</h2>
-                <p class="mb-6">
-                    The echoes of the Bosnian Pyramids fade without an audience. Your contribution is more than a donation—it is an offering to the ancient spirits that keep this portal open.
-                </p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full text-center">
-                    <div class="bg-black/30 border border-gray-700 rounded-lg p-6 flex flex-col">
-                        <h3 class="text-yellow-400 font-spectral text-2xl">Initiate</h3>
-                        <p class="font-bold text-white text-4xl my-4">$5</p>
-                        <p class="text-gray-400 text-sm min-h-[50px]">A one-time offering to show your belief in the mission.</p>
-                        <ul class="text-left text-gray-300 space-y-2 my-6 flex-grow">
-                            <li>✅ Access to the Inner Sanctum lore page.</li>
-                            <li>✅ Your chosen runic initial added to the Keepers' Circle.</li>
-                        </ul>
-                        <a href="https://buy.stripe.com/28E6oH6t188VfGf8LN1gs00" class="whisper-button mt-4 p-3">Make an Offering</a>
-                    </div>
-
-                    <div class="bg-black/30 border-2 border-yellow-400 rounded-lg p-6 flex flex-col relative">
-                        <p class="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-black font-bold text-xs px-3 py-1 rounded-full">MOST POPULAR</p>
-                        <h3 class="text-yellow-400 font-spectral text-2xl">Keeper</h3>
-                        <p class="font-bold text-white text-4xl my-4">$15</p>
-                        <p class="text-gray-400 text-sm min-h-[50px]">Become a true guardian of the research and its secrets.</p>
-                        <ul class="text-left text-gray-300 space-y-2 my-6 flex-grow">
-                            <li>✅ All benefits of the Initiate tier.</li>
-                            <li>✅ A personal 3-rune reading, delivered to your email.</li>
-                            <li>✅ Your name honored on the Wall of Keepers in the Sanctum.</li>
-                        </ul>
-                        <a href="https://buy.stripe.com/8x24gz4kT74R51B9PR1gs01" class="donate-button mt-4 p-3">Become a Keeper</a>
-                    </div>
-
-                    <div class="bg-black/30 border border-gray-700 rounded-lg p-6 flex flex-col">
-                        <h3 class="text-yellow-400 font-spectral text-2xl">Guardian</h3>
-                        <p class="font-bold text-white text-4xl my-4">$50</p>
-                        <p class="text-gray-400 text-sm min-h-[50px]">Provide foundational support for the expedition ahead.</p>
-                        <ul class="text-left text-gray-300 space-y-2 my-6 flex-grow">
-                            <li>✅ All benefits of the Keeper tier.</li>
-                            <li>✅ An exclusive high-resolution digital art download of the pyramids.</li>
-                            <li>✅ Early access to new discoveries and future features.</li>
-                        </ul>
-                        <a href="https://buy.stripe.com/bJefZhbNlgFr0Ll3rt1gs02" class="whisper-button mt-4 p-3">Become a Guardian</a>
-                    </div>
-
-                    <div class="bg-black/30 border border-gray-700 rounded-lg p-6 flex flex-col">
-                        <h3 class="text-yellow-400 font-spectral text-2xl">Whisperer's Choice</h3>
-                        <p class="font-bold text-white text-4xl my-4">You Choose</p>
-                        <p class="text-gray-400 text-sm min-h-[50px]">Make a one-time offering of any amount you feel called to give.</p>
-                        <ul class="text-left text-gray-300 space-y-2 my-6 flex-grow">
-                            <li>✅ Access to the Inner Sanctum lore page.</li>
-                            <li>✅ Your chosen runic initial added to the Keepers' Circle.</li>
-                        </ul>
-                        <a href="https://buy.stripe.com/5kQaEX5oXbl7dy7fab1gs03" class="whisper-button mt-4 p-3">Make a Custom Offering</a>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <section id="contactPage" class="page">
-            <div class="page-content-container">
-                <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Commune with a Keeper</h2>
-                <form id="contactForm" class="flex flex-col items-center gap-4 w-full max-w-md mx-auto">
-                    <textarea id="keeperMessage" class="w-full p-2 rounded bg-gray-800 text-white" rows="4" placeholder="Your message..." aria-label="Your message to the keepers"></textarea>
-                    <button type="submit" class="whisper-button">Send Message</button>
-                    <p id="messageFeedback"></p>
-                </form>
-            </div>
-        </section>
-        
         <footer class="app-footer">
             <div class="social-share-buttons">
-                <a href="#" id="share-twitter" class="social-share-button" title="Share on X">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
-                </a>
-                <a href="#" id="share-facebook" class="social-share-button" title="Share on Facebook">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3v9h4z"></path></svg>
-                </a>
-                <a href="#" id="copy-link" class="social-share-button" title="Copy Link">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.63 8.37a2.121 2.121 0 0 0-2.26 0L9.98 11.76a2.12 2.12 0 1 0 2.99 3l3.39-3.39a2.12 2.12 0 0 0-3-3zm-1.42 4.42a.5.5 0 1 1-.7-.7l3.39-3.4a.5.5 0 0 1 .7.7z"></path><path d="M8.37 15.63a2.121 2.121 0 0 0 2.26 0l3.39-3.39a2.12 2.12 0 1 0-2.99-3L7.64 12.24a2.12 2.12 0 0 0 3 3zm1.42-4.42a.5.5 0 1 1 .7.7L6.36 15.6a.5.5 0 0 1-.7-.7z"></path></svg>
-                </a>
+                <a href="#" id="share-twitter" class="social-share-button" title="Share on X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg></a>
+                <a href="#" id="share-facebook" class="social-share-button" title="Share on Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3v9h4z"></path></svg></a>
+                <a href="mailto:your-email@example.com" class="social-share-button" title="Commune with the Keepers"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"></path></svg></a>
             </div>
-            <p id="copy-link-feedback">Link Copied!</p>
+            <p class="text-sm text-gray-500 mt-4">&copy; 2025 Ancient Echoes Project. All rights reserved.</p>
         </footer>
-
     </div>
-
-    <div id="lore-modal">
-        <div class="lore-content">
-            <button class="lore-close-button">&times;</button>
-            <h3 id="lore-title" class="text-2xl font-bold text-yellow-400 mb-4 font-spectral"></h3>
-            <img id="lore-image" src="" alt="Artifact Image" class="w-full h-auto rounded-lg mb-4 border border-gray-600 hidden">
-            <p id="lore-text" class="text-gray-300"></p>
-        </div>
-    </div>
+    
+    <div id="lore-modal"><div class="lore-content"><button class="lore-close-button">&times;</button><h3 id="lore-title" class="text-2xl font-bold text-yellow-400 mb-4 font-spectral"></h3><div id="lore-text" class="text-gray-300"></div></div></div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- Element References ---
-        const allPages = document.querySelectorAll('.page');
-        const whisperBox = document.getElementById('whisperBox');
-        const runicOutput = document.getElementById('runicOutput');
-        const englishOutput = document.getElementById('englishOutput');
-        const toggleTranslationButton = document.getElementById('toggleTranslation');
-        const menuButton = document.getElementById('menuButton');
-        const overlayMenu = document.getElementById('overlayMenu');
-        const closeMenuButton = document.getElementById('closeMenuButton');
-        const navLinks = document.querySelectorAll('.overlay-menu nav ul li a');
-        const initialEntryOverlay = document.getElementById('initialEntryOverlay');
-        const mainContentArea = document.getElementById('mainContentArea');
-        const meditationCircle = document.getElementById('meditationCircle');
-        const meditationRune = document.getElementById('meditationRune');
-        const meditationStatus = document.getElementById('meditationStatus');
-        const toggleMeditationVoiceButton = document.getElementById('toggleMeditationVoiceButton');
-        const contactForm = document.getElementById('contactForm');
-        const keeperMessage = document.getElementById('keeperMessage');
-        const messageFeedback = document.getElementById('messageFeedback');
-        const drawRunesButton = document.getElementById('drawRunesButton');
-        const runeQuestionInput = document.getElementById('runeQuestionInput');
-        const runeDisplay = document.getElementById('runeDisplay');
-        const runeInterpretation = document.getElementById('runeInterpretation');
-        const toggleRuneVoiceButton = document.getElementById('toggleRuneVoiceButton');
-        const runeAlphabetGrid = document.querySelector('.rune-alphabet-grid');
-        const visitCounterElement = document.getElementById('visitCounter');
-        const postReadingMessage = document.getElementById('postReadingMessage');
-        const storytellerRune = document.getElementById('storytellerRune');
-        const storytellerMeaning = document.getElementById('storytellerMeaning');
-        const storytellerInput = document.getElementById('storytellerInput');
-        const submitStoryButton = document.getElementById('submitStoryButton');
-        const storiesContainer = document.getElementById('storiesContainer');
-        const storytellerStatusMessage = document.getElementById('storytellerStatusMessage');
-        const storytellerSuccessMessage = document.getElementById('storytellerSuccessMessage');
-        const donationProgress = document.getElementById('donation-progress');
-        const currentDonations = document.getElementById('current-donations');
-        const homePageDonationPrompt = document.getElementById('homePageDonationPrompt');
-        const storytellerDonationPrompt = document.getElementById('storytellerDonationPrompt');
-        const pageLinks = document.querySelectorAll('.page-link');
-        const keepersGrid = document.getElementById('keepersGrid');
-        const keepersCount = document.getElementById('keepersCount');
-        const frontPageKeepersCount = document.getElementById('frontPageKeepersCount');
-        const sanctumContent = document.getElementById('sanctumContent');
-        const sanctumAccessDenied = document.getElementById('sanctumAccessDenied');
-        const canvas = document.getElementById('interactive-background');
-        const ctx = canvas.getContext('2d');
-        const loreModal = document.getElementById('lore-modal');
-        const loreTitle = document.getElementById('lore-title');
-        const loreImage = document.getElementById('lore-image');
-        const loreText = document.getElementById('lore-text');
-        const loreCloseButton = document.querySelector('.lore-close-button');
-        const mapContainer = document.getElementById('map-container');
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Element References ---
+    const allPages = document.querySelectorAll('.page');
+    const pageLinks = document.querySelectorAll('.page-link');
+    const mainContentArea = document.getElementById('mainContentArea');
+    const initialEntryOverlay = document.getElementById('initialEntryOverlay');
+    const menuButton = document.getElementById('menuButton');
+    const overlayMenu = document.getElementById('overlayMenu');
+    const closeMenuButton = document.getElementById('closeMenuButton');
+    const pyramidGroup = document.getElementById('pyramidGroup');
+    const runicOutput = document.getElementById('runicOutput');
+    const englishOutput = document.getElementById('englishOutput');
+    const toggleTranslationButton = document.getElementById('toggleTranslation');
+    const keepersGrid = document.getElementById('keepersGrid');
+    const sanctumView = document.getElementById('sanctum-view');
+    const keeperOfferingView = document.getElementById('keeper-offering-view');
+    const mapContainer = document.getElementById('map-container');
+    const loreModal = document.getElementById('lore-modal');
+    const loreTitle = document.getElementById('lore-title');
+    const loreText = document.getElementById('lore-text');
+    const loreCloseButton = loreModal.querySelector('.lore-close-button');
+    const storytellerRuneEl = document.getElementById('storytellerRune');
+    const storytellerMeaningEl = document.getElementById('storytellerMeaning');
+    const storiesContainer = document.getElementById('storiesContainer');
+    const submitStoryButton = document.getElementById('submitStoryButton');
+    const storytellerInput = document.getElementById('storytellerInput');
+    const storytellerStatusMessage = document.getElementById('storytellerStatusMessage');
+    const drawRunesButton = document.getElementById('drawRunesButton');
+    const runeQuestionInput = document.getElementById('runeQuestionInput');
+    const runeDisplay = document.getElementById('runeDisplay');
+    const runeInterpretation = document.getElementById('runeInterpretation');
+    const meditationCircle = document.getElementById('meditationCircle');
+    const meditationRune = document.getElementById('meditationRune');
+    const meditationStatus = document.getElementById('meditationStatus');
+    const canvas = document.getElementById('interactive-background');
+    const ctx = canvas.getContext('2d');
+
+    let isGenerating = false;
+    let particlesArray = [];
+    window.mouse = {x: null, y: null, radius: 100};
+
+    // --- Data Arrays ---
+    const ancientWisdoms = [ { runic: "ᛞᚱᛁᛗ ᛞᛖᛈᛖᚱ", english: "Dream deeper." }, { runic: "ᛋᛏᚨᚱᛋ ᚹᚨᛏᚲᚺ", english: "The stars watch." }, { runic: "ᛖᚲᚺᛟ ᛟᚠ ᛏᛁᛗᛖ", english: "Listen to time's echo." }, { runic: "ᚦᛅ ᛋᛏᛟᚾᛋ ᛋᛒᛂᛅᚴ", english: "The stones speak to those who listen." }, { runic: "ᚢᛅᛁᛚ ᛁᛋ ᚦᛁᚾ", english: "Where the worlds touch, the veil is thin." }];
+    const mapLore = {
+        sun: { title: "Pyramid of the Sun", text: "The largest of the valley's structures. Its orientation to the cosmic north is more precise than that of the Great Pyramid of Giza. Energy scans have detected an unusual electromagnetic beam emanating from its peak.", rune: "ᛋ", runeName: "Sowilo (Sun, Wholeness)" },
+        moon: { title: "Pyramid of the Moon", text: "A terraced structure built from sandstone blocks and clay. Below it lies a network of chambers and a small blue lake, untouched for millennia. The water here is said to have unique, life-affirming properties.", rune: "ᛚ", runeName: "Laguz (Water, Intuition)" },
+        dragon: { title: "Pyramid of the Dragon", text: "This pyramid is believed to regulate the flow of energy throughout the valley. Its thermal inertia properties are remarkable, maintaining a stable internal temperature regardless of the outside weather.", rune: "ᚢ", runeName: "Uruz (Strength, Power)" },
+        tunnels: { title: "Ravne Tunnel Labyrinth", text: "A vast, prehistoric network of tunnels running for kilometers beneath the valley. Within these tunnels, the air has an unusually high concentration of negative ions, creating an atmosphere of healing and tranquility.", rune: "ᛉ", runeName: "Algiz (Protection)" }
+    };
+    const runeReadings = [ { runes: "ᚠᛉᛟ", interpretation: "Protected wealth and inheritance. Your foundations are strong. Do not fear loss, for your prosperity is watched over by ancestral spirits." }, { runes: "ᚢᚱᚨ", interpretation: "A journey of strength and wisdom is ahead. Primal power fuels your movement, and divine messages will guide your way." }];
+    const meditationScripts = { 'ᛗ': "Focus on the self. Feel the connection to all of humanity.", 'ᛟ': "Think of your heritage, your ancestors. Feel their strength.", 'ᛞ': "Embrace the dawn of a new understanding. A breakthrough is near." };
+    let currentStorytellerRuneInfo = {};
+    
+    // --- Core Functions ---
+    function showPage(pageId, isNavigatingHistory = false) {
+        allPages.forEach(page => page.classList.remove('active'));
+        const targetPage = document.getElementById(pageId + 'Page');
         
-        let isGenerating = false;
-        let isMeditationTTSActive = false;
-        let isRuneTTSActive = false;
-        let currentStorytellerRune = null;
-        let alignmentAnimationId = null;
-
-        const ancientWisdoms = [
-            { runic: "ᛞᚱᛁᛗ ᛞᛖᛈᛖᚱ", english: "Dream deeper." }, { runic: "ᛋᛏᚨᚱᛋ ᚹᚨᛏᚲᚺ", english: "The stars watch." }, { runic: "ᛖᚲᚺᛟ ᛟᚠ ᛏᛁᛗᛖ", english: "Listen to time's echo." }, { runic: "ᚦᛅ ᛋᛏᛟᚾᛋ ᛋᛒᛂᛅᚴ", english: "The stones speak to those who listen." }, { runic: "ᚢᛅᛁᛚ ᛁᛋ ᚦᛁᚾ", english: "Where the worlds touch, the veil is thin." }, { runic: "ᛋᛂᛅᚴ ᚦᛅ ᛏᚱᚢᚦ", english: "Seek the truth, not the comfort of answers." }, { runic: "ᛒᛅᛚᛅᚾᛋ ᛁᛋ ᚴᛅᛁ", english: "Balance is the key to unlocking potential." }, { runic: "ᛂᚾᛅᚱᚵᛁ ᚠᛚᚬᚢᛋ", english: "Energy flows where intention goes." }, { runic: "ᚦᛅ ᛒᛅᚦ ᛁᛋ ᚢᛁᚦᛁᚾ", english: "The path you seek is found within." }, { runic: "ᚦᛅ ᛘᚬᚢᚾᛏᛅᛁᚾ ᛒᚱᛂᛅᚦᛋ", english: "The mountain breathes with the ages." }, { runic: "ᚢᚱ ᚬᚠᚠᛂᚱᛁᚾᚵ ᛋᚢᛋᛏᛅᛁᚾᛋ ᚦᛁᛋ ᚢᛅᛁᛚ", english: "Your offering sustains this veil." }, { runic: "ᛅ ᛚᛁᚵᚦ ᚬᚠ ᛘᛅᚾᛃ ᛋᚱᛅᛁᚵᚦᛋ ᚦᛁᛋ ᛒᚬᛏᛅᛚ", english: "A light from many strengthens this portal." }
-        ];
-        
-        const keeperAnswers = [
-            "The answer lies not in the stars, but in the silence between your thoughts. Listen to it.", "A river cannot be pushed. Your path will reveal itself when the time is right, not a moment sooner.", "The shadow you cast is proof of the light within you. Do not fear the darkness you create.", "To find what you seek, you must first lose your way. The destination is not a place, but a new perspective.", "The heaviest stone is the one you refuse to put down. What burden do you carry that is not yours?", "Look for the echo. The first sound is the question, but the truth is in how it returns to you.", "A seed does not know it is a tree until it breaks through the earth. Your potential is buried; have the courage to grow.", "The veil is thinnest where you least expect it. Pay attention to the whispers in the mundane.", "You ask for a map, but the journey changes the land itself. Walk with faith, not with sight."
-        ];
-
-        const runeReadings = [
-            { runes: "ᚠᛉᛟ", interpretation: "Protected wealth and inheritance. Your foundations are strong. Do not fear loss, for your prosperity is watched over by ancestral spirits." }, { runes: "ᚢᚱᚨ", interpretation: "A journey of strength and wisdom is ahead. Primal power fuels your movement, and divine messages will guide your way." }, { runes: "ᚦᛖᛚ", interpretation: "A gateway of change lies before you. Do not force the path; let the flow guide you through the thorns to the other side." }, { runes: "ᚹᛗᛒ", interpretation: "Joy in community and new beginnings. This is a time for connection, celebrating the self, and nurturing growth." }
-        ];
-        
-        const elderFuthark = [
-            { char: 'ᚠ', name: 'Fehu', meaning: 'Wealth, cattle, new beginnings.' }, { char: 'ᚢ', name: 'Uruz', meaning: 'Strength, primal force, courage.' }, { char: 'ᚦ', name: 'Thurisaz', meaning: 'Thorn, change, directed force.' }, { char: 'ᚨ', name: 'Ansuz', meaning: 'Communication, wisdom, insight.' }, { char: 'ᚱ', name: 'Raido', meaning: 'Journey, movement, life path.' }, { char: 'ᚲ', name: 'Kenaz', meaning: 'Torch, illumination, creativity.' }, { char: 'ᚷ', name: 'Gebo', meaning: 'Gift, partnership, generosity.' }, { char: 'ᚹ', name: 'Wunjo', meaning: 'Joy, harmony, fellowship.' }, { char: 'ᚺ', name: 'Hagalaz', meaning: 'Hail, disruption, uncontrollable forces.' }, { char: 'ᚾ', name: 'Nauthiz', meaning: 'Need, delay, resistance.' }, { char: 'ᛁ', name: 'Isa', meaning: 'Ice, stillness, psychological block.' }, { char: 'ᛃ', name: 'Jera', meaning: 'Harvest, cycles, success from effort.' }, { char: 'ᛇ', name: 'Eihwaz', meaning: 'Yew, endurance, a bridge between worlds.' }, { char: 'ᛈ', name: 'Perthro', meaning: 'Lot-cup, mystery, fate, hidden knowledge.' }, { char: 'ᛉ', name: 'Algiz', meaning: 'Protection, defense, connection with the divine.' }, { char: 'ᛋ', name: 'Sowilo', meaning: 'Sun, wholeness, power, success.' }, { char: 'ᛏ', name: 'Tiwaz', meaning: 'Tyr, justice, sacrifice, leadership.' }, { char: 'ᛒ', name: 'Berkano', meaning: 'Birch, fertility, new growth, nurture.' }, { char: 'ᛖ', name: 'Ehwaz', meaning: 'Horse, teamwork, trust, movement.' }, { char: 'ᛗ', name: 'Mannaz', meaning: 'Man, humanity, the self.' }, { char: 'ᛚ', name: 'Laguz', meaning: 'Water, intuition, emotion, flow.' }, { char: 'ᛜ', name: 'Ingwaz', meaning: 'Ing, potential, home, retreat.' }, { char: 'ᛟ', name: 'Othala', meaning: 'Inheritance, home, ancestry.' }, { char: 'ᛞ', name: 'Dagaz', meaning: 'Dawn, breakthrough, a new day.' }
-        ];
-
-        const artifactData = [
-            { image: 'runic2.webp', title: 'The Ravne Megalith', description: 'This large stone, discovered in the Ravne tunnel network, features complex carvings believed to be an ancient runic script.' },
-            { image: 'runic11.webp', title: 'Ancient Pavement', description: 'Excavations on the Pyramid of the Sun have uncovered these large, precisely fitted stone blocks, forming what appears to be an ancient paved terrace.' },
-            { image: 'runic7.webp', title: 'Pyramid of the Sun', description: 'An aerial view of the largest of the Bosnian pyramids, Visočica Hill, which is covered by soil and vegetation.' },
-            { image: 'runic4.webp', title: 'Inscribed Pyramid Artifact', description: 'A small, pyramid-shaped artifact found during excavations, featuring layers of inscribed symbols that are yet to be fully deciphered.' }
-        ];
-        
-        const runeArtifacts = {};
-        elderFuthark.forEach((rune, index) => {
-            runeArtifacts[rune.char] = artifactData[index % artifactData.length];
-        });
-
-        const runeReflections = {
-            'ᚠ': ["You have shared a story of abundance. The veil recognizes this gift and echoes its prosperity back to you.", "Your tale of beginnings plants a seed in the timeless soil. May it grow into a mighty tree."],
-            'ᚢ': ["The strength in your story fortifies the veil itself. The echoes of your power will resonate for ages.", "You speak of primal force, and the ancient stones listen, recognizing a power as old as their own."],
-            'ᚦ': ["Your story of change is a gateway. In telling it, you have passed through, leaving the path clearer for others.", "The thorn you described has been offered to the veil. Its sharpness is now a tool of protection for this sacred space."],
-            'ᚨ': ["A story of wisdom is a drink from the deepest well. Thank you for sharing this sacred knowledge.", "Your words carry the breath of the ancients. The message has been heard and understood."],
-            'ᚱ': ["The veil has received your echo. By sharing your journey, you have charted a path for others to follow.", "Every journey is a circle. Your story has returned to its source, richer for the telling."],
-            'ᚲ': ["Your tale of illumination is a torch in the darkness. It will light the way for those who are lost.", "Creativity is the language of the cosmos. Your story is a verse in its endless song."],
-            'ᚷ': ["To give a story is the greatest gift. It has been received with gratitude.", "You speak of partnership, and in doing so, have strengthened the bond between this world and the veil."],
-            'ᚹ': ["Your joy has been woven into the fabric of this place. It is a light that will warm other seekers who pass this way.", "Harmony shared is harmony multiplied. Your story brings balance to the echoes."],
-            'ᚺ': ["You have given form to chaos, and in doing so, have shown its purpose. The storm you described now nourishes the ground for new growth.", "Disruption is the mother of change. Your story is a testament to the strength found in breaking."],
-            'ᚾ': ["By giving voice to your need, you have begun the process of fulfillment. The veil acknowledges your patience.", "Your story of resistance is a shield. It will lend strength to others in their own trials."],
-            'ᛁ': ["In describing stillness, you have revealed the universe of motion it contains. A profound and subtle truth.", "Your tale of ice is a mirror. It reflects a hidden truth, now clear for all to see."],
-            'ᛃ': ["You have shared a tale of the harvest. The seeds of your experience will feed the wisdom of the community.", "The cycle turns, and your story marks its passage. What was sown has been reaped and understood."],
-            'ᛇ': ["Your story bridges worlds, connecting the above and the below. It is a powerful work of magic.", "Endurance is the theme of your tale, and it has been etched into the memory of this place forever."],
-            'ᛈ': ["You have shared a mystery, adding to the great enigma. The veil does not offer an answer, but a deeper question.", "Fate is a thread, and your story has shown its pattern. Others will see their own threads reflected in yours."],
-            'ᛉ': ["A story of protection is a ward against darkness. Thank you for strengthening the defenses of this sacred space.", "Your words are a shield. The divine connection you described has been felt and amplified."],
-            'ᛋ': ["Your tale of triumph radiates like the sun. It has become a beacon within the veil, a testament to the power of a focused will.", "Wholeness is the goal, and your story is a step upon that path. It shines brightly."],
-            'ᛏ': ["You speak of justice and sacrifice, the cornerstones of cosmic law. Your story honors this ancient balance.", "The leadership shown in your tale inspires the echoes of heroes past. It is a worthy chronicle."],
-            'ᛒ': ["A story of new growth is a promise of the future. The veil nurtures this promise and will help it bloom.", "You have shared a tale of nurturing, and in doing so, have tended to the roots of the world tree."],
-            'ᛖ': ["Your story of teamwork shows the power of the herd. It is a reminder that no soul journeys alone.", "Trust is the bond that holds the worlds together. Your tale strengthens that bond."],
-            'ᛗ': ["In sharing a story of the self, you have shared a story of all humanity. It is a profound reflection.", "Your tale is a mirror in which others will see themselves. This is the great power of the chronicle."],
-            'ᛚ': ["Your story flows like water, finding its own path to the great sea of shared consciousness.", "Intuition is the whisper of the veil. Thank you for amplifying its voice with your tale."],
-            'ᛜ': ["A story of inner work and potential is a sacred thing. The seed you have described will be protected here.", "You have shared a tale of home, and in doing so, have made this place more of a home for all."],
-            'ᛟ': ["Your tale of inheritance honors all who came before. The ancestors listen and are pleased.", "By sharing a piece of your ancestry, you have enriched the lineage of all who seek wisdom here."],
-            'ᛞ': ["You have chronicled your night, and in doing so, have helped manifest the dawn. The veil recognizes your breakthrough.", "A new day is not given, but made. Your story is an act of creation, and it is beautiful."]
-        };
-        
-        const mapLore = {
-            sun: {
-                title: "Pyramid of the Sun",
-                text: "The largest of the valley's structures. Its orientation to the cosmic north is more precise than that of the Great Pyramid of Giza. Energy scans have detected an unusual electromagnetic beam emanating from its peak, focused and continuous."
-            },
-            moon: {
-                title: "Pyramid of the Moon",
-                text: "A terraced structure built from sandstone blocks and clay. Below it lies a network of chambers and a small blue lake, untouched for millennia. The water here is said to have unique, life-affirming properties."
-            },
-            dragon: {
-                title: "Pyramid of the Dragon",
-                text: "This pyramid is believed to regulate the flow of energy throughout the valley. Its thermal inertia properties are remarkable, maintaining a stable internal temperature regardless of the outside weather, suggesting a complex internal design."
-            },
-            tunnels: {
-                title: "Ravne Tunnel Labyrinth",
-                text: "A vast, prehistoric network of tunnels running for kilometers beneath the valley. Within these tunnels, the air has an unusually high concentration of negative ions, creating an atmosphere of healing and tranquility. Carved megaliths and runic symbols are found throughout, their purpose still a mystery."
-            }
-        };
-
-        let particlesArray = [];
-        let mouse = { x: null, y: null, radius: 100 };
-        let particleAnimationId;
-
-        function calculateMoonPhase(date = new Date()) {
-            const LUNAR_MONTH = 29.530588853;
-            const getJulianDate = (d) => (d.getTime() / 86400000) - (d.getTimezoneOffset() / 1440) + 2440587.5;
-            const knownNewMoon = getJulianDate(new Date(Date.UTC(2000, 0, 6, 18, 14, 0)));
-            const julianDate = getJulianDate(date);
-            const age = (julianDate - knownNewMoon) % LUNAR_MONTH;
-            return age / LUNAR_MONTH;
-        }
-
-        function updateMoonVisual(phase) {
-            const celestialBody = document.querySelector('.celestial-body');
-            if (!celestialBody) return;
-            
-            let translateX;
-            if (phase <= 0.5) {
-                translateX = -phase * 200;
-            } else {
-                translateX = (1 - phase) * 200;
-            }
-            celestialBody.style.setProperty('--moon-phase-x', `${translateX}%`);
-        }
-
-        const beamCooldowns = { sun: 0, moon: 0, dragon: 0, night: 0 };
-        const COOLDOWN_PERIOD = 5000; 
-
-        function fireRunicBeam(pyramidName) {
-            const now = Date.now();
-            if (now < beamCooldowns[pyramidName]) return;
-
-            const pyramidShapeEl = document.querySelector(`.pyramid[data-pyramid="${pyramidName}"] .pyramid-shape`);
-            const beamEl = document.getElementById(`beam-from-moon-${pyramidName}`);
-            const moonEl = document.getElementById('menuButton');
-
-            if (!moonEl || !pyramidShapeEl || !beamEl) return;
-
-            const moonRect = moonEl.getBoundingClientRect();
-            const pyramidRect = pyramidShapeEl.getBoundingClientRect();
-
-            const beamStartX = moonRect.left + moonRect.width / 2;
-            const beamStartY = moonRect.bottom;
-            const beamEndY = pyramidRect.top;
-            const height = beamEndY - beamStartY;
-
-            if (height <= 0) return;
-
-            beamEl.style.top = `${beamStartY}px`;
-            beamEl.style.left = `${beamStartX - beamEl.offsetWidth / 2}px`;
-            beamEl.style.height = `${height}px`;
-
-            const runeCount = Math.floor(height / 18);
-            let runesHTML = '';
-            for (let i = 0; i < runeCount; i++) {
-                const rune = elderFuthark[Math.floor(Math.random() * elderFuthark.length)];
-                runesHTML += `<span style="animation-delay: ${i * 0.05}s">${rune.char}</span>`;
-            }
-            beamEl.innerHTML = runesHTML;
-            beamEl.style.opacity = '1';
-
-            beamCooldowns[pyramidName] = now + COOLDOWN_PERIOD;
-
-            setTimeout(() => {
-                beamEl.style.opacity = '0';
-            }, 2500);
-        }
-
-        function checkMoonPyramidAlignment() {
-            const moonEl = document.getElementById('menuButton');
-            if (!moonEl) return;
-            const moonRect = moonEl.getBoundingClientRect();
-            const moonCenterX = moonRect.left + moonRect.width / 2;
-
-            ['sun', 'moon', 'dragon', 'night'].forEach(name => {
-                const pyramidEl = document.querySelector(`.pyramid[data-pyramid="${name}"]`);
-                if(pyramidEl) {
-                    const pyramidRect = pyramidEl.getBoundingClientRect();
-                    const pyramidCenterX = pyramidRect.left + pyramidRect.width / 2;
-                    if (Math.abs(moonCenterX - pyramidCenterX) < 20) { 
-                        fireRunicBeam(name);
-                    }
-                }
-            });
-        }
-        
-        function alignmentLoop() {
-            checkMoonPyramidAlignment();
-            alignmentAnimationId = requestAnimationFrame(alignmentLoop);
-        }
-
-        function startAlignmentCheck() {
-            if (!alignmentAnimationId) {
-                alignmentLoop();
-            }
-        }
-        function stopAlignmentCheck() {
-            if (alignmentAnimationId) {
-                cancelAnimationFrame(alignmentAnimationId);
-                alignmentAnimationId = null;
-            }
-        }
-
-        function handleResize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            initParticles();
-        }
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.baseX = this.x;
-                this.baseY = this.y;
-                this.density = (Math.random() * 30) + 1;
-                this.opacity = Math.random() * 0.4 + 0.3;
-                this.twinkleSpeed = Math.random() * 0.05;
-            }
-            draw() {
-                const currentOpacity = this.opacity + Math.sin(Date.now() * this.twinkleSpeed) * (this.opacity * 0.4);
-                ctx.fillStyle = `rgba(255, 215, 0, ${currentOpacity})`;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.closePath();
-                ctx.fill();
-            }
-            update() {
-                let dx = mouse.x - this.x;
-                let dy = mouse.y - this.y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < mouse.radius) {
-                    let forceDirectionX = dx / distance;
-                    let forceDirectionY = dy / distance;
-                    let maxDistance = mouse.radius;
-                    let force = (maxDistance - distance) / maxDistance;
-                    let directionX = (forceDirectionX * force * this.density);
-                    let directionY = (forceDirectionY * force * this.density);
-                    this.x -= directionX;
-                    this.y -= directionY;
-                } else {
-                    if (this.x !== this.baseX) {
-                        let dx = this.x - this.baseX;
-                        this.x -= dx / 10;
-                    }
-                    if (this.y !== this.baseY) {
-                        let dy = this.y - this.baseY;
-                        this.y -= dy / 10;
-                    }
-                }
-            }
-        }
-
-        function initParticles() {
-            particlesArray = [];
-            let numberOfParticles = (canvas.height * canvas.width) / 9000;
-            for (let i = 0; i < numberOfParticles; i++) {
-                particlesArray.push(new Particle());
-            }
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < particlesArray.length; i++) {
-                particlesArray[i].draw();
-                particlesArray[i].update();
-            }
-            particleAnimationId = requestAnimationFrame(animateParticles);
-        }
-
-        function stopParticleAnimation() {
-            if (particleAnimationId) {
-                cancelAnimationFrame(particleAnimationId);
-                particleAnimationId = null;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
-        }
-
-        function startParticleAnimation() {
-            if (!particleAnimationId) {
-                handleResize();
-                animateParticles();
-            }
-        }
-        
-        window.addEventListener('resize', () => {
-             if (particleAnimationId) {
-                 handleResize();
-            }
-        });
-
-        window.addEventListener('mousemove', (event) => {
-            mouse.x = event.clientX;
-            mouse.y = event.clientY;
-        });
-        
-        function buildRuneAlphabet() {
-            if (!runeAlphabetGrid) return;
-            runeAlphabetGrid.innerHTML = '';
-            elderFuthark.forEach(rune => {
-                const item = document.createElement('div');
-                item.className = 'rune-alphabet-item';
-                item.dataset.rune = rune.char; // Add data attribute for the rune character
-                // Add pointer-events: none to children to ensure click is on the parent
-                item.innerHTML = `<div class="rune-alphabet-char" style="pointer-events: none;">${rune.char}</div><div class="rune-alphabet-name" style="pointer-events: none;">${rune.name}</div>`;
-                runeAlphabetGrid.appendChild(item);
-            });
-        }
-        buildRuneAlphabet();
-
-        // Add event listener for the now-interactive alphabet grid
-        runeAlphabetGrid.addEventListener('click', (e) => {
-            const runeItem = e.target.closest('.rune-alphabet-item');
-            if (runeItem) {
-                const runeChar = runeItem.dataset.rune;
-                const artifact = runeArtifacts[runeChar];
-                if (artifact) {
-                    loreTitle.textContent = artifact.title;
-                    loreText.textContent = artifact.description;
-                    loreImage.src = artifact.image;
-                    loreImage.classList.remove('hidden');
-                    loreModal.classList.add('visible');
-                }
-            }
-        });
-
-        function speak(text) {
-            if (!('speechSynthesis' in window)) return;
-            speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.8;
-            utterance.pitch = 0.9;
-            speechSynthesis.speak(utterance);
-        }
-
-        toggleMeditationVoiceButton.addEventListener('click', () => {
-            isMeditationTTSActive = !isMeditationTTSActive;
-            toggleMeditationVoiceButton.textContent = isMeditationTTSActive ? "Disable Meditation Voice" : "Enable Meditation Voice";
-            toggleMeditationVoiceButton.classList.toggle('active', isMeditationTTSActive);
-            if (isMeditationTTSActive) speak(meditationStatus.textContent);
-            else speechSynthesis.cancel();
-        });
-
-        toggleRuneVoiceButton.addEventListener('click', () => {
-            isRuneTTSActive = !isRuneTTSActive;
-            toggleRuneVoiceButton.textContent = isRuneTTSActive ? "Disable Reading Voice" : "Enable Reading Voice";
-            toggleRuneVoiceButton.classList.toggle('active', isRuneTTSActive);
-            if (isRuneTTSActive && runeInterpretation.textContent) speak(runeInterpretation.textContent);
-            else speechSynthesis.cancel();
-        });
-
-        function getAncientCounsel() {
-            if (isGenerating) return;
-            isGenerating = true;
-            runicOutput.textContent = '';
-            englishOutput.textContent = '';
-            englishOutput.classList.remove('visible');
-            toggleTranslationButton.style.display = 'none';
-            whisperBox.classList.add('loading');
-            homePageDonationPrompt.style.display = 'none';
-            
-            setTimeout(() => {
-                const wisdom = ancientWisdoms[Math.floor(Math.random() * ancientWisdoms.length)];
-                runicOutput.textContent = wisdom.runic;
-                englishOutput.textContent = wisdom.english;
-                whisperBox.classList.remove('loading');
-                toggleTranslationButton.style.display = 'inline-block';
-                isGenerating = false;
-                homePageDonationPrompt.innerHTML = `<p>If this whisper resonated, <a href="#" data-page="donate" class="text-yellow-400 hover:underline page-link">consider an offering</a> to keep the echoes alive.</p>`;
-                homePageDonationPrompt.style.display = 'block';
-            }, 1500);
-        }
-
-        function getRuneReading() {
-            const question = runeQuestionInput.value.trim();
-            if (!question) {
-                runeInterpretation.textContent = "You must ask a question to receive a reading.";
-                return;
-            }
-            if (isGenerating) return;
-            isGenerating = true;
-            runeDisplay.innerHTML = '';
-            runeInterpretation.textContent = 'The runes are being cast...';
-            toggleRuneVoiceButton.classList.add('hidden');
-            postReadingMessage.style.display = 'none';
-            
-            setTimeout(() => {
-                const reading = runeReadings[Math.floor(Math.random() * runeReadings.length)];
-                
-                runeDisplay.innerHTML = ''; 
-                const runes = reading.runes.split('');
-                runes.forEach(runeChar => {
-                    const runeSpan = document.createElement('span');
-                    runeSpan.className = 'rune-link'; 
-                    runeSpan.textContent = runeChar;
-                    runeSpan.dataset.rune = runeChar;
-                    runeDisplay.appendChild(runeSpan);
-                });
-
-                runeInterpretation.innerHTML = reading.interpretation +  
-                  '<p class="mt-4 text-sm text-yellow-400/70 italic">Click a rune above to reveal its artifact.</p>';
-
-                toggleRuneVoiceButton.classList.remove('hidden');
-                postReadingMessage.style.display = 'block';
-                if (isRuneTTSActive) speak(reading.interpretation);
-                isGenerating = false;
-            }, 2500);
-        }
-
-        function initializeStoryteller() {
-            const randomRune = elderFuthark[Math.floor(Math.random() * elderFuthark.length)];
-            storytellerRune.textContent = randomRune.char;
-            storytellerMeaning.textContent = `${randomRune.name}: ${randomRune.meaning}`;
-            currentStorytellerRune = randomRune;
-            const stories = JSON.parse(localStorage.getItem('runic_stories') || '[]');
-            displayStories(stories);
-        }
-
-        function submitStory() {
-            const storyText = storytellerInput.value.trim();
-            if (storyText.length < 10) {
-                storytellerStatusMessage.textContent = "Your story is too brief. A keeper's tale must be told with more detail.";
-                setTimeout(() => storytellerStatusMessage.textContent = "Tell your tale, keeper.", 5000);
-                return;
-            }
-
-            submitStoryButton.disabled = true;
-            storytellerStatusMessage.textContent = "Submitting your echo to the veil...";
-
-            const stories = JSON.parse(localStorage.getItem('runic_stories') || '[]');
-            const newStory = {
-                rune: currentStorytellerRune.char,
-                story: storyText,
-                timestamp: new Date().toLocaleString()
-            };
-            stories.unshift(newStory);
-            localStorage.setItem('runic_stories', JSON.stringify(stories));
-
-            storytellerInput.classList.add('hidden');
-            storytellerStatusMessage.textContent = ''; 
-
-            const reflections = runeReflections[currentStorytellerRune.char] || ["Your story has been received and woven into the great tapestry."];
-            const reflection = reflections[Math.floor(Math.random() * reflections.length)];
-
-            storytellerSuccessMessage.textContent = reflection;
-            storytellerSuccessMessage.classList.remove('hidden');
-
-            storytellerDonationPrompt.innerHTML = `<p class="mt-4">Your story strengthens the veil. <a href="#" data-page="donate" class="text-yellow-400 hover:underline page-link">Become a Guardian of the Chronicle</a>.</p>`;
-            storytellerDonationPrompt.style.display = 'block';
-
-            setTimeout(() => {
-                storytellerSuccessMessage.classList.add('hidden');
-                storytellerDonationPrompt.style.display = 'none';
-                storytellerInput.value = ''; 
-                storytellerInput.classList.remove('hidden'); 
-                storytellerStatusMessage.textContent = "Tell your tale, keeper.";
-                submitStoryButton.disabled = false;
-                displayStories(stories);
-            }, 10000);
-        }
-
-        function displayStories(stories) {
-            storiesContainer.innerHTML = '';
-            if (stories.length === 0) {
-                storiesContainer.innerHTML = `<p class="text-gray-500 text-center italic">Your personal chronicle is empty. Be the first to write!</p>`;
-                return;
-            }
-            stories.forEach(story => {
-                const storyCard = document.createElement('div');
-                storyCard.className = 'story-card';
-                storyCard.innerHTML = `
-                    <div class="story-rune">${story.rune}</div>
-                    <p class="story-text">${story.story}</p>
-                    <div class="story-meta">
-                        <span class="story-author">Your Echo</span>
-                        <span class="story-timestamp">${story.timestamp}</span>
-                    </div>`;
-                storiesContainer.appendChild(storyCard);
-            });
-        }
-        
-        initialEntryOverlay.addEventListener('click', () => {
-            initialEntryOverlay.classList.add('hidden');
-            mainContentArea.classList.add('active');
-
-            const menuHint = document.getElementById('menuHint');
-            if (menuHint) {
-                setTimeout(() => {
-                    menuHint.style.opacity = '0';
-                }, 4000);
-            }
-            updateCounter();
-        }, { once: true });
-        
-        document.getElementById('pyramidGroup').addEventListener('click', (e) => {
-            const pyramidButton = e.target.closest('.pyramid');
-            if (pyramidButton) {
-                const beam = pyramidButton.querySelector('.beam');
-                const shape = pyramidButton.querySelector('.pyramid-shape');
-
-                if (shape) {
-                    shape.classList.add('charging');
-                    setTimeout(() => {
-                        shape.classList.remove('charging');
-                    }, 1000);
-                }
-
-                if (beam) {
-                    setTimeout(() => {
-                        beam.style.opacity = '1';
-                        setTimeout(() => beam.style.opacity = '0', 2000);
-                    }, 200);
-                }
-                getAncientCounsel();
-            }
-        });
-
-        toggleTranslationButton.addEventListener('click', () => englishOutput.classList.toggle('visible'));
-        drawRunesButton.addEventListener('click', getRuneReading);
-        submitStoryButton.addEventListener('click', submitStory);
-        menuButton.addEventListener('click', () => overlayMenu.classList.add('active'));
-        closeMenuButton.addEventListener('click', () => overlayMenu.classList.remove('active'));
-
-        function showPage(pageId, force = false) {
-            if (pageId === 'sanctumPage' && !force) {
-                if (localStorage.getItem('hasDonated') !== 'true') {
-                    sanctumContent.classList.add('hidden');
-                    sanctumAccessDenied.classList.remove('hidden');
-                } else {
-                    sanctumContent.classList.remove('hidden');
-                    sanctumAccessDenied.classList.add('hidden');
-                }
-            }
-
+        if (targetPage) {
+            targetPage.classList.add('active');
             window.scrollTo(0, 0);
-            speechSynthesis.cancel();
-            allPages.forEach(page => page.classList.remove('active'));
-            const targetPage = document.getElementById(pageId);
-            if (targetPage) {
-                targetPage.classList.add('active');
-                if (pageId === 'storytellerPage') initializeStoryteller();
-                if (pageId === 'guardiansPage') generateKeepersGrid();
+            if (pageId === 'keeper') {
+                const hasDonated = localStorage.getItem('hasDonated') === 'true';
+                if(sanctumView) sanctumView.classList.toggle('hidden', !hasDonated);
+                if(keeperOfferingView) keeperOfferingView.classList.toggle('hidden', hasDonated);
+                generateKeepersGrid(hasDonated ? 30 : 15);
             }
+            if (!isNavigatingHistory) {
+                history.pushState({page: pageId}, `Ancient Echoes - ${pageId}`, `#${pageId}`);
+            }
+        } else {
+            document.getElementById('homePage').classList.add('active');
+            history.replaceState({page: 'home'}, 'Ancient Echoes - Home', window.location.pathname);
         }
+    }
 
-        function handlePageNavigation(e) {
-            e.preventDefault();
-            const pageId = e.currentTarget.dataset.page + 'Page';
-            showPage(pageId);
-            if(overlayMenu.classList.contains('active')) {
-                overlayMenu.classList.remove('active');
-            }
+    function setupAccordion() {
+        const accordionContainer = document.querySelector('.bio-accordion');
+        if (!accordionContainer) return;
+        accordionContainer.addEventListener('click', e => {
+            const header = e.target.closest('.bio-accordion-header');
+            if (!header) return;
+            const content = header.nextElementSibling;
+            const allHeaders = accordionContainer.querySelectorAll('.bio-accordion-header');
+            const isActive = header.classList.contains('active');
+            allHeaders.forEach(h => { h.classList.remove('active'); h.nextElementSibling.classList.remove('active'); });
+            if (!isActive) { header.classList.add('active'); content.classList.add('active'); }
+        });
+    }
+
+    function generateKeepersGrid(count = 15) {
+        if (!keepersGrid) return;
+        keepersGrid.innerHTML = '';
+        const runes = ['ᚠ','ᚢ','ᚦ','ᚨ','ᚱ','ᚲ','ᚷ','ᚹ','ᚺ','ᚾ','ᛁ','ᛃ','ᛇ','ᛈ','ᛉ','ᛋ','ᛏ','ᛒ','ᛖ','ᛗ','ᛚ','ᛜ','ᛟ','ᛞ'];
+        for (let i = 0; i < count; i++) {
+            const runeEl = document.createElement('span');
+            runeEl.className = 'keeper-rune';
+            runeEl.textContent = runes[Math.floor(Math.random() * runes.length)];
+            keepersGrid.appendChild(runeEl);
         }
+    }
+    
+    function getAncientCounsel() {
+        if (isGenerating) return;
+        isGenerating = true;
+        runicOutput.style.opacity = '0';
+        englishOutput.classList.remove('visible');
+        if(toggleTranslationButton) toggleTranslationButton.style.display = 'none';
+        whisperBox.classList.add('loading');
+        setTimeout(() => {
+            const wisdom = ancientWisdoms[Math.floor(Math.random() * ancientWisdoms.length)];
+            runicOutput.textContent = wisdom.runic;
+            englishOutput.textContent = wisdom.english;
+            whisperBox.classList.remove('loading');
+            runicOutput.style.opacity = '1'; 
+            if(toggleTranslationButton) toggleTranslationButton.style.display = 'inline-block';
+            isGenerating = false;
+        }, 1500);
+    }
 
-        navLinks.forEach(link => link.addEventListener('click', handlePageNavigation));
-        document.body.addEventListener('click', function(event) {
-            if (event.target.matches('.page-link, .page-link *')) {
-                const targetLink = event.target.closest('.page-link');
-                handlePageNavigation({ currentTarget: targetLink, preventDefault: () => {} });
-            }
-        });
-        
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const message = keeperMessage.value.trim();
-            if (!message) {
-                messageFeedback.textContent = 'You must scribe a question for the keeper to answer.';
-                setTimeout(() => { messageFeedback.textContent = ''; }, 4000);
-                return;
-            }
-            const answer = keeperAnswers[Math.floor(Math.random() * keeperAnswers.length)];
-            messageFeedback.textContent = answer;
-            setTimeout(() => {
-                contactForm.reset();
-                messageFeedback.textContent = '';
-            }, 8000); 
-        });
+    function showLoreModal(point) {
+        const data = mapLore[point];
+        if (data && loreModal) {
+            loreTitle.textContent = data.title;
+            loreText.innerHTML = `${data.text}<br><br><p class='mt-4 text-center'>You have discovered the rune of this place: <strong class='text-yellow-400 text-2xl font-spectral'>${data.rune}</strong><br><em>${data.runeName}</em></p>`;
+            loreModal.classList.add('visible');
+        }
+    }
 
-        const meditationScripts = {
-            'ᛗ': "Focus on the self. Feel the connection to all of humanity.", 'ᛟ': "Think of your heritage, your ancestors. Feel their strength.", 'ᛞ': "Embrace the dawn of a new understanding. A breakthrough is near.", '': "Open yourself to illumination and creativity. Knowledge flows to you.", 'ᛋ': "Feel wholeness and success. The sun's energy empowers you.", 'ᛁ': "Find stillness within. Be calm and centered, like ice.", 'ᚹ': "Allow joy and harmony to fill your spirit.", 'ᛚ': "Go with the flow. Trust your intuition, like water."
-        };
+    function setRuneOfTheWeek() {
+        const runesOfWeek = [
+            { char: 'ᛋ', name: 'Sowilo: Sun, Success' }, { char: 'ᛏ', name: 'Tiwaz: Justice, Sacrifice' },
+            { char: 'ᚹ', name: 'Wunjo: Joy, Harmony' }, { char: 'ᚨ', name: 'Ansuz: Wisdom, Communication' },
+            { char: 'ᚦ', name: 'Thurisaz: Thorn, Change' }, { char: 'ᚠ', name: 'Fehu: Wealth, Beginnings' },
+            { char: 'ᚾ', name: 'Nauthiz: Need, Resistance' },
+        ];
+        const today = new Date().getDay(); // Sunday=0, Monday=1...
+        currentStorytellerRuneInfo = runesOfWeek[today];
+        if (storytellerRuneEl) storytellerRuneEl.textContent = currentStorytellerRuneInfo.char;
+        if (storytellerMeaningEl) storytellerMeaningEl.textContent = currentStorytellerRuneInfo.name;
+    }
+    
+    function displayStories() {
+        if(!storiesContainer) return;
+        const stories = JSON.parse(localStorage.getItem('runic_stories') || '[]');
+        storiesContainer.innerHTML = '';
+        if(stories.length === 0) {
+            storiesContainer.innerHTML = `<p class="text-gray-500 text-center italic">Your personal chronicle is empty.</p>`;
+            return;
+        }
+        stories.forEach(story => {
+            const storyCard = document.createElement('div');
+            storyCard.className = 'story-card';
+            storyCard.innerHTML = `<div class="story-rune">${story.rune}</div><p class="story-text">"${story.story}"</p><div class="story-meta"><span>Your Echo</span><span>${story.timestamp}</span></div>`;
+            storiesContainer.appendChild(storyCard);
+        });
+    }
+
+    // --- Particle Animation ---
+    function initParticles() { if(!canvas) return; particlesArray = []; let num = (canvas.height * canvas.width) / 9000; for (let i = 0; i < num; i++) { particlesArray.push(new Particle()); } }
+    function animateParticles() { if(!ctx || !canvas) return; ctx.clearRect(0,0,canvas.width,canvas.height); for(let p of particlesArray){ p.draw(); p.update(); } requestAnimationFrame(animateParticles); }
+    class Particle { constructor(){this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.size = Math.random() * 2 + 0.5; this.baseX = this.x; this.baseY = this.y; this.density = (Math.random() * 30) + 1;} draw(){ctx.fillStyle = `rgba(255, 215, 0, 0.5)`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.closePath(); ctx.fill();} update(){let dx=window.mouse.x-this.x; let dy=window.mouse.y-this.y; let dist=Math.sqrt(dx*dx+dy*dy); if(dist<window.mouse.radius){let fdx=dx/dist; let fdy=dy/dist; let max=window.mouse.radius; let f=(max-dist)/max; let dirX=fdx*f*this.density; let dirY=fdy*f*this.density; this.x -= dirX; this.y -= dirY;}else{if(this.x!==this.baseX){let dx=this.x-this.baseX;this.x-=dx/10;}if(this.y!==this.baseY){let dy=this.y-this.baseY;this.y-=dy/10;}}}}
+    
+    // --- Event Listeners ---
+    initialEntryOverlay.addEventListener('click', () => {
+        initialEntryOverlay.classList.add('hidden');
+        mainContentArea.classList.add('active');
+        if (document.getElementById('menuHint')) document.getElementById('menuHint').style.opacity = '0';
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        initParticles();
+        animateParticles();
+    }, { once: true });
+    
+    window.addEventListener('mousemove', e => { if(window.mouse) { window.mouse.x = e.clientX; window.mouse.y = e.clientY; }});
+    window.addEventListener('resize', () => { if(canvas) { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initParticles(); } });
+    menuButton.addEventListener('click', () => overlayMenu.classList.add('active'));
+    closeMenuButton.addEventListener('click', () => overlayMenu.classList.remove('active'));
+    pageLinks.forEach(link => { link.addEventListener('click', (e) => { e.preventDefault(); const pageId = e.currentTarget.dataset.page; showPage(pageId); if(overlayMenu.classList.contains('active')) overlayMenu.classList.remove('active'); }); });
+    window.addEventListener('popstate', (e) => { const pageId = (e.state && e.state.page) || window.location.hash.substring(1) || 'home'; showPage(pageId, true); });
+    if(pyramidGroup) pyramidGroup.addEventListener('click', (e) => { if (e.target.closest('.pyramid')) getAncientCounsel(); });
+    if(toggleTranslationButton) toggleTranslationButton.addEventListener('click', () => englishOutput.classList.toggle('visible'));
+    if(mapContainer) mapContainer.addEventListener('click', e => { if (e.target.classList.contains('hotspot')) showLoreModal(e.target.dataset.point); });
+    if(loreCloseButton) loreCloseButton.addEventListener('click', () => loreModal.classList.remove('visible'));
+    
+    if(submitStoryButton) submitStoryButton.addEventListener('click', () => {
+        const storyText = storytellerInput.value.trim();
+        if(storyText.length < 10) { if(storytellerStatusMessage) storytellerStatusMessage.textContent = "Your tale is too brief."; return; }
+        const stories = JSON.parse(localStorage.getItem('runic_stories') || '[]');
+        stories.unshift({ rune: currentStorytellerRuneInfo.char, story: storyText, timestamp: new Date().toLocaleDateString() });
+        localStorage.setItem('runic_stories', JSON.stringify(stories));
+        displayStories();
+        storytellerInput.value = '';
+    });
+    
+    if(drawRunesButton) drawRunesButton.addEventListener('click', () => {
+        if(!runeQuestionInput.value) { if(runeInterpretation) runeInterpretation.textContent = "You must first ask a question."; return; }
+        const reading = runeReadings[Math.floor(Math.random() * runeReadings.length)];
+        if(runeDisplay) runeDisplay.textContent = reading.runes;
+        if(runeInterpretation) runeInterpretation.textContent = reading.interpretation;
+    });
+
+    if(meditationCircle) setInterval(() => {
         const meditationRunes = Object.keys(meditationScripts);
-        let runeIndex = 0;
+        const currentRuneChar = meditationRunes[Math.floor(Math.random() * meditationRunes.length)];
+        if(meditationRune) meditationRune.textContent = currentRuneChar;
+        if(meditationStatus) meditationStatus.textContent = meditationScripts[currentRuneChar];
+    }, 8000);
 
-        setInterval(() => {
-            if(meditationCircle && meditationRune && meditationStatus) {
-                meditationCircle.classList.toggle('pulsing');
-                runeIndex = (runeIndex + 1) % meditationRunes.length;
-                const currentRune = meditationRunes[runeIndex];
-                meditationRune.textContent = currentRune;
-                const script = meditationScripts[currentRune];
-                meditationStatus.textContent = script;
-                if (isMeditationTTSActive) speak(script);
-            }
-        }, 8000);
-
-        function updateCounter() {
-            let count = parseInt(localStorage.getItem('visitCount') || '0') + 1;
-            localStorage.setItem('visitCount', count);
-            visitCounterElement.textContent = count;
-        }
-        
-        let initialCount = localStorage.getItem('visitCount') || '0';
-        visitCounterElement.textContent = initialCount;
-
-        function updateDonationProgress() {
-            const goal = 1200;
-            const currentAmount = parseInt(localStorage.getItem('donationAmount')) || 450;
-            const percentage = Math.min((currentAmount / goal) * 100, 100);
-            if (donationProgress) {
-                donationProgress.style.width = `${percentage}%`;
-            }
-            if (currentDonations) {
-                currentDonations.textContent = currentAmount;
-            }
-        }
-        updateDonationProgress();
-
-        function updateKeepersCount() {
-            const date = new Date();
-            const keeperCount = 17 + (date.getDate() % 10);
-            if (keepersCount) keepersCount.textContent = keeperCount;
-            if (frontPageKeepersCount) frontPageKeepersCount.textContent = keeperCount;
-            return keeperCount;
-        }
-
-        function generateKeepersGrid() {
-            if (!keepersGrid) return;
-            keepersGrid.innerHTML = '';
-            const keeperCount = updateKeepersCount();
-            for (let i = 0; i < keeperCount; i++) {
-                const rune = elderFuthark[Math.floor(Math.random() * elderFuthark.length)];
-                const runeEl = document.createElement('span');
-                runeEl.className = 'keeper-rune';
-                runeEl.textContent = rune.char;
-                runeEl.style.animationDelay = `${i * 0.05}s`;
-                keepersGrid.appendChild(runeEl);
-            }
-        }
+    // --- Initialization ---
+    function initialize() {
+        setupAccordion();
+        setRuneOfTheWeek();
+        displayStories();
 
         const urlParams = new URLSearchParams(window.location.search);
+        const initialHash = window.location.hash.substring(1);
+        let startingPage = 'home';
+
         if (urlParams.get('from') === 'stripe') {
             localStorage.setItem('hasDonated', 'true');
+            startingPage = 'keeper';
             const url = new URL(window.location);
             url.searchParams.delete('from');
-            window.history.replaceState({}, document.title, url.pathname + '#sanctumPage');
-            showPage('sanctumPage', true);
-        } else {
-             const hash = window.location.hash.substring(1);
-             if (hash) showPage(hash, false);
+            history.replaceState({page: 'keeper'}, `Ancient Echoes - Keeper`, `${url.pathname}#keeper`);
+        } else if (initialHash) {
+            startingPage = initialHash;
         }
-
-        mapContainer.addEventListener('click', (e) => {
-            if (e.target.classList.contains('hotspot')) {
-                const point = e.target.dataset.point;
-                const data = mapLore[point];
-                if (data) {
-                    loreTitle.textContent = data.title;
-                    loreText.textContent = data.text;
-                    loreImage.src = '';
-                    loreImage.classList.add('hidden');
-                    loreModal.classList.add('visible');
-                }
-            }
-        });
-
-        // This event listener makes the runes from a reading clickable.
-        runeDisplay.addEventListener('click', (e) => {
-            if (e.target.classList.contains('rune-link')) {
-                const runeChar = e.target.dataset.rune;
-                const artifact = runeArtifacts[runeChar];
-
-                if (artifact) {
-                    loreTitle.textContent = artifact.title;
-                    loreText.textContent = artifact.description;
-                    loreImage.src = artifact.image;
-                    loreImage.classList.remove('hidden');
-                    
-                    loreModal.classList.add('visible');
-                }
-            }
-        });
-
-        const closeLoreModal = () => loreModal.classList.remove('visible');
-        loreCloseButton.addEventListener('click', closeLoreModal);
-        loreModal.addEventListener('click', (e) => {
-            if (e.target === loreModal) {
-                closeLoreModal();
-            }
-        });
         
-        const shareTwitter = document.getElementById('share-twitter');
-        const shareFacebook = document.getElementById('share-facebook');
-        const copyLink = document.getElementById('copy-link');
-        const copyLinkFeedback = document.getElementById('copy-link-feedback');
-
-        const shareUrl = 'https://bosnianpyramids.netlify.app/';
-        const shareText = 'I\'ve been listening to the ancient echoes from the Bosnian Pyramids. What will they whisper to you?';
-
-        shareTwitter.addEventListener('click', (e) => {
-            e.preventDefault();
-            const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
-            window.open(twitterUrl, '_blank');
-        });
-
-        shareFacebook.addEventListener('click', (e) => {
-            e.preventDefault();
-            const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-            window.open(facebookUrl, '_blank');
-        });
-
-        copyLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            navigator.clipboard.writeText(shareUrl).then(() => {
-                copyLinkFeedback.style.opacity = '1';
-                setTimeout(() => {
-                    copyLinkFeedback.style.opacity = '0';
-                }, 2000);
-            });
-        });
-
-        // --- INITIALIZE ---
-        startParticleAnimation();
-        startAlignmentCheck();
-        updateMoonVisual(calculateMoonPhase());
-        updateKeepersCount();
-
-    });
+        showPage(startingPage, true);
+    }
+    
+    initialize();
+});
 </script>
+
 </body>
 </html>
