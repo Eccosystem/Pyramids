@@ -35,7 +35,6 @@
             font-family: 'Inter', sans-serif;
             display: flex; flex-direction: column; justify-content: flex-start;
             align-items: center; margin: 0; overflow-x: hidden; position: relative;
-            /* CHANGED: Replaced broken URL with a working one from a public source */
             background-image: url('https://images.pexels.com/photos/1252890/pexels-photo-1252890.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
             background-color: #000000; /* Fallback color */
             background-size: cover;
@@ -101,47 +100,70 @@
             color: var(--primary-night); font-size: 2rem; cursor: pointer; transition: transform 0.3s ease;
         }
         .overlay-menu-close:hover { transform: rotate(90deg); }
-        .overlay-menu nav ul {
-            list-style: none; padding: 0; display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            width: 100%; max-width: 600px;
+
+        /* --- Styles for the two-column grid menu --- */
+        .overlay-menu nav {
+            width: 100%;
+            max-width: 700px; /* Wider for two columns */
+            padding: 0 1rem;
         }
+
+        .overlay-menu nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* The two-column magic */
+            gap: 1.5rem 2.5rem; /* Row gap and Column gap */
+        }
+
         .overlay-menu nav ul li a {
-            color: var(--secondary-night); font-size: clamp(1.2rem, 3vw, 1.5rem); text-decoration: none;
-            display: flex; flex-direction: row; align-items: center;
-            gap: 1rem; transition: all 0.3s ease;
+            color: var(--secondary-night);
+            font-size: clamp(1rem, 2.5vw, 1.3rem); /* Slightly smaller to fit nicely */
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
             font-family: 'Spectral', serif;
             text-shadow: none;
         }
+
         .overlay-menu nav ul li a:hover {
             color: var(--primary-night);
             transform: translateX(10px);
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
         }
+
         .runic-icon {
             font-family: 'RunicFont', 'Spectral', serif;
             font-size: 2rem;
             color: var(--primary-night);
             transition: all 0.3s ease;
-            flex-shrink: 0; /* Prevents icon from shrinking */
+            flex-shrink: 0;
         }
+
         .menu-text {
-            flex-grow: 1; /* Allows text to take available space */
+            text-align: left;
         }
+
         .overlay-menu nav ul li a:hover .runic-icon {
             transform: scale(1.2);
             filter: drop-shadow(0 0 8px var(--primary-night));
         }
+
         .overlay-menu-close svg {
             color: var(--primary-night);
             transition: transform 0.3s ease, filter 0.3s ease;
             filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
         }
+
         .overlay-menu-close:hover svg {
             transform: rotate(90deg);
             filter: drop-shadow(0 0 10px var(--primary-night));
         }
+        /* --- End of menu styles --- */
+
         .pyramids-visual-group {
             position: relative; width: 100%; display: flex; justify-content: center; align-items: flex-end;
             margin-top: 2rem; min-height: 350px;
@@ -643,6 +665,15 @@
         @media (max-width: 768px) {
             .celestial-body { width: 60px; height: 60px; font-size: 0.9rem; }
         }
+        /* Responsive override for the menu */
+        @media (max-width: 640px) {
+            .overlay-menu nav ul {
+                grid-template-columns: 1fr;
+            }
+            .overlay-menu nav {
+                max-width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -668,17 +699,18 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
         </button>
         <nav aria-label="Main navigation">
-            <ul>
-                <li><a href="#" data-page="home"><span class="runic-icon">ᚷ</span><span class="menu-text">Ancient Echoes</span></a></li>
-                <li><a href="#" data-page="visoko"><span class="runic-icon">ᚱ</span><span class="menu-text">The Visoko Valley</span></a></li>
-                <li><a href="#" data-page="meditation"><span class="runic-icon">ᛃ</span><span class="menu-text">The Inner Well</span></a></li>
+            <ul class="menu-grid">
+                <li><a href="#" data-page="home"><span class="runic-icon">ᚷ</span><span class="menu-text">Ancient Echoes (Home)</span></a></li>
+                <li><a href="#" data-page="visoko"><span class="runic-icon">ᚱ</span><span class="menu-text">Explore the Valley</span></a></li>
                 <li><a href="#" data-page="runeReading"><span class="runic-icon">ᛈ</span><span class="menu-text">The Seer's Whisper</span></a></li>
+                <li><a href="#" data-page="meditation"><span class="runic-icon">ᛃ</span><span class="menu-text">The Inner Well</span></a></li>
                 <li><a href="#" data-page="storyteller"><span class="runic-icon">ᚹ</span><span class="menu-text">The Runic Chronicle</span></a></li>
+        
                 <li><a href="#" data-page="journal"><span class="runic-icon">ᛏ</span><span class="menu-text">The Seeker's Journal</span></a></li>
                 <li><a href="#" data-page="guardians"><span class="runic-icon">ᛉ</span><span class="menu-text">The Keepers' Circle</span></a></li>
-                <li><a href="#" data-page="about"><span class="runic-icon">ᛇ</span><span class="menu-text">On the Veil</span></a></li>
                 <li><a href="#" data-page="donate"><span class="runic-icon">ᚠ</span><span class="menu-text">Make an Offering</span></a></li>
-                <li><a href="#" data-page="contact"><span class="runic-icon">ᚦ</span><span class="menu-text">Commune with a Keeper</span></a></li>
+                <li><a href="#" data-page="about"><span class="runic-icon">ᛇ</span><span class="menu-text">About the Project</span></a></li>
+                <li><a href="#" data-page="contact"><span class="runic-icon">ᚦ</span><span class="menu-text">Commune with Us</span></a></li>
             </ul>
         </nav>
     </div>
@@ -1547,7 +1579,7 @@
                 });
 
                 runeInterpretation.innerHTML = reading.interpretation +  
-                 '<p class="mt-4 text-sm text-yellow-400/70 italic">Click a rune above to reveal its artifact.</p>';
+                  '<p class="mt-4 text-sm text-yellow-400/70 italic">Click a rune above to reveal its artifact.</p>';
 
                 toggleRuneVoiceButton.classList.remove('hidden');
                 postReadingMessage.style.display = 'block';
@@ -1878,4 +1910,3 @@
 </script>
 </body>
 </html>
-
