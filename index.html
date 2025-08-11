@@ -67,6 +67,43 @@
         .menu-container {
             position: fixed; top: 1rem; right: 1rem; z-index: 1001;
         }
+        /* Custom styles for the hamburger menu animation */
+        .hamburger-menu {
+            cursor: pointer;
+            width: 40px; /* Increased size for better touch target */
+            height: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            transition: all 0.3s ease-in-out;
+            padding: 5px;
+        }
+        .hamburger-menu:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+        .hamburger-menu span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: var(--primary-night);
+            margin: 4px 0;
+            transition: all 0.3s ease-in-out;
+            border-radius: 9999px;
+        }
+        .hamburger-menu.active span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+        .hamburger-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger-menu.active span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
         .celestial-body {
             width: 60px; height: 60px; border-radius: 50%;
             background-size: cover; background-position: center; cursor: pointer;
@@ -148,6 +185,8 @@
         .whisper-box { min-height: 80px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-style: italic; font-size: clamp(0.9rem, 1.5vw, 1.1rem); max-width: 90%; width: 100%; position: relative; }
         .whisper-box.loading::after { content: '...'; animation: blinking-dots 1.5s infinite; position: absolute; color: var(--primary-night); font-size: 2rem;}
         @keyframes blinking-dots { 0%{opacity: 0;} 50%{opacity: 1;} 100%{opacity: 0;} }
+        #guidance-prompt { opacity: 0; transition: opacity 1.5s ease-in; }
+        #guidance-prompt.visible { opacity: 1; }
         .runic-text {
             font-family: 'Spectral', serif; font-size: clamp(1.5rem, 3vw, 2.2rem);
             color: var(--primary-night); text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
@@ -170,7 +209,6 @@
         }
         .bio-accordion-content.active { max-height: 1500px; padding: 0 1rem 1rem; }
         .bio-accordion-content p { margin-bottom: 1rem; }
-        .bio-accordion-content ul { list-style: disc; list-style-position: inside; margin-left: 1rem; margin-bottom: 1rem; }
         .bio-accordion-content img { width: 100%; max-width: 300px; height: auto; border-radius: 0.5rem; margin: 1rem auto; display: block; }
         .donate-button { background: linear-gradient(to bottom right, #DAA520, #B8860B); color: #1a1a1a; padding: 0.8rem 2rem; border-radius: 0.5rem; font-weight: bold; font-size: 1.1rem; text-decoration: none; display: inline-block; transition: all 0.3s ease; }
         .donate-button:hover { transform: translateY(-2px); box-shadow: 5px 5px 15px rgba(255, 215, 0, 0.3); }
@@ -211,7 +249,7 @@
             to { border-color: rgba(255, 215, 0, 1); text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); }
         }
 
-        /* --- NEW/IMPROVED Runic Beam Styles --- */
+        /* --- Runic Beam Styles --- */
         .shooting-beam {
             position: fixed;
             z-index: 999;
@@ -244,6 +282,21 @@
             to { transform: translateY(-30%); }
         }
 
+        #runic-translation-output {
+            font-family: 'RunicFont', 'Spectral', serif;
+            font-size: 2rem;
+            color: var(--primary-night);
+            text-shadow: 0 0 10px var(--primary-night);
+            letter-spacing: 0.1em;
+            word-break: break-all;
+            min-height: 2em;
+            border: 1px dashed rgba(255,215,0,0.3);
+            background-color: rgba(0,0,0,0.2);
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0.5rem;
+        }
+
         @media (max-width: 768px) { .celestial-body { width: 50px; height: 50px; } }
         @media (max-width: 640px) { .overlay-menu nav ul { grid-template-columns: 1fr; } }
     </style>
@@ -261,8 +314,13 @@
     </div>
 
     <div class="menu-container">
-        <button class="celestial-body" id="menuButton" aria-label="Open portal navigation">
-            <span id="menuHint" class="menu-hint-label">MENU</span>
+        <!-- Replaced the moon button with a tri-dash (hamburger) icon -->
+        <button id="menuButton" aria-label="Open portal navigation">
+            <div class="hamburger-menu" id="hamburgerMenu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </button>
     </div>
 
@@ -297,6 +355,9 @@
                 <p class="text-yellow-400 mb-4 text-center">Touch a pyramid to listen to the ancient echoes.</p>
                 <div class="pyramids-visual-group" id="pyramidGroup"><div class="pyramid-container"><button class="pyramid side" data-pyramid="dragon" aria-label="Touch the Dragon Pyramid"><div class="pyramid-shape"></div><h3 class="pyramid-name">Dragon</h3></button><button class="pyramid center" data-pyramid="sun" aria-label="Touch the Sun Pyramid"><div class="pyramid-shape"></div><h3 class="pyramid-name">Sun</h3></button><button class="pyramid side" data-pyramid="moon" aria-label="Touch the Moon Pyramid"><div class="pyramid-shape"></div><h3 class="pyramid-name">Moon</h3></button></div></div>
                 <div class="whisper-box content-box" id="whisperBox"><div class="runic-text" id="runicOutput">Click a pyramid to begin...</div><div class="english-translation" id="englishOutput"></div><button class="runic-toggle hidden" id="toggleTranslation">Show Translation</button></div>
+                <div id="guidance-prompt" class="hidden text-center mt-4 opacity-0">
+                    <a href="#visoko" data-page="visoko" class="page-link text-yellow-400/80 hover:text-yellow-400 font-spectral italic text-lg">You've heard the echo. Discover its source in the Valley Map...</a>
+                </div>
                 <div class="mt-8 flex flex-col sm:flex-row gap-4 w-full max-w-md"><a href="#visoko" data-page="visoko" class="flex-1 whisper-button p-4 text-center page-link">Explore the Valley</a><a href="#keeper" data-page="keeper" class="flex-1 donate-button p-4 text-center page-link">Become a Keeper</a></div>
             </section>
 
@@ -305,15 +366,56 @@
             </section>
 
             <section id="visokoPage" class="page">
-                <div class="page-content-container text-gray-300"><h2 class="page-title">Explore the Valley</h2><p class="page-intro">Each location in the valley has its own unique energy, its own secret to share. Click a hotspot on the map to discover its lore and attune to its runic frequency.</p><div id="map-container"><img src="map.png" alt="Map of the Visoko Valley"><div class="hotspot" style="top: 35%; left: 45%;" data-point="sun"></div><div class="hotspot" style="top: 55%; left: 20%;" data-point="moon"></div><div class="hotspot" style="top: 58%; left: 70%;" data-point="dragon"></div><div class="hotspot" style="top: 75%; left: 48%;" data-point="tunnels"></div></div></div>
+                <div class="page-content-container text-gray-300">
+                    <h2 class="page-title">Explore the Valley</h2>
+                    <p class="page-intro">Each location in the valley has its own unique energy, its own secret to share. Click a hotspot on the map to discover its lore and attune to its runic frequency.</p>
+                    <div id="map-container">
+                        <img src="map.png" alt="Map of the Visoko Valley">
+                        <div class="hotspot" style="top: 35%; left: 45%;" data-point="sun"></div>
+                        <div class="hotspot" style="top: 55%; left: 20%;" data-point="moon"></div>
+                        <div class="hotspot" style="top: 58%; left: 70%;" data-point="dragon"></div>
+                        <div class="hotspot" style="top: 75%; left: 48%;" data-point="tunnels"></div>
+                    </div>
+                    <!-- Updated section for ancient artifacts -->
+                    <div class="mt-12 border-t border-gray-600 pt-6">
+                        <h3 class="text-2xl font-bold text-yellow-400 mb-2 font-spectral">Ancient Artifacts</h3>
+                        <p class="mb-4">The expedition has uncovered more than just colossal structures. Fragments of a forgotten civilization echo in the artifacts they left behind. These discoveries hint at a profound spiritual and technological understanding.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <img src="https://placehold.co/400x250/1F2937/FCD34D?text=Megalithic+Stone" alt="Megalithic Stones with symbols" class="rounded-xl shadow-lg mb-4">
+                                <ul class="list-none space-y-2">
+                                    <li><span class="runic-icon">ᛟ</span> <strong>Megalithic Stones:</strong> Found within the Ravne Tunnels, these large, carefully carved stones bear intricate symbols. Researchers have measured a high concentration of energy emanating from them, suggesting a purpose beyond simple construction.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <img src="https://placehold.co/400x250/1F2937/FCD34D?text=Runic+Carvings" alt="Close up of runic carvings" class="rounded-xl shadow-lg mb-4">
+                                <ul class="list-none space-y-2">
+                                    <li><span class="runic-icon">ᚷ</span> <strong>Runic Carvings:</strong> Mysterious symbols are etched into the megaliths and clay tablets unearthed at the site. These ancient scripts await translation, holding the potential to unlock the true history and purpose of the pyramids.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <img src="https://placehold.co/400x250/1F2937/FCD34D?text=Organic+Materials" alt="Ancient organic material sample" class="rounded-xl shadow-lg mb-4">
+                                <ul class="list-none space-y-2">
+                                    <li><span class="runic-icon">ᛋ</span> <strong>Organic Materials:</strong> Ancient organic fragments discovered deep within the structures provide invaluable clues to the age of the pyramids. Carbon dating of these materials has produced highly debated results, hinting at an age far greater than conventional history suggests.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <img src="https://placehold.co/400x250/1F2937/FCD34D?text=Crystal+Formations" alt="Crystal formations inside tunnels" class="rounded-xl shadow-lg mb-4">
+                                <ul class="list-none space-y-2">
+                                    <li><span class="runic-icon">ᛚ</span> <strong>Crystal Formations:</strong> Unusual crystal structures, often with sharp, pyramid-like facets, have been discovered in the tunnels. It is believed that these formations act as a natural technology, amplifying the surrounding energy fields for a purpose we are yet to understand.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <section id="runeReadingPage" class="page">
-                <div class="page-content-container"><h2 class="page-title">The Seer's Whisper</h2><p class="page-intro">Seeker, present your query to the stones. Focus your mind on a question, and the runes will offer a reflection. Not a simple answer, but a deeper truth to contemplate.</p><div class="user-input-section flex flex-col items-center w-full max-w-md mx-auto gap-3"><input type="text" id="runeQuestionInput" class="w-full p-2 rounded bg-gray-800 text-white text-center" placeholder="Ask the runes a question..." aria-label="Rune question input"><button class="whisper-button" id="drawRunesButton">Draw Runes</button></div><div class="text-center"><div id="runeDisplay" class="font-['Spectral',serif] text-5xl tracking-[0.5rem] text-primary-night [text-shadow:0_0_15px_rgba(255,215,0,0.8)] mt-6 min-h-[1.5em]"></div><div id="runeInterpretation" class="text-secondary-night italic mt-4 min-h-[3em] leading-relaxed"></div></div><div class="mt-12 border-t border-gray-600 pt-6"><h3 class="text-2xl font-bold text-yellow-400 mb-4 font-spectral text-center">The Discoverer & The Dogma</h3><div class="bio-accordion"><div class="bio-accordion-item"><button class="bio-accordion-header">Dr. Semir Osmanagić: The Scholar</button><div class="bio-accordion-content"><p>Before the world knew him as "the Bosnian pyramid man," Dr. Osmanagić had already built a formidable academic and professional career. His background is crucial to understanding the methodical approach he brings to his work. He holds a Ph.D. in the Sociology of History, with a specific focus on the Mayan civilization, and has served as a <strong>Professor of Anthropology</strong>.</p><img src="runic11.webp" alt="Ancient Pavement found on the Pyramid of the Sun"></div></div><div class="bio-accordion-item"><button class="bio-accordion-header">The Quest for Truth in Visoko</button><div class="bio-accordion-content"><p>His on-the-ground investigation began in 2005. His team, adopting a <strong>multidisciplinary approach</strong>, brought in geologists, physicists, and archaeologists. Core drilling and excavations revealed what appear to be high-quality, <strong>man-made concrete blocks</strong>, far stronger than modern concrete. Instruments have also allegedly detected an unusual, continuous <strong>electromagnetic energy beam</strong> emanating from the apex of the Pyramid of the Sun.</p><img src="runic7.webp" alt="Aerial view of the Pyramid of the Sun"></div></div><div class="bio-accordion-item"><button class="bio-accordion-header">The Fight Against Mainstream Dogma</button><div class="bio-accordion-content"><p>Dr. Osmanagić's claims were met with immediate and fierce opposition. However, he and his supporters highlight a critical point: the most vocal critics have largely been <strong>"armchair archaeologists"</strong> who have never set foot in Visoko to examine the evidence firsthand. He frames this as a battle against institutional dogma that refuses to entertain evidence challenging established historical timelines.</p><img src="runic2.webp" alt="The Ravne Megalith with runic carvings"></div></div></div></div></div>
+                <div class="page-content-container"><h2 class="page-title">The Seer's Whisper</h2><p class="page-intro">Seeker, present your query to the stones. Focus your mind on a question, and the runes will offer a reflection. Not a simple answer, but a deeper truth to contemplate.</p><div class="user-input-section flex flex-col items-center w-full max-w-md mx-auto gap-3"><input type="text" id="runeQuestionInput" class="w-full p-2 rounded bg-gray-800 text-white text-center" placeholder="Ask the runes a question..." aria-label="Rune question input"><button class="whisper-button" id="drawRunesButton">Draw Runes</button></div><div class="text-center"><div id="runeDisplay" class="font-['Spectral',serif] text-5xl tracking-[0.5rem] text-primary-night [text-shadow:0_0_15px_rgba(255,215,0,0.8)] mt-6 min-h-[1.5em]"></div><div id="runeInterpretation" class="text-secondary-night italic mt-4 min-h-[3em] leading-relaxed"></div></div><div class="mt-12 border-t border-gray-600 pt-6"><h3 class="text-2xl font-bold text-yellow-400 mb-4 font-spectral text-center">The Discoverer & The Dogma</h3><div class="bio-accordion"><div class="bio-accordion-item"><button class="bio-accordion-header">Dr. Semir Osmanagić: The Scholar</button><div class="bio-accordion-content"><p>Before the world knew him as "the Bosnian pyramid man," Dr. Osmanagić had already built a formidable academic and professional career. His background is crucial to understanding the methodical approach he brings to his work. He holds a Ph.D. in the Sociology of History, with a specific focus on the Mayan civilization, and has served as a <strong>Professor of Anthropology</strong>.</p><img src="runic11.webp" alt="Ancient Pavement found on the Pyramid of the Sun"></div></div><div class="bio-accordion-item"><button class="bio-accordion-header">The Quest for Truth in Visoko</p></div></div>
             </section>
             
             <section id="meditationPage" class="page">
-                 <div class="page-content-container"><h2 class="page-title">The Inner Well</h2><p class="page-intro">Still your mind and connect with the ancient energies. Focus on the pulsing rune and allow its meaning to guide your meditation. This is a journey inward.</p><div class="meditation-circle pulsing" id="meditationCircle" style="width: clamp(150px, 30vw, 250px); height: clamp(150px, 30vw, 250px); background: radial-gradient(circle, rgba(255, 215, 0, 0.4), transparent); border-radius: 50%; margin: 2rem auto; display: flex; justify-content: center; align-items: center; transition: all 1s ease-in-out; animation: pulse-meditation 4s infinite alternate ease-in-out;"><div class="rune-symbol text-7xl text-primary-night" id="meditationRune">ᛗ</div></div><p id="meditationStatus" class="text-gray-400 mt-4 text-center">Ready to begin your inner journey.</p></div>
+                <div class="page-content-container"><h2 class="page-title">The Inner Well</h2><p class="page-intro">Still your mind and connect with the ancient energies. Focus on the pulsing rune and allow its meaning to guide your meditation. This is a journey inward.</p><div class="meditation-circle pulsing" id="meditationCircle" style="width: clamp(150px, 30vw, 250px); height: clamp(150px, 30vw, 250px); background: radial-gradient(circle, rgba(255, 215, 0, 0.4), transparent); border-radius: 50%; margin: 2rem auto; display: flex; justify-content: center; align-items: center; transition: all 1s ease-in-out; animation: pulse-meditation 4s infinite alternate ease-in-out;"><div class="rune-symbol text-7xl text-primary-night" id="meditationRune">ᛗ</div></div><p id="meditationStatus" class="text-gray-400 mt-4 text-center">Ready to begin your inner journey.</p></div>
             </section>
             
             <section id="storytellerPage" class="page">
@@ -321,7 +423,7 @@
             </section>
 
             <section id="keeperPage" class="page">
-                <div class="page-content-container text-gray-300 text-center"><div id="keeper-offering-view"><h2 class="page-title">Become a Keeper</h2><p class="page-intro">The Seeker's Journey leads here. To become a Keeper is to move from observer to guardian. It is a commitment to help preserve this space and support the ongoing expedition into the mystery. Your offering is the final step in your initiation.</p><h3 class="text-2xl font-bold text-yellow-400 mb-4 font-spectral">The Keepers' Circle</h3><p class="mb-4">Each rune below represents a Keeper who has completed their journey. Join them.</p><div id="keepersGrid" class="keepers-grid mb-8"></div><div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full text-center"><div class="bg-black/30 border border-gray-700 rounded-lg p-6 flex flex-col"><h3 class="text-yellow-400 font-spectral text-2xl">Initiate</h3><p class="font-bold text-white text-4xl my-4">$5</p><p class="text-gray-400 text-sm min-h-[50px]">A one-time offering to show your belief in the mission.</p><ul class="text-left text-gray-300 space-y-2 my-6 flex-grow"><li>✅ Access to the Inner Sanctum lore.</li><li>✅ Your chosen runic initial added to the Keepers' Circle.</li></ul><a href="https://buy.stripe.com/28E6oH6t188VfGf8LN1gs00" target="_blank" rel="noopener noreferrer" class="whisper-button mt-4 p-3">Make an Offering</a></div><div class="bg-black/30 border-2 border-yellow-400 rounded-lg p-6 flex flex-col relative"><p class="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-black font-bold text-xs px-3 py-1 rounded-full">MOST POPULAR</p><h3 class="text-yellow-400 font-spectral text-2xl">Keeper</h3><p class="font-bold text-white text-4xl my-4">$15</p><p class="text-gray-400 text-sm min-h-[50px]">Become a true guardian of the research and its secrets.</p><ul class="text-left text-gray-300 space-y-2 my-6 flex-grow"><li>✅ All benefits of the Initiate tier.</li><li>✅ A personal 3-rune reading, delivered to your email.</li></ul><a href="https://buy.stripe.com/8x24gz4kT74R51B9PR1gs01" target="_blank" rel="noopener noreferrer" class="donate-button mt-4 p-3">Become a Keeper</a></div><div class="bg-black/30 border border-gray-700 rounded-lg p-6 flex flex-col"><h3 class="text-yellow-400 font-spectral text-2xl">Whisperer's Choice</h3><p class="font-bold text-white text-4xl my-4">Custom</p><p class="text-gray-400 text-sm min-h-[50px]">Your offering ensures this portal continues to echo through time for new Seekers.</p<ul class="text-left text-gray-300 space-y-2 my-6 flex-grow"><li>✅ Access to the Inner Sanctum lore.</li><li>✅ Your chosen runic initial added to the Keepers' Circle.</li></ul><a href="https://buy.stripe.com/5kQaEX5oXbl7dy7fab1gs03" target="_blank" rel="noopener noreferrer" class="whisper-button mt-4 p-3">Choose Your Offering</a></div></div></div><div id="sanctum-view" class="hidden"><h2 class="page-title">Welcome, Inner Sanctum</h2><p class="page-intro">Your initiation is complete. Thank you for your offering, Keeper. As a guardian, you are granted access to exclusive tools to aid your journey.</p><div class="text-left border-t border-gray-600 pt-6 mt-6"><h3 class="text-2xl font-bold text-yellow-400 mb-4 font-spectral">The Keeper's Toolkit</h3><p class="mb-4"><strong>Deeper Lore:</strong> The secrets of the runes are now open to you. The Elder Futhark is more than an alphabet; it is a cosmological map. Each rune is a key to a specific type of energy or event in the universe. Fehu (ᚠ), seen as wealth, is truly the untamed, expansive energy of creation...</p><p class="mb-4"><strong>The Keeper's Meditation:</strong> Access the full, extended guided meditation to better align with the valley's energy. [A link to your exclusive audio file would go here]</p><p><strong>The Pyramid Cipher:</strong> Download this high-resolution runic cipher, a key to decoding the hidden whispers of the valley. [A link to your exclusive image file would go here]</p></div></div></div>
+                <div class="page-content-container text-gray-300 text-center"><div id="keeper-offering-view"><h2 class="page-title">Become a Keeper</h2><p class="page-intro">The Seeker's Journey leads here. To become a Keeper is to move from observer to guardian. It is a commitment to help preserve this space and support the ongoing expedition into the mystery. Your offering is the final step in your initiation.</p><h3 class="text-2xl font-bold text-yellow-400 mb-4 font-spectral">The Keepers' Circle</h3><p class="mb-4">Each rune below represents a Keeper who has completed their journey. Join them.</p><div id="keepersGrid" class="keepers-grid mb-8"></div><div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full text-center"><div class="bg-black/30 border border-gray-700 rounded-lg p-6 flex flex-col"><h3 class="text-yellow-400 font-spectral text-2xl">Initiate</h3><p class="font-bold text-white text-4xl my-4">$5</p><p class="text-gray-400 text-sm min-h-[50px]">A one-time offering to show your belief in the mission.</p><ul class="text-left text-gray-300 space-y-2 my-6 flex-grow"><li>✅ Access to the Inner Sanctum lore.</li><li>✅ Your chosen runic initial added to the Keepers' Circle.</li></ul><a href="https://buy.stripe.com/28E6oH6t188VfGf8LN1gs00" target="_blank" rel="noopener noreferrer" class="whisper-button mt-4 p-3">Make an Offering</a></div><div class="bg-black/30 border-2 border-yellow-400 rounded-lg p-6 flex flex-col relative"><p class="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-black font-bold text-xs px-3 py-1 rounded-full">MOST POPULAR</p><h3 class="text-yellow-400 font-spectral text-2xl">Keeper</h3><p class="font-bold text-white text-4xl my-4">$15</p><p class="text-gray-400 text-sm min-h-[50px]">Become a true guardian of the research and its secrets.</p><ul class="text-left text-gray-300 space-y-2 my-6 flex-grow"><li>✅ All benefits of the Initiate tier.</li><li>✅ A personal 3-rune reading, delivered to your email.</li></ul><a href="https://buy.stripe.com/8x24gz4kT74R51B9PR1gs01" target="_blank" rel="noopener noreferrer" class="donate-button mt-4 p-3">Become a Keeper</a></div><div class="bg-black/30 border border-gray-700 rounded-lg p-6 flex flex-col"><h3 class="text-yellow-400 font-spectral text-2xl">Whisperer's Choice</h3><p class="font-bold text-white text-4xl my-4">Custom</p><p class="text-gray-400 text-sm min-h-[50px]">Your offering ensures this portal continues to echo through time for new Seekers.</p><ul class="text-left text-gray-300 space-y-2 my-6 flex-grow"><li>✅ Access to the Inner Sanctum lore.</li><li>✅ Your chosen runic initial added to the Keepers' Circle.</li></ul><a href="https://buy.stripe.com/5kQaEX5oXbl7dy7fab1gs03" target="_blank" rel="noopener noreferrer" class="whisper-button mt-4 p-3">Choose Your Offering</a></div></div></div><div id="sanctum-view" class="hidden"><h2 class="page-title">Welcome, Inner Sanctum</h2><p class="page-intro">Your initiation is complete. Thank you for your offering, Keeper. As a guardian, you are granted access to exclusive tools to aid your journey.</p><div class="text-left border-t border-gray-600 pt-6 mt-6"><h3 class="text-2xl font-bold text-yellow-400 mb-4 font-spectral">The Keeper's Toolkit</h3><p class="mb-4"><strong>Deeper Lore: The Aettir:</strong> The secrets of the runes are now open to you. The Elder Futhark is more than an alphabet; it is a cosmological map divided into three families, or *Aettir*, of eight runes each. Each Aett represents a different stage of cosmic and personal evolution.</p><p class="mb-4"><strong>Freyja's Aett (ᚠᚢᚦᚨᚱᚲᚷᚹ):</strong> This is the Aett of creation, sustenance, and the physical world. It begins with Fehu (ᚠ), the primal energy of creation, and ends with Wunjo (ᚹ), the joy of belonging and achievement in the material plane. These runes govern your relationship with your body, your wealth, and your community.</p><p class="mb-4"><strong>Heimdall's Aett (ᚺᚾᛁᛃᛇᛈᛉᛋ):</strong> The second Aett governs disruption, challenge, and the forces of nature outside of human control. It begins with Hagalaz (ᚺ), the destructive hail storm, and ends with Sowilo (ᛋ), the life-giving Sun. This is the Aett of shadow work, resilience, and navigating fate.</p><p class="mb-4"><strong>Tyr's Aett (ᛏᛒᛖᛗᛚᛜᛟᛞ):</strong> The final Aett represents the ascent to divinity and higher consciousness. It begins with Tiwaz (ᛏ), the rune of justice and self-sacrifice, and culminates in Dagaz (ᛞ), the rune of total enlightenment and paradox. These runes guide your spiritual evolution and legacy.</p><div class="mt-8 border-t border-gray-600 pt-6"><h3 class="text-2xl font-bold text-yellow-400 mb-4 font-spectral">The Keeper's Cipher</h3><p class="mb-4">As a Keeper, you can now translate the common tongue into the ancient script. Enter a name or a word of power below to see its runic form.</p><div class="flex flex-col items-center w-full max-w-md mx-auto gap-3"><input type="text" id="runic-translator-input" class="w-full p-2 rounded bg-gray-800 text-white text-center" placeholder="Enter text to translate..." aria-label="Runic translator input"><button id="runic-translator-button" class="whisper-button">Translate to Runes</button></div><div id="runic-translation-output" class="text-center mt-4"></div></div></div></div>
             </section>
         </main>
 
@@ -349,6 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuButton = document.getElementById('menuButton');
     const overlayMenu = document.getElementById('overlayMenu');
     const closeMenuButton = document.getElementById('closeMenuButton');
+    const hamburgerMenu = document.getElementById('hamburgerMenu'); // Added reference to the hamburger menu
     const pyramidGroup = document.getElementById('pyramidGroup');
     const runicOutput = document.getElementById('runicOutput');
     const englishOutput = document.getElementById('englishOutput');
@@ -378,22 +481,55 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d');
     const beamElement = document.getElementById('runicBeam');
     const beamInner = beamElement.querySelector('.shooting-beam-inner');
+    const guidancePrompt = document.getElementById('guidance-prompt');
 
     let isGenerating = false;
     let particlesArray = [];
     window.mouse = {x: null, y: null, radius: 100};
     let isBeamActive = false;
 
-    // --- Data Arrays ---
-    const ancientWisdoms = [ { runic: "ᛞᚱᛁᛗ ᛞᛖᛈᛖᚱ", english: "Dream deeper." }, { runic: "ᛋᛏᚨᚱᛋ ᚹᚨᛏᚲᚺ", english: "The stars watch." }, { runic: "ᛖᚲᚺᛟ ᛟᚠ ᛏᛁᛗᛖ", english: "Listen to time's echo." }, { runic: "ᚦᛅ ᛋᛏᛟᚾᛋ ᛋᛒᛂᛅᚴ", english: "The stones speak to those who listen." }, { runic: "ᚢᛅᛁᛚ ᛁᛋ ᚦᛁᚾ", english: "Where the worlds touch, the veil is thin." }];
+    // --- EXPANDED Data Arrays ---
+    const ancientWisdoms = [
+        { runic: "ᛞᚱᛁᛗ ᛞᛖᛈᛖᚱ", english: "Dream deeper." }, 
+        { runic: "ᛋᛏᚨᚱᛋ ᚹᚨᛏᚲᚺ", english: "The stars watch." }, 
+        { runic: "ᛖᚲᚺᛟ ᛟᚠ ᛏᛁᛗᛖ", english: "Listen to time's echo." }, 
+        { runic: "ᚦᛅ ᛋᛏᛟᚾᛋ ᛋᛒᛂᛅᚴ", english: "The stones speak to those who listen." }, 
+        { runic: "ᚢᛅᛁᛚ ᛁᛋ ᚦᛁᚾ", english: "Where the worlds touch, the veil is thin." },
+        { runic: "ᛗᛖᛗᛟᚱᛁ ᛁᚾ ᛋᛏᛟᚾᛖ", english: "Memory is etched in stone." },
+        { runic: "ᛒᛁᚱᚦ ᚬᚠ ᛚᛁᚷᚻᛏ", english: "Witness the birth of light." },
+        { runic: "ᚷᚱᛟᚢᚾᛞ ᛒᚱᛠᚦᛋ", english: "The ground itself breathes." },
+        { runic: "ᛋᛂᛂᚴ ᚦᛅ ᛒᛅᛚᛅᚾᛋ", english: "Seek the balance in all things." },
+        { runic: "ᚾᛟᛚᛖᚷ ᛁᛋ ᚲᛁ", english: "Knowledge is the key." }
+    ];
     const mapLore = {
         sun: { title: "Pyramid of the Sun", text: "The largest of the valley's structures. Its orientation to the cosmic north is more precise than that of the Great Pyramid of Giza. Energy scans have detected an unusual electromagnetic beam emanating from its peak.", rune: "ᛋ", runeName: "Sowilo (Sun, Wholeness)" },
         moon: { title: "Pyramid of the Moon", text: "A terraced structure built from sandstone blocks and clay. Below it lies a network of chambers and a small blue lake, untouched for millennia. The water here is said to have unique, life-affirming properties.", rune: "ᛚ", runeName: "Laguz (Water, Intuition)" },
         dragon: { title: "Pyramid of the Dragon", text: "This pyramid is believed to regulate the flow of energy throughout the valley. Its thermal inertia properties are remarkable, maintaining a stable internal temperature regardless of the outside weather.", rune: "ᚢ", runeName: "Uruz (Strength, Power)" },
         tunnels: { title: "Ravne Tunnel Labyrinth", text: "A vast, prehistoric network of tunnels running for kilometers beneath the valley. Within these tunnels, the air has an unusually high concentration of negative ions, creating an atmosphere of healing and tranquility.", rune: "ᛉ", runeName: "Algiz (Protection)" }
     };
-    const runeReadings = [ { runes: "ᚠᛉᛟ", interpretation: "Protected wealth and inheritance. Your foundations are strong. Do not fear loss, for your prosperity is watched over by ancestral spirits." }, { runes: "ᚢᚱᚨ", interpretation: "A journey of strength and wisdom is ahead. Primal power fuels your movement, and divine messages will guide your way." }];
-    const meditationScripts = { 'ᛗ': "Focus on the self. Feel the connection to all of humanity.", 'ᛟ': "Think of your heritage, your ancestors. Feel their strength.", 'ᛞ': "Embrace the dawn of a new understanding. A breakthrough is near." };
+    const runeReadings = [
+        { runes: "ᚠᛉᛟ", interpretation: "Protected wealth and inheritance. Your foundations are strong. Do not fear loss, for your prosperity is watched over by ancestral spirits." }, 
+        { runes: "ᚢᚱᚨ", interpretation: "A journey of strength and wisdom is ahead. Primal power fuels your movement, and divine messages will guide your way." },
+        { runes: "ᛏᛁᛚ", interpretation: "A battle for truth approaches. Stand firm in your convictions, for victory and enlightenment are linked." },
+        { runes: "ᚹᛈᛗ", interpretation: "Joy and enlightenment come through connection with others. Do not isolate yourself on this path." },
+        { runes: "ᚷᚾᛞ", interpretation: "A gift of new knowledge will soon bring a breakthrough. Be open to unexpected wisdom." },
+        { runes: "ᛇᛉᛋ", interpretation: "You are on a protected journey toward a great goal. Trust the path, even when it is difficult." },
+        { runes: "ᚦᚺᚾ", interpretation: "A necessary, if difficult, change is upon you. Endure this hardship, for it is a catalyst for growth." }
+    ];
+    const meditationScripts = { 
+        'ᛗ': "Focus on the self. Feel the connection to all of humanity.", 
+        'ᛟ': "Think of your heritage, your ancestors. Feel their strength.", 
+        'ᛞ': "Embrace the dawn of a new understanding. A breakthrough is near.",
+        'ᛒ': "Consider new beginnings. Plant a seed of intention in your mind.",
+        'ᚷ': "Reflect on the nature of gifts, both given and received. Acknowledge your own generosity.",
+        'ᛚ': "Let your intuition flow like water. Do not force an answer; let it come to you."
+    };
+    const runeMap = {
+        'a': 'ᚨ', 'b': 'ᛒ', 'c': 'ᚲ', 'd': 'ᛞ', 'e': 'ᛖ', 'f': 'ᚠ', 'g': 'ᚷ', 'h': 'ᚺ', 
+        'i': 'ᛁ', 'j': 'ᛃ', 'k': 'ᚲ', 'l': 'ᛚ', 'm': 'ᛗ', 'n': 'ᚾ', 'o': 'ᛟ', 'p': 'ᛈ', 
+        'q': 'ᚲ', 'r': 'ᚱ', 's': 'ᛋ', 't': 'ᛏ', 'u': 'ᚢ', 'v': 'ᚹ', 'w': 'ᚹ', 'x': 'ᛉ', 
+        'y': 'ᛇ', 'z': 'ᛉ', ' ': ' '
+    };
     let currentStorytellerRuneInfo = {};
     
     // --- Core Functions ---
@@ -450,7 +586,9 @@ document.addEventListener('DOMContentLoaded', () => {
         runicOutput.style.opacity = '0';
         englishOutput.classList.remove('visible');
         if(toggleTranslationButton) toggleTranslationButton.style.display = 'none';
+        if(guidancePrompt) guidancePrompt.classList.remove('visible');
         whisperBox.classList.add('loading');
+        
         setTimeout(() => {
             const wisdom = ancientWisdoms[Math.floor(Math.random() * ancientWisdoms.length)];
             runicOutput.textContent = wisdom.runic;
@@ -458,6 +596,10 @@ document.addEventListener('DOMContentLoaded', () => {
             whisperBox.classList.remove('loading');
             runicOutput.style.opacity = '1'; 
             if(toggleTranslationButton) toggleTranslationButton.style.display = 'inline-block';
+            if(guidancePrompt) {
+                guidancePrompt.classList.remove('hidden');
+                setTimeout(() => guidancePrompt.classList.add('visible'), 100);
+            }
             isGenerating = false;
         }, 1500);
     }
@@ -505,18 +647,18 @@ document.addEventListener('DOMContentLoaded', () => {
         isBeamActive = true;
         beamElement.classList.remove('is-hidden');
     
-        const moon = document.getElementById('menuButton');
-        if (!moon || !targetElement) { isBeamActive = false; return; }
+        const menuBtn = document.getElementById('menuButton');
+        if (!menuBtn || !targetElement) { isBeamActive = false; return; }
     
-        const moonRect = moon.getBoundingClientRect();
+        const menuRect = menuBtn.getBoundingClientRect();
         const targetRect = targetElement.getBoundingClientRect();
-        const moonX = moonRect.left + moonRect.width / 2;
-        const moonY = moonRect.top + moonRect.height / 2;
+        const menuX = menuRect.left + menuRect.width / 2;
+        const menuY = menuRect.top + menuRect.height / 2;
         const targetX = targetRect.left + targetRect.width / 2;
         const targetY = targetRect.top;
     
-        const deltaX = targetX - moonX;
-        const deltaY = targetY - moonY;
+        const deltaX = targetX - menuX;
+        const deltaY = targetY - menuY;
         const distance = Math.hypot(deltaX, deltaY);
         const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
         
@@ -524,8 +666,8 @@ document.addEventListener('DOMContentLoaded', () => {
         beamInner.innerHTML = (runeChars.repeat(6)).split('').sort(() => 0.5 - Math.random()).join('<br>');
         
         beamElement.style.height = '0px';
-        beamElement.style.left = `${moonX - 12.5}px`; // Center beam
-        beamElement.style.top = `${moonY}px`;
+        beamElement.style.left = `${menuX - 12.5}px`; // Center beam
+        beamElement.style.top = `${menuY}px`;
         beamElement.style.transform = `rotate(${angle + 90}deg)`;
         
         beamElement.classList.remove('is-hiding');
@@ -553,7 +695,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initialEntryOverlay.addEventListener('click', () => {
         initialEntryOverlay.classList.add('hidden');
         mainContentArea.classList.add('active');
-        if (document.getElementById('menuHint')) document.getElementById('menuHint').style.opacity = '0';
+        // The original menu hint is not needed with the hamburger menu.
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         initParticles();
@@ -562,9 +704,30 @@ document.addEventListener('DOMContentLoaded', () => {
     
     window.addEventListener('mousemove', e => { if(window.mouse) { window.mouse.x = e.clientX; window.mouse.y = e.clientY; }});
     window.addEventListener('resize', () => { if(canvas) { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initParticles(); } });
-    menuButton.addEventListener('click', () => overlayMenu.classList.add('active'));
-    closeMenuButton.addEventListener('click', () => overlayMenu.classList.remove('active'));
-    pageLinks.forEach(link => { link.addEventListener('click', (e) => { e.preventDefault(); const pageId = e.currentTarget.dataset.page; showPage(pageId); if(overlayMenu.classList.contains('active')) overlayMenu.classList.remove('active'); }); });
+    
+    // Modified menu toggle logic
+    menuButton.addEventListener('click', () => {
+        overlayMenu.classList.toggle('active');
+        hamburgerMenu.classList.toggle('active');
+    });
+
+    closeMenuButton.addEventListener('click', () => {
+        overlayMenu.classList.remove('active');
+        hamburgerMenu.classList.remove('active');
+    });
+    
+    pageLinks.forEach(link => { 
+        link.addEventListener('click', (e) => { 
+            e.preventDefault(); 
+            const pageId = e.currentTarget.dataset.page; 
+            showPage(pageId); 
+            if(overlayMenu.classList.contains('active')) {
+                overlayMenu.classList.remove('active');
+                hamburgerMenu.classList.remove('active');
+            }
+        }); 
+    });
+    
     window.addEventListener('popstate', (e) => { const pageId = (e.state && e.state.page) || window.location.hash.substring(1) || 'home'; showPage(pageId, true); });
     
     if(pyramidGroup) pyramidGroup.addEventListener('click', (e) => { 
@@ -603,12 +766,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if(meditationStatus) meditationStatus.textContent = meditationScripts[currentRuneChar];
     }, 8000);
 
+    if(sanctumView) sanctumView.addEventListener('click', e => {
+        if (e.target.id === 'runic-translator-button') {
+            const input = document.getElementById('runic-translator-input');
+            const output = document.getElementById('runic-translation-output');
+            if (input && output) {
+                const textToTranslate = input.value.toLowerCase();
+                const translatedText = textToTranslate.split('').map(char => runeMap[char] || char).join('');
+                output.textContent = translatedText || "Enter text above.";
+            }
+        }
+    });
+
     // --- Initialization ---
     function initialize() {
         setupAccordion();
         setRuneOfTheWeek();
         displayStories();
         generateKeepersGrid(15);
+        if(document.getElementById('runic-translation-output')) {
+            document.getElementById('runic-translation-output').textContent = "Your translation will appear here.";
+        }
         const urlParams = new URLSearchParams(window.location.search);
         const initialHash = window.location.hash.substring(1);
         let startingPage = 'home';
