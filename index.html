@@ -209,31 +209,6 @@
             from { border-color: rgba(255, 215, 0, 0.7); text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
             to { border-color: rgba(255, 215, 0, 1); text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); }
         }
-        
-        .shooting-beam {
-            position: fixed;
-            transform-origin: top center;
-            width: 2ch; 
-            z-index: 999;
-            pointer-events: none;
-            overflow: hidden;
-            color: var(--primary-night);
-            font-family: 'RunicFont', 'Spectral', serif;
-            font-size: 1.2rem;
-            line-height: 1;
-            text-shadow: 0 0 8px var(--primary-night);
-            word-break: break-all;
-            opacity: 0;
-            transition: opacity 0.5s ease-out 1s; /* Fade out after 1 second */
-        }
-        .shooting-beam-inner {
-            height: 200%;
-            animation: flow-down 1.5s linear infinite;
-        }
-        @keyframes flow-down {
-            from { transform: translateY(-50%); }
-            to { transform: translateY(0%); }
-        }
 
         @media (max-width: 768px) { .celestial-body { width: 50px; height: 50px; } }
         @media (max-width: 640px) { .overlay-menu nav ul { grid-template-columns: 1fr; } }
@@ -327,6 +302,8 @@
     </div>
     
     <div id="lore-modal"><div class="lore-content"><button class="lore-close-button">&times;</button><h3 id="lore-title" class="text-2xl font-bold text-yellow-400 mb-4 font-spectral"></h3><div id="lore-text" class="text-gray-300"></div></div></div>
+    
+    <div id="runicBeam" class="shooting-beam is-hidden"><div class="shooting-beam-inner"></div></div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -365,11 +342,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const meditationStatus = document.getElementById('meditationStatus');
     const canvas = document.getElementById('interactive-background');
     const ctx = canvas.getContext('2d');
+    const beamElement = document.getElementById('runicBeam');
+    const beamInner = beamElement.querySelector('.shooting-beam-inner');
 
     let isGenerating = false;
     let particlesArray = [];
     window.mouse = {x: null, y: null, radius: 100};
-    let isBeamActive = false; // Cooldown for beam
+    let isBeamActive = false;
 
     // --- Data Arrays ---
     const ancientWisdoms = [ { runic: "ᛞᚱᛁᛗ ᛞᛖᛈᛖᚱ", english: "Dream deeper." }, { runic: "ᛋᛏᚨᚱᛋ ᚹᚨᛏᚲᚺ", english: "The stars watch." }, { runic: "ᛖᚲᚺᛟ ᛟᚠ ᛏᛁᛗᛖ", english: "Listen to time's echo." }, { runic: "ᚦᛅ ᛋᛏᛟᚾᛋ ᛋᛒᛂᛅᚴ", english: "The stones speak to those who listen." }, { runic: "ᚢᛅᛁᛚ ᛁᛋ ᚦᛁᚾ", english: "Where the worlds touch, the veil is thin." }];
@@ -387,7 +366,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function showPage(pageId, isNavigatingHistory = false) {
         allPages.forEach(page => page.classList.remove('active'));
         const targetPage = document.getElementById(pageId + 'Page');
-        
         if (targetPage) {
             targetPage.classList.add('active');
             window.scrollTo(0, 0);
@@ -489,51 +467,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function fireRunicBeam(targetElement) {
-        if (isBeamActive) return; // Cooldown check
+        if (isBeamActive) return;
         isBeamActive = true;
-
+    
         const moon = document.getElementById('menuButton');
         if (!moon || !targetElement) { isBeamActive = false; return; }
-
+    
         const moonRect = moon.getBoundingClientRect();
         const targetRect = targetElement.getBoundingClientRect();
         const moonX = moonRect.left + moonRect.width / 2;
         const moonY = moonRect.top + moonRect.height / 2;
         const targetX = targetRect.left + targetRect.width / 2;
         const targetY = targetRect.top;
-
+    
         const deltaX = targetX - moonX;
         const deltaY = targetY - moonY;
         const distance = Math.hypot(deltaX, deltaY);
         const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
-
-        const beam = document.createElement('div');
-        beam.className = 'shooting-beam';
         
-        const runesInner = document.createElement('div');
-        runesInner.className = 'shooting-beam-inner';
         const runeChars = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛋᛏᛒᛖᛗᛚᛜᛟᛞ';
-        runesInner.textContent = (runeChars.repeat(20)).split('').sort(() => 0.5 - Math.random()).join('');
-        beam.appendChild(runesInner);
-
-        beam.style.height = `${distance}px`;
-        beam.style.left = `${moonX}px`;
-        beam.style.top = `${moonY}px`;
-        beam.style.transform = `rotate(${angle + 90}deg)`;
+        beamInner.textContent = (runeChars.repeat(20)).split('').sort(() => 0.5 - Math.random()).join('');
         
-        document.body.appendChild(beam);
-
+        beamElement.style.height = '0px';
+        beamElement.style.left = `${moonX}px`;
+        beamElement.style.top = `${moonY}px`;
+        beamElement.style.transform = `rotate(${angle + 90}deg)`;
+        
+        beamElement.classList.remove('is-hiding');
+        beamElement.style.opacity = '1';
+    
         requestAnimationFrame(() => {
-            beam.style.opacity = '1';
+            beamElement.style.height = `${distance}px`;
         });
-
+    
         setTimeout(() => {
-            beam.style.opacity = '0';
+            beamElement.classList.add('is-hiding');
             setTimeout(() => {
-                beam.remove();
-                isBeamActive = false; // Reset cooldown
-            }, 500);
-        }, 1000); // Linger duration
+                isBeamActive = false;
+            }, 1500); // Wait for fade out to finish
+        }, 2000); // Linger for 2 seconds
     }
 
     // --- Particle Animation ---
