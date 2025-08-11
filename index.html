@@ -37,6 +37,7 @@
             z-index: 1; transition: opacity 2s ease-in-out; pointer-events: none;
         }
         .hidden { display: none !important; }
+        .is-hidden { display: none; } /* Utility class */
         .main-content-area {
             z-index: 10; width: 95%; max-width: 900px; display: flex;
             flex-direction: column; align-items: center; padding: 1rem; box-sizing: border-box;
@@ -210,6 +211,39 @@
             to { border-color: rgba(255, 215, 0, 1); text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); }
         }
 
+        /* --- NEW/IMPROVED Runic Beam Styles --- */
+        .shooting-beam {
+            position: fixed;
+            z-index: 999;
+            transform-origin: top center;
+            width: 25px;
+            overflow: hidden;
+            transition: height 1s cubic-bezier(0.25, 1, 0.5, 1);
+            pointer-events: none;
+            background: linear-gradient(to bottom, rgba(255, 215, 0, 0), rgba(255, 215, 0, 0.7), rgba(255, 215, 0, 0));
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.7));
+            border-radius: 50%;
+        }
+        .shooting-beam.is-hiding {
+            opacity: 0 !important;
+            transition: opacity 1.5s ease-out;
+        }
+        .shooting-beam-inner {
+            width: 100%;
+            height: 100%;
+            font-family: 'RunicFont', 'Spectral', serif;
+            font-size: 16px;
+            color: #fff;
+            text-shadow: 0 0 4px #FFD700, 0 0 8px #FFD700;
+            animation: scroll-runes 4s linear infinite;
+            text-align: center;
+            line-height: 1.5;
+        }
+        @keyframes scroll-runes {
+            from { transform: translateY(0%); }
+            to { transform: translateY(-30%); }
+        }
+
         @media (max-width: 768px) { .celestial-body { width: 50px; height: 50px; } }
         @media (max-width: 640px) { .overlay-menu nav ul { grid-template-columns: 1fr; } }
     </style>
@@ -287,7 +321,7 @@
             </section>
 
             <section id="keeperPage" class="page">
-                <div class="page-content-container text-gray-300 text-center"><div id="keeper-offering-view"><h2 class="page-title">Become a Keeper</h2><p class="page-intro">The Seeker's Journey leads here. To become a Keeper is to move from observer to guardian. It is a commitment to help preserve this space and support the ongoing expedition into the mystery. Your offering is the final step in your initiation.</p><h3 class="text-2xl font-bold text-yellow-400 mb-4 font-spectral">The Keepers' Circle</h3><p class="mb-4">Each rune below represents a Keeper who has completed their journey. Join them.</p><div id="keepersGrid" class="keepers-grid mb-8"></div><div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full text-center"><div class="bg-black/30 border border-gray-700 rounded-lg p-6 flex flex-col"><h3 class="text-yellow-400 font-spectral text-2xl">Initiate</h3><p class="font-bold text-white text-4xl my-4">$5</p><p class="text-gray-400 text-sm min-h-[50px]">A one-time offering to show your belief in the mission.</p><ul class="text-left text-gray-300 space-y-2 my-6 flex-grow"><li>✅ Access to the Inner Sanctum lore.</li><li>✅ Your chosen runic initial added to the Keepers' Circle.</li></ul><a href="https://buy.stripe.com/28E6oH6t188VfGf8LN1gs00" target="_blank" rel="noopener noreferrer" class="whisper-button mt-4 p-3">Make an Offering</a></div><div class="bg-black/30 border-2 border-yellow-400 rounded-lg p-6 flex flex-col relative"><p class="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-black font-bold text-xs px-3 py-1 rounded-full">MOST POPULAR</p><h3 class="text-yellow-400 font-spectral text-2xl">Keeper</h3><p class="font-bold text-white text-4xl my-4">$15</p><p class="text-gray-400 text-sm min-h-[50px]">Become a true guardian of the research and its secrets.</p><ul class="text-left text-gray-300 space-y-2 my-6 flex-grow"><li>✅ All benefits of the Initiate tier.</li><li>✅ A personal 3-rune reading, delivered to your email.</li></ul><a href="https://buy.stripe.com/8x24gz4kT74R51B9PR1gs01" target="_blank" rel="noopener noreferrer" class="donate-button mt-4 p-3">Become a Keeper</a></div><div class="bg-black/30 border border-gray-700 rounded-lg p-6 flex flex-col"><h3 class="text-yellow-400 font-spectral text-2xl">Whisperer's Choice</h3><p class="font-bold text-white text-4xl my-4">Custom</p><p class="text-gray-400 text-sm min-h-[50px]">Your offering ensures this portal continues to echo through time for new Seekers.</p><ul class="text-left text-gray-300 space-y-2 my-6 flex-grow"><li>✅ Access to the Inner Sanctum lore.</li><li>✅ Your chosen runic initial added to the Keepers' Circle.</li></ul><a href="https://buy.stripe.com/5kQaEX5oXbl7dy7fab1gs03" target="_blank" rel="noopener noreferrer" class="whisper-button mt-4 p-3">Choose Your Offering</a></div></div></div><div id="sanctum-view" class="hidden"><h2 class="page-title">Welcome, Inner Sanctum</h2><p class="page-intro">Your initiation is complete. Thank you for your offering, Keeper. As a guardian, you are granted access to exclusive tools to aid your journey.</p><div class="text-left border-t border-gray-600 pt-6 mt-6"><h3 class="text-2xl font-bold text-yellow-400 mb-4 font-spectral">The Keeper's Toolkit</h3><p class="mb-4"><strong>Deeper Lore:</strong> The secrets of the runes are now open to you. The Elder Futhark is more than an alphabet; it is a cosmological map. Each rune is a key to a specific type of energy or event in the universe. Fehu (ᚠ), seen as wealth, is truly the untamed, expansive energy of creation...</p><p class="mb-4"><strong>The Keeper's Meditation:</strong> Access the full, extended guided meditation to better align with the valley's energy. [A link to your exclusive audio file would go here]</p><p><strong>The Pyramid Cipher:</strong> Download this high-resolution runic cipher, a key to decoding the hidden whispers of the valley. [A link to your exclusive image file would go here]</p></div></div></div>
+                <div class="page-content-container text-gray-300 text-center"><div id="keeper-offering-view"><h2 class="page-title">Become a Keeper</h2><p class="page-intro">The Seeker's Journey leads here. To become a Keeper is to move from observer to guardian. It is a commitment to help preserve this space and support the ongoing expedition into the mystery. Your offering is the final step in your initiation.</p><h3 class="text-2xl font-bold text-yellow-400 mb-4 font-spectral">The Keepers' Circle</h3><p class="mb-4">Each rune below represents a Keeper who has completed their journey. Join them.</p><div id="keepersGrid" class="keepers-grid mb-8"></div><div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full text-center"><div class="bg-black/30 border border-gray-700 rounded-lg p-6 flex flex-col"><h3 class="text-yellow-400 font-spectral text-2xl">Initiate</h3><p class="font-bold text-white text-4xl my-4">$5</p><p class="text-gray-400 text-sm min-h-[50px]">A one-time offering to show your belief in the mission.</p><ul class="text-left text-gray-300 space-y-2 my-6 flex-grow"><li>✅ Access to the Inner Sanctum lore.</li><li>✅ Your chosen runic initial added to the Keepers' Circle.</li></ul><a href="https://buy.stripe.com/28E6oH6t188VfGf8LN1gs00" target="_blank" rel="noopener noreferrer" class="whisper-button mt-4 p-3">Make an Offering</a></div><div class="bg-black/30 border-2 border-yellow-400 rounded-lg p-6 flex flex-col relative"><p class="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-black font-bold text-xs px-3 py-1 rounded-full">MOST POPULAR</p><h3 class="text-yellow-400 font-spectral text-2xl">Keeper</h3><p class="font-bold text-white text-4xl my-4">$15</p><p class="text-gray-400 text-sm min-h-[50px]">Become a true guardian of the research and its secrets.</p><ul class="text-left text-gray-300 space-y-2 my-6 flex-grow"><li>✅ All benefits of the Initiate tier.</li><li>✅ A personal 3-rune reading, delivered to your email.</li></ul><a href="https://buy.stripe.com/8x24gz4kT74R51B9PR1gs01" target="_blank" rel="noopener noreferrer" class="donate-button mt-4 p-3">Become a Keeper</a></div><div class="bg-black/30 border border-gray-700 rounded-lg p-6 flex flex-col"><h3 class="text-yellow-400 font-spectral text-2xl">Whisperer's Choice</h3><p class="font-bold text-white text-4xl my-4">Custom</p><p class="text-gray-400 text-sm min-h-[50px]">Your offering ensures this portal continues to echo through time for new Seekers.</p<ul class="text-left text-gray-300 space-y-2 my-6 flex-grow"><li>✅ Access to the Inner Sanctum lore.</li><li>✅ Your chosen runic initial added to the Keepers' Circle.</li></ul><a href="https://buy.stripe.com/5kQaEX5oXbl7dy7fab1gs03" target="_blank" rel="noopener noreferrer" class="whisper-button mt-4 p-3">Choose Your Offering</a></div></div></div><div id="sanctum-view" class="hidden"><h2 class="page-title">Welcome, Inner Sanctum</h2><p class="page-intro">Your initiation is complete. Thank you for your offering, Keeper. As a guardian, you are granted access to exclusive tools to aid your journey.</p><div class="text-left border-t border-gray-600 pt-6 mt-6"><h3 class="text-2xl font-bold text-yellow-400 mb-4 font-spectral">The Keeper's Toolkit</h3><p class="mb-4"><strong>Deeper Lore:</strong> The secrets of the runes are now open to you. The Elder Futhark is more than an alphabet; it is a cosmological map. Each rune is a key to a specific type of energy or event in the universe. Fehu (ᚠ), seen as wealth, is truly the untamed, expansive energy of creation...</p><p class="mb-4"><strong>The Keeper's Meditation:</strong> Access the full, extended guided meditation to better align with the valley's energy. [A link to your exclusive audio file would go here]</p><p><strong>The Pyramid Cipher:</strong> Download this high-resolution runic cipher, a key to decoding the hidden whispers of the valley. [A link to your exclusive image file would go here]</p></div></div></div>
             </section>
         </main>
 
@@ -295,7 +329,7 @@
             <div class="social-share-buttons">
                 <a href="#" id="share-twitter" class="social-share-button" title="Share on X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg></a>
                 <a href="#" id="share-facebook" class="social-share-button" title="Share on Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3v9h4z"></path></svg></a>
-                <a href="mailto:your-email@example.com" class="social-share-button" title="Commune with the Keepers"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"></path></svg></a>
+                <a href="mailto:portxy@gmail.com" class="social-share-button" title="Commune with the Keepers"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"></path></svg></a>
             </div>
             <p class="text-sm text-gray-500 mt-4">&copy; 2025 Ancient Echoes Project. All rights reserved.</p>
         </footer>
@@ -469,6 +503,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function fireRunicBeam(targetElement) {
         if (isBeamActive) return;
         isBeamActive = true;
+        beamElement.classList.remove('is-hidden');
     
         const moon = document.getElementById('menuButton');
         if (!moon || !targetElement) { isBeamActive = false; return; }
@@ -486,10 +521,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
         
         const runeChars = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛋᛏᛒᛖᛗᛚᛜᛟᛞ';
-        beamInner.textContent = (runeChars.repeat(20)).split('').sort(() => 0.5 - Math.random()).join('');
+        beamInner.innerHTML = (runeChars.repeat(6)).split('').sort(() => 0.5 - Math.random()).join('<br>');
         
         beamElement.style.height = '0px';
-        beamElement.style.left = `${moonX}px`;
+        beamElement.style.left = `${moonX - 12.5}px`; // Center beam
         beamElement.style.top = `${moonY}px`;
         beamElement.style.transform = `rotate(${angle + 90}deg)`;
         
@@ -504,8 +539,9 @@ document.addEventListener('DOMContentLoaded', () => {
             beamElement.classList.add('is-hiding');
             setTimeout(() => {
                 isBeamActive = false;
-            }, 1500); // Wait for fade out to finish
-        }, 2000); // Linger for 2 seconds
+                beamElement.classList.add('is-hidden');
+            }, 1500); 
+        }, 2000); 
     }
 
     // --- Particle Animation ---
